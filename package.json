@@ -1,0 +1,13 @@
+{
+  "name": "japan-travel-info",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check": "node scripts/check-site.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}
