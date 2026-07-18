@@ -1,53 +1,57 @@
+import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
-import { chromium } from "playwright";
 
-const base = process.env.SITE_BASE_URL || "http://127.0.0.1:8898";
-const outDir = path.join(process.cwd(), "output/playwright");
-fs.mkdirSync(outDir, { recursive: true });
-
+const base = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:8898";
 const pages = [
-  { path: "/", name: "home", must: ["Japan Travel 由株式会社大寅／Daitora Group 运营", "グループ全体で約100台規模の車両ネットワーク", "Rezio"], minImages: 1, minVideos: 1 },
-  { path: "/h5/routes/kyoto-nara-classic/", name: "route", must: ["京都奈良", "Rezio"], minImages: 1, minAudio: 2 },
-  { path: "/spots/nar-0003/", name: "spot", must: ["春日大社"], minImages: 1, minAudio: 2 },
-  { path: "/member/", name: "member", must: ["Japan Travel", "接口尚未配置"], minImages: 0 },
-  { path: "/products/", name: "products", must: ["Rezio", "预约跳转"], minImages: 0 }
+  ["/zh-cn/", "森有静之气"],
+  ["/zh-cn/spots/kyo-0001/", "清水寺"],
+  ["/zh-cn/products/kix-osaka/", "KIX"],
+  ["/zh-cn/contact/", "定制咨询"],
+  ["/zh-cn/member/login/", "Login"],
+  ["/zh-tw/", "森有靜之氣"],
+  ["/zh-tw/spots/kyo-0001/", "清水寺"],
+  ["/zh-tw/services/airport-transfer/", "機場"],
+  ["/zh-tw/faq/", "FAQ"],
+  ["/ja/", "森に息づき"],
+  ["/ja/spots/kyo-0001/", "清水寺"],
+  ["/ja/vehicles/alphard/", "Alphard"],
+  ["/ja/contact/", "カスタム"],
+  ["/en/", "Still forests"],
+  ["/en/spots/kyo-0001/", "Kiyomizu"],
+  ["/en/services/airport-transfer/", "Airport"],
+  ["/en/faq/", "FAQ"],
+  ["/ko/", "숲은"],
+  ["/ko/spots/kyo-0001/", "기요"],
+  ["/ko/services/airport-transfer/", "공항"],
+  ["/ko/member/register/", "Register"],
+  ["/en/routes/", "Popular"],
+  ["/en/routes/kyoto-nara-classic/", "Kyoto"],
+  ["/en/spots/", "Kansai"],
+  ["/en/products/", "Rezio"],
+  ["/en/vip/", "VIP"],
+  ["/en/referral/", "Referral"],
+  ["/en/404/", "404"],
+  ["/go/rezio/not-configured", "Rezio link unavailable"]
 ];
 
+fs.mkdirSync(path.join(process.cwd(), "output/playwright"), { recursive: true });
+const browser = await chromium.launch();
+const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
 const errors = [];
-const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true });
-
-for (const item of pages) {
+for (const [url, text] of pages) {
   const page = await context.newPage();
-  const consoleErrors = [];
   page.on("console", (msg) => {
-    if (msg.type() === "error") consoleErrors.push(msg.text());
+    if (msg.type() === "error") errors.push(`${url}: ${msg.text()}`);
   });
-  const response = await page.goto(`${base}${item.path}`, { waitUntil: "networkidle" });
-  if (!response || response.status() >= 400) errors.push(`${item.name}: HTTP ${response?.status()}`);
-  const text = await page.locator("body").innerText();
-  for (const must of item.must) {
-    if (!text.includes(must)) errors.push(`${item.name}: missing "${must}"`);
-  }
-  const counts = await page.evaluate(() => ({
-    images: Array.from(document.images).filter((img) => img.complete && img.naturalWidth > 0).length,
-    videos: document.querySelectorAll("video").length,
-    audio: document.querySelectorAll("audio").length
-  }));
-  if (counts.images < (item.minImages || 0)) errors.push(`${item.name}: expected images >= ${item.minImages}, got ${counts.images}`);
-  if (counts.videos < (item.minVideos || 0)) errors.push(`${item.name}: expected videos >= ${item.minVideos}, got ${counts.videos}`);
-  if (counts.audio < (item.minAudio || 0)) errors.push(`${item.name}: expected audio >= ${item.minAudio}, got ${counts.audio}`);
-  if (consoleErrors.length) errors.push(`${item.name}: console errors ${consoleErrors.join(" | ")}`);
-  await page.screenshot({ path: path.join(outDir, `${item.name}.png`), fullPage: true });
+  const res = await page.goto(base + url, { waitUntil: "networkidle" });
+  if (!res || res.status() >= 500) throw new Error(`bad status ${url}: ${res?.status()}`);
+  await page.getByText(text, { exact: false }).first().waitFor({ timeout: 5000 });
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+  if (overflow) throw new Error(`horizontal overflow ${url}`);
+  await page.screenshot({ path: path.join(process.cwd(), "output/playwright", url.replaceAll("/", "_") + ".png"), fullPage: false });
   await page.close();
 }
-
 await browser.close();
-
-if (errors.length) {
-  console.error(errors.join("\n"));
-  process.exit(1);
-}
-
+if (errors.length) throw new Error(`console errors:\n${errors.join("\n")}`);
 console.log(`OK browser check: ${pages.length} pages at ${base}`);

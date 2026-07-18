@@ -1,0 +1,66 @@
+{
+  "brand_name": "Japan Travel",
+  "legal_operator": "株式会社大寅",
+  "group_name": "Daitora Group",
+  "operated_by_text": "Japan Travel Operated by 株式会社大寅 / Daitora Group",
+  "daitora_url": "https://daitora-jp.com/",
+  "default_source_name": "Official tourism and local destination references",
+  "default_source_url": "https://www.japan.travel/",
+  "last_reviewed_at": "2026-07-18",
+  "vehicle_network_text": {
+    "zh": "集团整体约100台规模车辆网络。",
+    "zhHant": "集團整體約100台規模車輛網絡。",
+    "ja": "グループ全体で約100台規模の車両ネットワーク。",
+    "en": "A group-wide vehicle network of around 100 vehicles.",
+    "ko": "그룹 전체 약 100대 규모의 차량 네트워크."
+  },
+  "service_area_text": {
+    "zh": "服务以关西地区为中心，覆盖大阪、京都、奈良、兵库、滋贺、和歌山、三重及主要机场动线。",
+    "zhHant": "服務以關西地區為中心，涵蓋大阪、京都、奈良、兵庫、滋賀、和歌山、三重及主要機場動線。",
+    "ja": "関西エリアを中心に、大阪、京都、奈良、兵庫、滋賀、和歌山、三重と主要空港動線を扱います。",
+    "en": "Service guidance focuses on Kansai, including Osaka, Kyoto, Nara, Hyogo, Shiga, Wakayama, Mie and major airport corridors.",
+    "ko": "서비스 안내는 오사카, 교토, 나라, 효고, 시가, 와카야마, 미에 및 주요 공항 동선을 중심으로 합니다."
+  },
+  "vehicle_boundary": {
+    "zh": "车型将根据人数、行李、预约时间和车辆情况优先协调，不能在未确认前承诺指定车型。",
+    "zhHant": "車型會依人數、行李、預約時間與車輛狀況優先協調，未確認前不能承諾指定車型。",
+    "ja": "車種は人数、荷物、予約時間、車両状況に応じて優先調整します。未確認の段階で特定車種を保証するものではありません。",
+    "en": "Vehicle type is coordinated by party size, luggage, booking time and fleet conditions; a specific model is not guaranteed before confirmation.",
+    "ko": "차종은 인원, 수하물, 예약 시간과 차량 상황에 따라 우선 조율되며 확정 전 특정 차종을 보장하지 않습니다."
+  },
+  "luggage_boundary": {
+    "zh": "行李数量较多、婴儿车、轮椅或大型物品需要提前说明，以便判断车型和多车方案。",
+    "zhHant": "行李較多、嬰兒車、輪椅或大型物品需提前說明，以便判斷車型與多車方案。",
+    "ja": "荷物が多い場合、ベビーカー、車いす、大型荷物がある場合は事前に知らせると、車種や複数台手配を判断しやすくなります。",
+    "en": "Large luggage volume, strollers, wheelchairs or oversized items should be declared in advance so vehicle or multi-car planning can be checked.",
+    "ko": "수하물이 많거나 유모차, 휠체어, 대형 짐이 있는 경우 사전에 알려야 차종 또는 복수 차량 여부를 판단할 수 있습니다."
+  },
+  "privacy_summary": {
+    "zh": "我们只收集完成咨询、会员、推荐归因和客服所需的信息。统计与第三方平台追踪仅在配置并获得同意后加载。",
+    "zhHant": "我們只收集完成諮詢、會員、推薦歸因與客服所需的資訊。統計與第三方平台追蹤僅在完成設定並取得同意後載入。",
+    "ja": "問い合わせ、会員、紹介計測、サポートに必要な情報のみを扱います。統計と第三者トラッキングは設定済みかつ同意後に読み込みます。",
+    "en": "We collect only what is needed for inquiries, membership, referral attribution and support. Analytics and third-party tracking load only when configured and consented.",
+    "ko": "문의, 회원, 추천 귀속 및 고객 응대에 필요한 정보만 수집합니다. 통계와 제3자 추적은 설정 및 동의 후에만 로드됩니다."
+  },
+  "terms_summary": {
+    "zh": "本站公开内容用于旅行参考。正式预约、付款、凭证、库存、取消规则以Rezio及最终预约确认为准。",
+    "zhHant": "本站公開內容用於旅行參考。正式預約、付款、憑證、庫存、取消規則以 Rezio 及最終預約確認為準。",
+    "ja": "公開コンテンツは旅行参考情報です。正式予約、支払い、バウチャー、在庫、取消規定はRezioと最終予約確認が基準です。",
+    "en": "Public content is travel reference material. Formal booking, payment, vouchers, inventory and cancellation rules are governed by Rezio and final confirmation.",
+    "ko": "공개 콘텐츠는 여행 참고 자료입니다. 공식 예약, 결제, 바우처, 재고와 취소 규정은 Rezio 및 최종 예약 확인을 기준으로 합니다."
+  },
+  "vip_rules": {
+    "zh": ["Japan Travel Member：完成首次服务。", "VIP Friend：推荐1位朋友完成服务，或本人完成2次服务。", "Circle Host：12个月内推荐3位朋友完成服务。", "Premier Host：累计推荐10位朋友完成服务。", "VIP权益以预约确认为准，不承诺超出预约确认范围的特定安排。"],
+    "zhHant": ["Japan Travel Member：完成首次服務。", "VIP Friend：推薦1位朋友完成服務，或本人完成2次服務。", "Circle Host：12個月內推薦3位朋友完成服務。", "Premier Host：累計推薦10位朋友完成服務。", "VIP權益以預約確認為準，不承諾超出預約確認範圍的特定安排。"],
+    "ja": ["Japan Travel Member：初回サービス完了。", "VIP Friend：友人1名のサービス完了紹介、または本人2回利用。", "Circle Host：12か月以内に友人3名のサービス完了紹介。", "Premier Host：累計10名のサービス完了紹介。", "VIP特典は予約確認が基準で、予約確認範囲を超える特定手配は約束できません。"],
+    "en": ["Japan Travel Member: first completed service.", "VIP Friend: one friend completes service, or the member completes two services.", "Circle Host: three referred friends complete service within 12 months.", "Premier Host: ten referred friends complete service in total.", "VIP benefits depend on booking confirmation and do not guarantee a specific driver, vehicle upgrade, unlimited waiting or free extra hours."],
+    "ko": ["Japan Travel Member: 첫 서비스 완료.", "VIP Friend: 친구 1명이 서비스를 완료하거나 본인이 2회 이용 완료.", "Circle Host: 12개월 내 친구 3명이 서비스 완료.", "Premier Host: 누적 친구 10명이 서비스 완료.", "VIP 혜택은 예약 확인을 기준으로 하며 예약 확인 범위를 넘는 특정 배정은 약속할 수 없습니다."]
+  },
+  "referral_rules": {
+    "zh": ["推荐码由系统随机生成，不能由浏览器自行修改。", "只有已付款且满足有效订单规则的服务才计入推荐和VIP。", "取消、退款、测试单和自我推荐不计入。"],
+    "zhHant": ["推薦碼由系統隨機生成，不能由瀏覽器自行修改。", "只有已付款且符合有效訂單規則的服務才計入推薦與VIP。", "取消、退款、測試單與自我推薦不計入。"],
+    "ja": ["紹介コードはシステムがランダムに生成し、ブラウザ側では変更できません。", "支払い済みで有効注文ルールを満たすサービスのみ紹介とVIPに計上します。", "取消、返金、テスト注文、自己紹介は計上しません。"],
+    "en": ["Referral codes are random system-generated values and cannot be modified in the browser.", "Only paid services that satisfy valid-order rules count toward referral and VIP status.", "Cancelled, refunded, test and self-referral orders do not count."],
+    "ko": ["추천 코드는 시스템에서 무작위로 생성되며 브라우저에서 수정할 수 없습니다.", "결제 완료 및 유효 주문 규칙을 만족한 서비스만 추천과 VIP에 반영됩니다.", "취소, 환불, 테스트 주문과 자기 추천은 반영되지 않습니다."]
+  }
+}

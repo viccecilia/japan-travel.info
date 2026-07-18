@@ -1,0 +1,3 @@
+rezio_order_id,email,referral_code,status,paid_status,service_completed_at
+RZ-SAMPLE-001,guest@example.com,JTAB12CD34,completed,paid,2026-07-18T09:00:00Z
+RZ-SAMPLE-002,test@example.com,JTAB12CD34,cancelled,refunded,

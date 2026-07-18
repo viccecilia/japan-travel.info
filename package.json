@@ -5,7 +5,13 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
-    "check": "node scripts/check-site.mjs"
+    "check": "node scripts/check-site.mjs",
+    "audit:seo": "node scripts/audit-seo.mjs",
+    "audit:i18n": "node scripts/audit-i18n.mjs",
+    "audit:security": "node scripts/audit-security.mjs",
+    "test": "node scripts/test-rules.mjs",
+    "test:e2e": "node scripts/browser-check.mjs",
+    "verify": "npm run build && npm run check && npm run audit:seo && npm run audit:i18n && npm run audit:security && npm run test"
   },
   "devDependencies": {
     "playwright": "^1.61.1"

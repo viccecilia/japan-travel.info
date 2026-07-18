@@ -5,3 +5,10 @@ Thumbs.db
 desktop.ini
 output/
 node_modules/
+.env
+.env.*
+!.env.example
+runtime/
+*.sqlite
+*.sqlite3
+mail_spool/

@@ -1,70 +1,140 @@
 (function () {
   const config = window.JAPAN_TRAVEL_CONFIG || {};
+  const consentKey = "jt_cookie_consent";
 
-  function showMessage(target, text) {
-    const box = target.closest("section, .panel, .card")?.querySelector("[data-message]");
-    if (box) box.textContent = text;
+  function bySel(sel, root = document) {
+    return Array.from(root.querySelectorAll(sel));
   }
-
-  function resolveRezio(button) {
-    const key = button.dataset.rezioKey;
-    const routeUrls = config.rezioRouteUrls || {};
-    const productUrls = config.rezioProductUrls || {};
-    return routeUrls[key] || productUrls[key] || config.rezioDefaultUrl || "";
+  function safeText(node, text) {
+    if (node) node.textContent = text;
   }
-
-  document.addEventListener("click", async (event) => {
-    const rezio = event.target.closest("[data-rezio-key]");
-    if (rezio) {
-      event.preventDefault();
-      const url = resolveRezio(rezio);
-      if (!url) {
-        showMessage(rezio, rezio.dataset.unconfigured || "Reservation link is not configured yet.");
-        return;
-      }
-      if (config.analyticsEndpoint) {
-        try {
-          navigator.sendBeacon?.(
-            config.analyticsEndpoint,
-            JSON.stringify({ type: "rezio_redirect_attempt", key: rezio.dataset.rezioKey, at: new Date().toISOString() })
-          );
-        } catch (_) {}
-      }
-      window.open(url, "_blank", "noopener,noreferrer");
+  function getConsent() {
+    try { return localStorage.getItem(consentKey) === "accepted"; } catch (_) { return false; }
+  }
+  function setConsent(value) {
+    try { localStorage.setItem(consentKey, value ? "accepted" : "declined"); } catch (_) {}
+  }
+  function track(type, payload = {}) {
+    if (!config.analyticsEndpoint) return;
+    const data = JSON.stringify({
+      type,
+      page: location.pathname,
+      language: document.body.dataset.lang || "",
+      at: new Date().toISOString(),
+      ...payload
+    });
+    try { navigator.sendBeacon?.(config.analyticsEndpoint, data); } catch (_) {}
+  }
+  function initCookieBanner() {
+    if (getConsent()) {
+      maybeLoadPixels();
       return;
     }
-
-    const gated = event.target.closest("[data-requires-login]");
-    if (gated) {
-      event.preventDefault();
-      showMessage(gated, gated.dataset.loginMessage || "Please sign in to use this member feature.");
-    }
-  });
-
-  document.addEventListener("submit", async (event) => {
-    const form = event.target.closest("[data-member-form]");
-    if (!form) return;
-    event.preventDefault();
-    const message = form.querySelector("[data-message]");
-    const endpoint = config.memberApiBase ? `${config.memberApiBase.replace(/\/$/, "")}/join` : "";
-    if (!endpoint) {
-      if (message) message.textContent = form.dataset.unconfigured || "Member API is not configured yet.";
-      return;
-    }
-    if (message) message.textContent = form.dataset.sending || "Sending...";
-    try {
-      const body = Object.fromEntries(new FormData(form).entries());
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(body)
+    const box = document.createElement("div");
+    box.className = "cookie";
+    box.innerHTML = '<p>Analytics cookies are optional. Meta/TikTok pixels load only after consent.</p><button type="button" data-accept>Accept</button><button type="button" data-decline>Decline</button>';
+    document.body.appendChild(box);
+    box.addEventListener("click", (event) => {
+      if (event.target.matches("[data-accept]")) {
+        setConsent(true);
+        box.remove();
+        maybeLoadPixels();
+      }
+      if (event.target.matches("[data-decline]")) {
+        setConsent(false);
+        box.remove();
+      }
+    });
+  }
+  function maybeLoadPixels() {
+    if (!getConsent()) return;
+    if (config.metaPixelId) track("MetaPixelReady", { configured: true });
+    if (config.tiktokPixelId) track("TikTokPixelReady", { configured: true });
+  }
+  function initSocial() {
+    const map = {
+      instagramUrl: ["Instagram", config.instagramUrl],
+      tiktokUrl: ["TikTok", config.tiktokUrl],
+      lineUrl: ["LINE", config.lineUrl]
+    };
+    bySel("[data-social]").forEach((slot) => {
+      const [name, url] = map[slot.dataset.social] || [];
+      if (!url) return;
+      const a = document.createElement("a");
+      a.href = url;
+      a.textContent = name;
+      a.rel = "noopener noreferrer";
+      a.target = "_blank";
+      slot.replaceWith(a);
+    });
+  }
+  function initSearch() {
+    bySel(".search").forEach((input) => {
+      const scope = input.closest(".page, .section, main") || document;
+      input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        bySel("[data-search]", scope).forEach((node) => {
+          const hit = !q || node.dataset.search.toLowerCase().includes(q);
+          node.hidden = !hit;
+        });
       });
-      if (!res.ok) throw new Error("request_failed");
-      if (message) message.textContent = form.dataset.sent || "Please check your email.";
-      form.reset();
-    } catch (_) {
-      if (message) message.textContent = form.dataset.failed || "Unable to process now. Please try again later.";
-    }
+    });
+    bySel("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const scope = button.closest(".page, .section, main") || document;
+        const key = button.dataset.filter;
+        bySel("[data-region]", scope).forEach((node) => {
+          node.hidden = key !== "all" && node.dataset.region !== key;
+        });
+      });
+    });
+  }
+  function initForms() {
+    bySel("[data-enhanced-form]").forEach((form) => {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const status = form.querySelector("[data-form-status]");
+        const data = new FormData(form);
+        data.set("source_url", location.href);
+        data.set("idempotency_key", crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+        safeText(status, "Sending...");
+        try {
+          const res = await fetch(form.action, { method: "POST", body: data, credentials: "same-origin" });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) throw new Error(json.message || "failed");
+          safeText(status, json.message || "Inquiry received, but the reservation is not confirmed yet.");
+          form.reset();
+          track("Lead", { request_id: json.request_id || "" });
+        } catch (_) {
+          safeText(status, "The inquiry backend is not configured or is unavailable. No reservation has been confirmed.");
+        }
+      });
+    });
+    bySel("[data-member-form]").forEach((form) => {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const status = form.querySelector("[data-member-status]");
+        safeText(status, "Processing...");
+        try {
+          const res = await fetch(form.action, { method: "POST", body: new FormData(form), credentials: "same-origin" });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) throw new Error("failed");
+          safeText(status, json.message || "Please check the next step in your email.");
+          track("SignUp", {});
+        } catch (_) {
+          safeText(status, "Member backend is unavailable or not configured. Sensitive data was not stored in the browser.");
+        }
+      });
+    });
+  }
+  document.addEventListener("click", (event) => {
+    const rezio = event.target.closest("[data-server-rezio]");
+    if (rezio) track("RezioClick", { product_key: rezio.dataset.serverRezio });
   });
+
+  initSocial();
+  initSearch();
+  initForms();
+  initCookieBanner();
+  track(document.body.dataset.page?.startsWith("spots/") ? "ViewSpot" : document.body.dataset.page?.startsWith("routes/") ? "ViewRoute" : "PageView");
 })();

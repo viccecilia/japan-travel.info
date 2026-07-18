@@ -1,384 +1,473 @@
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 
 const root = process.cwd();
 const content = JSON.parse(fs.readFileSync(path.join(root, "src/content.json"), "utf8"));
+const brand = JSON.parse(fs.readFileSync(path.join(root, "src/facts/brand.json"), "utf8"));
+const faq = JSON.parse(fs.readFileSync(path.join(root, "src/facts/faq.json"), "utf8"));
 
-const langs = ["zh", "ja", "en", "ko", "zhHant"];
-const langLabels = { zh: "简", ja: "JP", en: "EN", ko: "KR", zhHant: "繁" };
-const langSuffix = { zh: "", ja: "-ja", en: "-en", ko: "-ko", zhHant: "-zhHant" };
-const regionOrder = ["大阪", "京都", "奈良", "兵库", "滋贺", "和歌山", "三重"];
+const langs = [
+  { key: "zh", slug: "zh-cn", html: "zh-CN", label: "CN", name: "简体中文" },
+  { key: "zhHant", slug: "zh-tw", html: "zh-Hant", label: "繁", name: "繁體中文" },
+  { key: "ja", slug: "ja", html: "ja", label: "JP", name: "日本語" },
+  { key: "en", slug: "en", html: "en", label: "EN", name: "English" },
+  { key: "ko", slug: "ko", html: "ko", label: "KR", name: "한국어" }
+];
+const langByKey = new Map(langs.map((l) => [l.key, l]));
+const siteUrl = (process.env.SITE_URL || "https://japan-travel.info").replace(/\/$/, "");
+const generated = new Set();
+const publicPages = [];
 
-const ui = {
+const label = {
   zh: {
-    home: "首页", routes: "一日路线", spots: "景点资料", products: "交通服务", member: "加入", vip: "VIP", referral: "推荐",
-    eyebrow: "Japan Travel · Kansai Guide", heroTitle: "森有静之气，海有远之意，古都有余音。",
-    heroLead: "把关西的海、森林、古都、湖景和温泉，整理成游客可以慢慢浏览的中文资料页。",
-    operated: "Japan Travel 由株式会社大寅／Daitora Group 运营。",
-    network: "グループ全体で約100台規模の車両ネットワーク",
-    networkZh: "集团整体约100台规模的车辆网络",
-    routeTitle: "热门一日路线", routeLead: "公开内容可以直接浏览。日期、库存、价格和正式订单以 Rezio 页面为准。",
-    spotTitle: "关西景点资料库", spotLead: "73 个景点，按地区、主题和路线关系整理。每个景点都保留文字介绍和两种语音讲解。",
-    productTitle: "交通与预约导引", productLead: "页面只做内容导引和预约跳转。点击 Rezio 只记录预约跳转，不等于已付款订单。",
-    joinTitle: "有些地方，适合先放进心里。", joinLead: "保存你喜欢的海、森林和古都，下次再慢慢出发。",
-    ctaDetail: "查看内容", ctaRezio: "前往 Rezio", unavailable: "Rezio 入口尚未配置。", search: "搜索景点、城市、标签",
-    standardAudio: "标准讲解", classicAudio: "Classic 讲解", relatedRoutes: "相关路线", nearbySpots: "附近景点",
-    sourceNote: "资料为原创整理，外部官方来源可在后续数据中补充。", memberGate: "此功能需要登录后使用。",
-    notConfigured: "相关接口尚未配置，页面已安全降级。"
-  },
-  ja: {
-    home: "ホーム", routes: "日帰りルート", spots: "スポット", products: "交通サービス", member: "参加", vip: "VIP", referral: "紹介",
-    eyebrow: "Japan Travel · Kansai Guide", heroTitle: "森に息づき、海にひらき、古都に還る。",
-    heroLead: "関西の海、森、古都、湖、温泉を、旅行前にゆっくり読めるガイドとして整理しました。",
-    operated: "Japan Travel は株式会社大寅／Daitora Group が運営しています。",
-    network: "グループ全体で約100台規模の車両ネットワーク",
-    networkZh: "グループ全体で約100台規模の車両ネットワーク",
-    routeTitle: "人気の日帰りルート", routeLead: "公開コンテンツはログインなしで閲覧できます。日付、在庫、価格、正式予約は Rezio 側で確認します。",
-    spotTitle: "関西スポット資料庫", spotLead: "73スポットを地域、テーマ、ルート関係で整理。各スポットに文章と2種類の音声ガイドを用意しています。",
-    productTitle: "交通と予約案内", productLead: "このページは案内と予約ページへの導線です。Rezio へのクリックは予約遷移であり、支払い済み注文ではありません。",
-    joinTitle: "心にそっと残しておきたい場所があります。", joinLead: "好きな海、森、古都を保存して、次はゆっくり出かけましょう。",
-    ctaDetail: "内容を見る", ctaRezio: "Rezioへ", unavailable: "Rezioリンクは未設定です。", search: "スポット、都市、タグを検索",
-    standardAudio: "標準ガイド", classicAudio: "Classic ガイド", relatedRoutes: "関連ルート", nearbySpots: "近くのスポット",
-    sourceNote: "本文は独自に整理した概要です。公式ソースは今後データに追加できます。", memberGate: "この機能はログイン後に利用できます。",
-    notConfigured: "関連APIは未設定です。ページは安全に縮退表示しています。"
-  },
-  en: {
-    home: "Home", routes: "Day Routes", spots: "Spot Guide", products: "Transport", member: "Join", vip: "VIP", referral: "Referral",
-    eyebrow: "Japan Travel · Kansai Guide", heroTitle: "Still forests, open seas, and echoes of old capitals.",
-    heroLead: "A public Kansai travel guide for seasides, forests, old capitals, lakes, temples, hot springs, routes and audio stories.",
-    operated: "Japan Travel is operated by Kabushiki Kaisha Daitora / Daitora Group.",
-    network: "グループ全体で約100台規模の車両ネットワーク",
-    networkZh: "Group-wide vehicle network of around 100 vehicles.",
-    routeTitle: "Popular Day Routes", routeLead: "Public content is open to browse. Dates, inventory, prices, confirmed orders and payment are handled by Rezio.",
-    spotTitle: "Kansai Spot Library", spotLead: "73 spots organized by area, theme and route relation. Each spot keeps text plus standard and classic audio guides.",
-    productTitle: "Transport And Booking Guide", productLead: "This site guides visitors to products. A Rezio click is a reservation redirect, not a paid order.",
-    joinTitle: "Some places are worth saving before you go.", joinLead: "Keep your favorite sea, forest and old-capital ideas, then come back when the trip begins.",
-    ctaDetail: "View", ctaRezio: "Open Rezio", unavailable: "Rezio link is not configured yet.", search: "Search spots, cities or tags",
-    standardAudio: "Standard audio", classicAudio: "Classic audio", relatedRoutes: "Related routes", nearbySpots: "Nearby spots",
-    sourceNote: "Descriptions are original summaries. Official source links can be added to the data later.", memberGate: "Please sign in to use this feature.",
-    notConfigured: "Related API is not configured yet. The page is safely degraded."
-  },
-  ko: {
-    home: "홈", routes: "당일 루트", spots: "스팟 가이드", products: "교통 서비스", member: "가입", vip: "VIP", referral: "추천",
-    eyebrow: "Japan Travel · Kansai Guide", heroTitle: "고요한 숲, 열린 바다, 오래된 도시의 여운.",
-    heroLead: "간사이의 바다, 숲, 고도, 호수, 온천과 오디오 가이드를 여행 전 천천히 볼 수 있도록 정리했습니다.",
-    operated: "Japan Travel은 주식회사 다이토라 / Daitora Group이 운영합니다.",
-    network: "グループ全体で約100台規模の車両ネットワーク",
-    networkZh: "그룹 전체 약 100대 규모의 차량 네트워크",
-    routeTitle: "인기 당일 루트", routeLead: "공개 콘텐츠는 로그인 없이 볼 수 있습니다. 날짜, 재고, 가격, 공식 주문과 결제는 Rezio에서 처리합니다.",
-    spotTitle: "간사이 스팟 자료실", spotLead: "73개 스팟을 지역, 테마, 루트 관계로 정리했습니다. 각 스팟에는 텍스트와 두 종류의 오디오 가이드가 있습니다.",
-    productTitle: "교통 및 예약 안내", productLead: "이 사이트는 상품 안내와 예약 페이지 이동을 제공합니다. Rezio 클릭은 예약 이동이며 결제 완료 주문이 아닙니다.",
-    joinTitle: "마음속에 먼저 담아둘 만한 장소가 있습니다.", joinLead: "좋아하는 바다, 숲, 고도를 저장하고 다음 여행 때 천천히 떠나보세요.",
-    ctaDetail: "보기", ctaRezio: "Rezio 열기", unavailable: "Rezio 링크가 아직 설정되지 않았습니다.", search: "스팟, 도시, 태그 검색",
-    standardAudio: "표준 오디오", classicAudio: "Classic 오디오", relatedRoutes: "관련 루트", nearbySpots: "근처 스팟",
-    sourceNote: "본문은 독자적으로 정리한 개요입니다. 공식 출처 링크는 추후 데이터에 추가할 수 있습니다.", memberGate: "이 기능은 로그인 후 사용할 수 있습니다.",
-    notConfigured: "관련 API가 아직 설정되지 않아 안전하게 축소 표시됩니다."
+    home: "首页", routes: "一日路线", spots: "景点", services: "交通服务", products: "预约导引", faq: "FAQ", about: "运营主体", contact: "咨询",
+    heroTitle: "森有静之气，海有远之意，古都有余音。",
+    heroLead: "把关西的海、森林、古都、湖景和温泉整理成清晰的旅行资料。公开内容可直接浏览，收藏、VIP和推荐功能登录后使用。",
+    routesTitle: "热门一日路线", spotsTitle: "关西景点资料库", servicesTitle: "关西交通服务", productsTitle: "Rezio预约导引",
+    view: "查看详情", rezio: "前往Rezio", consult: "定制咨询", search: "搜索景点、城市或标签", allArea: "全部地区",
+    standard: "标准讲解", classic: "Classic讲解", nearby: "附近景点", relatedRoutes: "相关路线",
+    source: "资料来源", unavailable: "该预约入口尚未配置，请使用咨询表单联系确认。", noLogin: "公开内容无需登录。",
+    formTitle: "定制咨询", formLead: "提交后我们只表示已收到咨询，尚未确认预约。价格、库存、日期和取消规则以Rezio商品及最终预约确认为准。",
+    memberLead: "会员功能用于收藏、偏好、VIP和推荐记录。公开内容与Rezio预约导引无需登录。",
+    bookingBoundary: "车型、司机及个性化用品将根据预约时间、车辆情况和运营条件优先协调，具体安排以预约确认为准。",
+    rezioBoundary: "价格、库存、日期和取消规则以Rezio对应商品及最终预约确认为准。"
   },
   zhHant: {
-    home: "首頁", routes: "一日路線", spots: "景點資料", products: "交通服務", member: "加入", vip: "VIP", referral: "推薦",
-    eyebrow: "Japan Travel · Kansai Guide", heroTitle: "森有靜之氣，海有遠之意，古都有餘音。",
-    heroLead: "把關西的海、森林、古都、湖景和溫泉，整理成旅客可以慢慢瀏覽的中文資料頁。",
-    operated: "Japan Travel 由株式会社大寅／Daitora Group 營運。",
-    network: "グループ全体で約100台規模の車両ネットワーク",
-    networkZh: "集團整體約100台規模的車輛網絡",
-    routeTitle: "熱門一日路線", routeLead: "公開內容可以直接瀏覽。日期、庫存、價格和正式訂單以 Rezio 頁面為準。",
-    spotTitle: "關西景點資料庫", spotLead: "73 個景點，按地區、主題和路線關係整理。每個景點都保留文字介紹和兩種語音講解。",
-    productTitle: "交通與預約導引", productLead: "頁面只做內容導引和預約跳轉。點擊 Rezio 只記錄預約跳轉，不等於已付款訂單。",
-    joinTitle: "有些地方，適合先放進心裡。", joinLead: "保存你喜歡的海、森林和古都，下次再慢慢出發。",
-    ctaDetail: "查看內容", ctaRezio: "前往 Rezio", unavailable: "Rezio 入口尚未配置。", search: "搜尋景點、城市、標籤",
-    standardAudio: "標準講解", classicAudio: "Classic 講解", relatedRoutes: "相關路線", nearbySpots: "附近景點",
-    sourceNote: "資料為原創整理，外部官方來源可在後續資料中補充。", memberGate: "此功能需要登入後使用。",
-    notConfigured: "相關接口尚未配置，頁面已安全降級。"
+    home: "首頁", routes: "一日路線", spots: "景點", services: "交通服務", products: "預約導引", faq: "FAQ", about: "營運主體", contact: "諮詢",
+    heroTitle: "森有靜之氣，海有遠之意，古都有餘音。",
+    heroLead: "把關西的海、森林、古都、湖景與溫泉整理成清楚的旅行資料。公開內容可直接瀏覽，收藏、VIP與推薦功能登入後使用。",
+    routesTitle: "熱門一日路線", spotsTitle: "關西景點資料庫", servicesTitle: "關西交通服務", productsTitle: "Rezio 預約導引",
+    view: "查看詳情", rezio: "前往 Rezio", consult: "客製諮詢", search: "搜尋景點、城市或標籤", allArea: "全部地區",
+    standard: "標準講解", classic: "Classic 講解", nearby: "附近景點", relatedRoutes: "相關路線",
+    source: "資料來源", unavailable: "此預約入口尚未設定，請使用諮詢表單聯絡確認。", noLogin: "公開內容無需登入。",
+    formTitle: "客製諮詢", formLead: "送出後僅代表已收到諮詢，尚未確認預約。價格、庫存、日期與取消規則以 Rezio 商品及最終預約確認為準。",
+    memberLead: "會員功能用於收藏、偏好、VIP 與推薦記錄。公開內容與 Rezio 預約導引無需登入。",
+    bookingBoundary: "車型、司機及個人化用品會依預約時間、車輛狀況與營運條件優先協調，具體安排以預約確認為準。",
+    rezioBoundary: "價格、庫存、日期與取消規則以 Rezio 對應商品及最終預約確認為準。"
+  },
+  ja: {
+    home: "ホーム", routes: "日帰りルート", spots: "スポット", services: "送迎サービス", products: "予約案内", faq: "FAQ", about: "運営主体", contact: "相談",
+    heroTitle: "森に息づき、海にひらき、古都に還る。",
+    heroLead: "関西の海、森、古都、湖、温泉を、出発前に読みやすい旅行資料として整理しています。公開コンテンツはログインなしで閲覧できます。",
+    routesTitle: "人気の日帰りルート", spotsTitle: "関西スポット資料庫", servicesTitle: "関西送迎サービス", productsTitle: "Rezio予約案内",
+    view: "詳しく見る", rezio: "Rezioへ", consult: "相談する", search: "スポット、都市、タグを検索", allArea: "全エリア",
+    standard: "標準ガイド", classic: "Classicガイド", nearby: "近くのスポット", relatedRoutes: "関連ルート",
+    source: "参照元", unavailable: "この予約入口は未設定です。相談フォームからお問い合わせください。", noLogin: "公開コンテンツはログイン不要です。",
+    formTitle: "カスタム相談", formLead: "送信後は相談受付であり、予約確定ではありません。料金、在庫、日付、取消規定はRezio商品と最終確認が基準です。",
+    memberLead: "会員機能は保存、好み、VIP、紹介記録に使います。公開コンテンツとRezio案内はログイン不要です。",
+    bookingBoundary: "車種、ドライバー、個別用品は予約時間、車両状況、運行条件に基づき優先調整し、具体的な手配は予約確認が基準です。",
+    rezioBoundary: "料金、在庫、日付、取消規定はRezioの該当商品および最終予約確認が基準です。"
+  },
+  en: {
+    home: "Home", routes: "Day Routes", spots: "Spots", services: "Transfers", products: "Booking Guide", faq: "FAQ", about: "About", contact: "Contact",
+    heroTitle: "Still forests, open seas, and echoes of old capitals.",
+    heroLead: "A clear Kansai travel guide for seasides, forests, old capitals, lakes and hot springs. Public pages are open; favorites, VIP and referrals require sign-in.",
+    routesTitle: "Popular Day Routes", spotsTitle: "Kansai Spot Library", servicesTitle: "Kansai Transfer Services", productsTitle: "Rezio Booking Guide",
+    view: "View Details", rezio: "Open Rezio", consult: "Custom Inquiry", search: "Search spots, cities or tags", allArea: "All Areas",
+    standard: "Standard Audio", classic: "Classic Audio", nearby: "Nearby Spots", relatedRoutes: "Related Routes",
+    source: "Source", unavailable: "This booking link is not configured yet. Please use the inquiry form.", noLogin: "Public content does not require sign-in.",
+    formTitle: "Custom Inquiry", formLead: "Submission means we received your inquiry; it is not a confirmed reservation. Prices, inventory, dates and cancellation rules follow Rezio and final confirmation.",
+    memberLead: "Member features support favorites, preferences, VIP and referrals. Public content and Rezio booking guidance do not require sign-in.",
+    bookingBoundary: "Vehicle type, driver and personalized items are coordinated according to reservation time, vehicle availability and operation conditions. Final arrangements follow booking confirmation.",
+    rezioBoundary: "Prices, inventory, dates and cancellation rules follow the relevant Rezio product and final booking confirmation."
+  },
+  ko: {
+    home: "홈", routes: "당일 코스", spots: "스팟", services: "전용 차량", products: "예약 안내", faq: "FAQ", about: "운영 주체", contact: "문의",
+    heroTitle: "숲은 고요하고, 바다는 멀리 열리며, 고도에는 여운이 남습니다.",
+    heroLead: "간사이의 바다, 숲, 고도, 호수와 온천을 여행 전 읽기 좋은 자료로 정리했습니다. 공개 콘텐츠는 로그인 없이 볼 수 있습니다.",
+    routesTitle: "인기 당일 코스", spotsTitle: "간사이 스팟 자료실", servicesTitle: "간사이 전용 차량 서비스", productsTitle: "Rezio 예약 안내",
+    view: "자세히 보기", rezio: "Rezio로 이동", consult: "맞춤 문의", search: "스팟, 도시, 태그 검색", allArea: "전체 지역",
+    standard: "표준 오디오", classic: "Classic 오디오", nearby: "주변 스팟", relatedRoutes: "관련 코스",
+    source: "자료 출처", unavailable: "이 예약 링크는 아직 설정되지 않았습니다. 문의 양식을 이용해 주세요.", noLogin: "공개 콘텐츠는 로그인 없이 이용할 수 있습니다.",
+    formTitle: "맞춤 문의", formLead: "제출은 문의 접수이며 예약 확정이 아닙니다. 가격, 재고, 날짜와 취소 규정은 Rezio 상품과 최종 확인을 기준으로 합니다.",
+    memberLead: "회원 기능은 저장, 선호, VIP와 추천 기록에 사용됩니다. 공개 콘텐츠와 Rezio 안내는 로그인이 필요 없습니다.",
+    bookingBoundary: "차종, 기사 및 개인화 용품은 예약 시간, 차량 상황과 운영 조건에 따라 우선 조율되며 구체적인 배정은 예약 확인을 기준으로 합니다.",
+    rezioBoundary: "가격, 재고, 날짜와 취소 규정은 해당 Rezio 상품 및 최종 예약 확인을 기준으로 합니다."
   }
 };
 
-function envJson(name) {
-  try { return JSON.parse(process.env[name] || "{}"); } catch { return {}; }
-}
-
-const publicConfig = {
-  rezioDefaultUrl: process.env.REZIO_DEFAULT_URL || "",
-  rezioRouteUrls: envJson("REZIO_ROUTE_URLS_JSON"),
-  rezioProductUrls: envJson("REZIO_PRODUCT_URLS_JSON"),
-  instagramUrl: process.env.INSTAGRAM_URL || "",
-  tiktokUrl: process.env.TIKTOK_URL || "",
-  lineUrl: process.env.LINE_URL || "",
-  memberApiBase: process.env.MEMBER_API_BASE || "",
-  analyticsEndpoint: process.env.ANALYTICS_ENDPOINT || "",
-  daitoraGroupUrl: process.env.DAITORA_GROUP_URL || "https://daitora-jp.com/"
+const regionLocal = {
+  zh: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵库", 滋贺: "滋贺", 和歌山: "和歌山", 三重: "三重" },
+  zhHant: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵庫", 滋贺: "滋賀", 和歌山: "和歌山", 三重: "三重" },
+  ja: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵庫", 滋贺: "滋賀", 和歌山: "和歌山", 三重: "三重" },
+  en: { 大阪: "Osaka", 京都: "Kyoto", 奈良: "Nara", 兵库: "Hyogo", 滋贺: "Shiga", 和歌山: "Wakayama", 三重: "Mie" },
+  ko: { 大阪: "오사카", 京都: "교토", 奈良: "나라", 兵库: "효고", 滋贺: "시가", 和歌山: "와카야마", 三重: "미에" }
 };
 
-fs.writeFileSync(
-  path.join(root, "assets/js/site-config.js"),
-  `window.JAPAN_TRAVEL_CONFIG = ${JSON.stringify(publicConfig, null, 2)};\n`,
-  "utf8"
-);
+const routeCopy = {
+  zh: ["从大阪出发，把经典景点串成容易理解的一天。", "路线内容可直接浏览，预约与库存以Rezio最终确认为准。"],
+  zhHant: ["從大阪出發，把經典景點串成容易理解的一天。", "路線內容可直接瀏覽，預約與庫存以 Rezio 最終確認為準。"],
+  ja: ["大阪発で、定番スポットを一日で分かりやすくつなぎます。", "内容は自由に閲覧でき、予約と在庫はRezioの最終確認が基準です。"],
+  en: ["Start from Osaka and connect signature Kansai stops into one clear day.", "Route content is open; booking and inventory follow final Rezio confirmation."],
+  ko: ["오사카 출발 기준으로 간사이의 대표 스팟을 하루 코스로 연결합니다.", "코스 내용은 공개되어 있으며 예약과 재고는 Rezio 최종 확인을 기준으로 합니다."]
+};
+
+const servicePages = [
+  { id: "airport-transfer", product: "kix-osaka", title: { zh: "机场接送服务", zhHant: "機場接送服務", ja: "空港送迎サービス", en: "Airport Transfer", ko: "공항 송영" } },
+  { id: "charter", product: "charter-kansai", title: { zh: "关西包车服务", zhHant: "關西包車服務", ja: "関西貸切車サービス", en: "Kansai Private Charter", ko: "간사이 전용 차량" } },
+  { id: "family", product: "family-transfer", title: { zh: "家庭与亲子用车", zhHant: "家庭與親子用車", ja: "家族旅行向け送迎", en: "Family Transfer", ko: "가족 여행 차량" } },
+  { id: "business", product: "business-guest", title: { zh: "商务及来宾接待", zhHant: "商務及來賓接待", ja: "ビジネス・来賓対応", en: "Business Guest Transport", ko: "비즈니스 의전 차량" } }
+];
+const vehiclePages = [
+  { id: "alphard", title: { zh: "Alphard车型", zhHant: "Alphard 車型", ja: "Alphard", en: "Alphard", ko: "알파드" } },
+  { id: "hiace", title: { zh: "Hiace车型", zhHant: "Hiace 車型", ja: "Hiace", en: "Hiace", ko: "하이에이스" } }
+];
+const productPages = [
+  { id: "kix-osaka", title: { zh: "KIX ⇄ 大阪预约导引", zhHant: "KIX ⇄ 大阪預約導引", ja: "KIX ⇄ 大阪 予約案内", en: "KIX ⇄ Osaka Booking Guide", ko: "KIX ⇄ 오사카 예약 안내" } },
+  { id: "kix-kyoto", title: { zh: "KIX ⇄ 京都预约导引", zhHant: "KIX ⇄ 京都預約導引", ja: "KIX ⇄ 京都 予約案内", en: "KIX ⇄ Kyoto Booking Guide", ko: "KIX ⇄ 교토 예약 안내" } },
+  { id: "kix-nara", title: { zh: "KIX ⇄ 奈良预约导引", zhHant: "KIX ⇄ 奈良預約導引", ja: "KIX ⇄ 奈良 予約案内", en: "KIX ⇄ Nara Booking Guide", ko: "KIX ⇄ 나라 예약 안내" } },
+  { id: "kix-kobe", title: { zh: "KIX ⇄ 神户预约导引", zhHant: "KIX ⇄ 神戶預約導引", ja: "KIX ⇄ 神戸 予約案内", en: "KIX ⇄ Kobe Booking Guide", ko: "KIX ⇄ 고베 예약 안내" } }
+];
+const memberPages = ["login", "register", "reset-password", "profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
 
 function h(value = "") {
   return String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-
-function stripVersion(url = "") {
-  return String(url).replace(/\?.*$/, "");
+function cleanAsset(value = "") {
+  return String(value).replace(/\?.*$/, "");
 }
-
-function pageName(lang) {
-  return `index${langSuffix[lang]}.html`;
-}
-
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
-
-function writePage(dir, lang, html) {
-  ensureDir(dir);
-  fs.writeFileSync(path.join(dir, pageName(lang)), html, "utf8");
+function writeFile(rel, data) {
+  const file = path.join(root, rel);
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, data, "utf8");
+  generated.add(rel.replaceAll("\\", "/"));
 }
-
-function langLinks(lang) {
-  return `<div class="lang" aria-label="Language">${langs.map((l) => `<a class="${l === lang ? "active" : ""}" href="${pageName(l)}">${langLabels[l]}</a>`).join("")}</div>`;
+function relUrl(lang, rest = "") {
+  const clean = rest.replace(/^\/+|\/+$/g, "");
+  return `/${lang.slug}/${clean ? `${clean}/` : ""}`;
 }
-
+function canonical(lang, rest = "") {
+  return siteUrl + relUrl(lang, rest);
+}
+function data(lang) {
+  return content[lang.key] || content.zh;
+}
+function spots(lang) {
+  return data(lang).all_spots;
+}
+function routes(lang) {
+  return data(lang).routes;
+}
+function spotById(lang, id) {
+  return spots(lang).find((s) => s.id === id) || spots(langByKey.get("zh")).find((s) => s.id === id);
+}
+function routeById(lang, id) {
+  return routes(lang).find((r) => r.id === id) || routes(langByKey.get("zh")).find((r) => r.id === id);
+}
+function imageForRoute(route, lang) {
+  const spot = route.spots?.map((id) => spotById(lang, id)).find(Boolean);
+  return cleanAsset(route.feature_media?.poster || spot?.image || "/kansai-assets/images/kyoto/kyo-0001-kiyomizu-dera-temple-cover.jpg");
+}
+function pageLangAlternates(rest = "") {
+  return langs.map((l) => `<link rel="alternate" hreflang="${l.html}" href="${canonical(l, rest)}">`).join("\n  ") +
+    `\n  <link rel="alternate" hreflang="x-default" href="${siteUrl}/">`;
+}
 function nav(lang) {
-  const t = ui[lang];
+  const t = label[lang.key];
+  const links = [
+    [t.home, relUrl(lang)],
+    [t.routes, relUrl(lang, "routes")],
+    [t.spots, relUrl(lang, "spots")],
+    [t.services, relUrl(lang, "services/airport-transfer")],
+    [t.products, relUrl(lang, "products")],
+    [t.contact, relUrl(lang, "contact")]
+  ];
   return `<header class="topbar"><div class="wrap nav">
-    <a class="brand" href="/${pageName(lang)}">japan-travel.info<small>Kansai Travel Guide</small></a>
-    <nav class="nav-links">
-      <a class="pill" href="/${pageName(lang)}">${h(t.home)}</a>
-      <a class="pill" href="/h5/${pageName(lang)}#routes">${h(t.routes)}</a>
-      <a class="pill" href="/spots/${pageName(lang)}">${h(t.spots)}</a>
-      <a class="pill" href="/products/${pageName(lang)}">${h(t.products)}</a>
-      <a class="pill" href="/member/${pageName(lang)}">${h(t.member)}</a>
-    </nav>
-    ${langLinks(lang)}
+    <a class="brand" href="${relUrl(lang)}">Japan Travel<small>Operated by 株式会社大寅 / Daitora Group</small></a>
+    <nav class="nav-links" aria-label="Main">${links.map(([n, u]) => `<a href="${u}">${h(n)}</a>`).join("")}</nav>
+    <div class="lang" aria-label="Language">${langs.map((l) => `<a class="${l.key === lang.key ? "active" : ""}" href="${relUrl(l)}">${l.label}</a>`).join("")}</div>
   </div></header>`;
 }
-
-function layout(lang, title, body, opts = {}) {
+function footer(lang) {
+  const t = label[lang.key];
+  const social = ["instagramUrl", "tiktokUrl", "lineUrl"].map((key) => `<span data-social="${key}"></span>`).join("");
+  return `<footer class="footer"><div class="wrap footer-grid">
+    <div><strong>Japan Travel</strong><p>${h(brand.operated_by_text)}</p><p>${h(t.bookingBoundary)}</p></div>
+    <div><strong>${h(t.services)}</strong><a href="${relUrl(lang, "services/airport-transfer")}">${h(servicePages[0].title[lang.key])}</a><a href="${relUrl(lang, "services/charter")}">${h(servicePages[1].title[lang.key])}</a></div>
+    <div><strong>${h(t.faq)}</strong><a href="${relUrl(lang, "faq")}">FAQ</a><a href="${relUrl(lang, "privacy")}">Privacy Policy</a><a href="${relUrl(lang, "terms")}">Terms</a></div>
+    <div><strong>Social</strong><div class="social-links">${social}</div></div>
+  </div></footer>
+  <nav class="bottom-nav" aria-label="Mobile">${[[t.home, relUrl(lang)], [t.routes, relUrl(lang, "routes")], [t.spots, relUrl(lang, "spots")], [t.contact, relUrl(lang, "contact")]].map(([n, u]) => `<a href="${u}">${h(n)}</a>`).join("")}</nav>`;
+}
+function jsonLd(obj) {
+  return `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
+}
+function layout(lang, rest, meta, body, options = {}) {
+  const title = `${meta.title || "Japan Travel"} (${lang.label})`;
+  const description = `${meta.description || label[lang.key].heroLead} ${lang.name}.`;
+  const noindex = options.noindex ? `<meta name="robots" content="noindex,follow">` : `<meta name="robots" content="index,follow">`;
+  const ld = (options.ld || []).map(jsonLd).join("\n  ");
   return `<!doctype html>
-<html lang="${lang === "zhHant" ? "zh-Hant" : lang}">
+<html lang="${lang.html}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${h(title)} | japan-travel.info</title>
-  <meta name="description" content="${h(opts.description || ui[lang].heroLead)}">
+  <title>${h(title)}</title>
+  <meta name="description" content="${h(description)}">
+  ${noindex}
+  <link rel="canonical" href="${canonical(lang, rest)}">
+  ${pageLangAlternates(rest)}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${h(title)}">
+  <meta property="og:description" content="${h(description)}">
+  <meta property="og:url" content="${canonical(lang, rest)}">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="/assets/css/site.css">
   <script defer src="/assets/js/site-config.js"></script>
   <script defer src="/assets/js/site-runtime.js"></script>
+  ${ld}
 </head>
-<body>
-  ${nav(lang)}
-  ${body}
-  <footer class="footer"><div class="wrap">
-    <strong>japan-travel.info</strong>
-    <p>${h(ui[lang].operated)} ${h(ui[lang].networkZh)}</p>
-  </div></footer>
+<body data-page="${h(rest || "home")}" data-lang="${lang.slug}">
+${nav(lang)}
+${body}
+${footer(lang)}
 </body>
 </html>`;
 }
-
-function getData(lang) {
-  return content[lang] || content.zh;
+function breadcrumb(lang, items) {
+  return `<nav class="breadcrumb" aria-label="Breadcrumb">${items.map((it, i) => it.href ? `<a href="${it.href}">${h(it.name)}</a>` : `<span>${h(it.name)}</span>`).join("<span>/</span>")}</nav>`;
 }
-
-function spotMap(lang) {
-  return new Map(getData(lang).all_spots.map((spot) => [spot.id, spot]));
+function card(routeOrSpot, img, href, text, chips = []) {
+  return `<article class="card"><a href="${href}"><img src="${h(img)}" alt="${h(routeOrSpot.title || routeOrSpot.name)}" loading="lazy"></a><div class="card-body"><h3><a href="${href}">${h(routeOrSpot.title || routeOrSpot.name)}</a></h3><p>${h(text)}</p><div class="chips">${chips.slice(0, 4).map((c) => `<span>${h(c)}</span>`).join("")}</div></div></article>`;
 }
-
-function routeImage(route, lang) {
-  const map = spotMap(lang);
-  const first = route.spots?.map((id) => map.get(id)).find(Boolean);
-  return stripVersion(route.feature_media?.poster || first?.image || "/kansai-assets/images/kyoto/kyo-0001-kiyomizu-dera-temple-cover.jpg");
+function audioBlock(lang, spot) {
+  const t = label[lang.key];
+  return `<section class="panel"><h2>${h(t.standard)}</h2><audio controls preload="none" src="${h(cleanAsset(spot.audio))}"></audio><h2>${h(t.classic)}</h2><audio controls preload="none" src="${h(cleanAsset(spot.classic_audio))}"></audio></section>`;
 }
-
-function chips(items = []) {
-  return `<div class="chips">${items.slice(0, 5).map((item) => `<span class="chip">${h(item)}</span>`).join("")}</div>`;
+function routeGrid(lang, limit) {
+  return `<div class="grid cards">${routes(lang).slice(0, limit || 99).map((r) => card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || routeCopy[lang.key][0], r.tags || [])).join("")}</div>`;
 }
-
-function routeCard(route, lang) {
-  const t = ui[lang];
-  return `<article class="card route-card">
-    <img src="${h(routeImage(route, lang))}" alt="${h(route.title)}" loading="lazy">
-    <div class="card-body">
-      <h3>${h(route.title)}</h3>
-      <p class="muted">${h(route.summary || route.subtitle)}</p>
-      ${chips(route.tags)}
-      <div class="btn-row">
-        <a class="btn primary" href="/h5/routes/${route.id}/${pageName(lang)}">${h(t.ctaDetail)}</a>
-        <a class="btn" href="#" data-rezio-key="${h(route.id)}" data-unconfigured="${h(t.unavailable)}">${h(t.ctaRezio)}</a>
-      </div>
-      <p data-message class="muted"></p>
-    </div>
-  </article>`;
+function spotGrid(lang, limit) {
+  return `<div class="spot-tools"><input class="search" type="search" placeholder="${h(label[lang.key].search)}" aria-label="${h(label[lang.key].search)}"><div class="filters"><button data-filter="all">${h(label[lang.key].allArea)}</button>${Object.values(regionLocal[lang.key]).map((r) => `<button data-filter="${h(r)}">${h(r)}</button>`).join("")}</div></div>
+  <div class="grid spot-grid">${spots(lang).slice(0, limit || 99).map((s) => {
+    const reg = regionLocal[lang.key][s.region] || s.region;
+    return `<a class="spot-tile" href="${relUrl(lang, `spots/${s.id}`)}" data-region="${h(reg)}" data-search="${h([s.name, s.city, reg, ...(s.tags || [])].join(" "))}"><img src="${h(cleanAsset(s.image))}" alt="${h(s.name)}" loading="lazy"><span>${h(s.name)}</span></a>`;
+  }).join("")}</div>`;
 }
-
-function spotCard(spot, lang) {
-  return `<a class="card spot-card" href="/spots/${spot.id}/${pageName(lang)}" data-name="${h([spot.name, spot.city, spot.region, ...(spot.tags || [])].join(" "))}">
-    <img src="${h(stripVersion(spot.image))}" alt="${h(spot.name)}" loading="lazy">
-    <div class="over"><strong>${h(spot.name)}</strong><br><small>${h(spot.region)} · ${h(spot.category || "")}</small></div>
-  </a>`;
-}
-
-function homeBody(lang) {
-  const data = getData(lang);
-  const t = ui[lang];
-  const selectedSpots = data.all_spots.slice(0, 16);
-  return `<main>
+function homePage(lang) {
+  const t = label[lang.key];
+  const body = `<main>
     <section class="hero">
-      <div class="hero-media">
-        <video autoplay muted loop playsinline preload="metadata" src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4"></video>
-      </div>
-      <div class="wrap hero-content">
-        <div class="eyebrow">${h(t.eyebrow)}</div>
-        <h1>${h(t.heroTitle)}</h1>
-        <p class="lead">${h(t.heroLead)}</p>
-        <div class="hero-badges"><span class="chip">${h(t.operated)}</span><span class="chip">${h(t.network)}</span></div>
-      </div>
+      <video autoplay muted loop playsinline poster="/kansai-assets/images/nara/nar-0003-kasuga-taisha-shrine-cover.jpg"><source src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4" type="video/mp4"></video>
+      <div class="hero-overlay wrap"><p class="eyebrow">Japan Travel</p><h1>${h(t.heroTitle)}</h1><p>${h(t.heroLead)}</p><div class="hero-actions"><a class="btn primary" href="${relUrl(lang, "routes")}">${h(t.routes)}</a><a class="btn" href="${relUrl(lang, "services/airport-transfer")}">${h(t.services)}</a></div></div>
     </section>
-    <section id="routes" class="section"><div class="wrap">
-      <div class="section-head"><h2>${h(t.routeTitle)}</h2><p>${h(t.routeLead)}</p></div>
-      <div class="grid">${data.routes.map((route) => routeCard(route, lang)).join("")}</div>
-    </div></section>
-    <section id="spots" class="section"><div class="wrap">
-      <div class="section-head"><h2>${h(t.spotTitle)}</h2><p>${h(t.spotLead)}</p></div>
-      <input class="searchbar" data-spot-search placeholder="${h(t.search)}">
-      <div class="chips">${regionOrder.map((r) => `<span class="chip">${h(r)}</span>`).join("")}</div>
-      <div class="grid" style="margin-top:22px">${selectedSpots.map((spot) => spotCard(spot, lang)).join("")}</div>
-      <div class="btn-row" style="margin-top:24px"><a class="btn primary" href="/spots/${pageName(lang)}">${h(t.spots)}</a></div>
-    </div></section>
-    <section class="section"><div class="wrap feature">
-      <div class="panel"><h2>${h(t.productTitle)}</h2><p class="muted">${h(t.productLead)}</p><div class="statline">
-        <div><strong>73</strong><span>${h(t.spots)}</span></div><div><strong>5</strong><span>${h(t.routes)}</span></div><div><strong>2</strong><span>Audio styles</span></div>
-      </div></div>
-      <div class="panel"><h2>${h(t.joinTitle)}</h2><p class="muted">${h(t.joinLead)}</p><div class="btn-row">
-        <a class="btn primary" href="/member/${pageName(lang)}">${h(t.member)}</a>
-        <a class="btn" href="/vip/${pageName(lang)}">${h(t.vip)}</a>
-        <a class="btn" href="/referral/${pageName(lang)}">${h(t.referral)}</a>
-      </div></div>
-    </div></section>
-  </main>
-  <script>
-    document.querySelector('[data-spot-search]')?.addEventListener('input', (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll('.spot-card').forEach(card => {
-        card.style.display = card.dataset.name.toLowerCase().includes(q) ? '' : 'none';
-      });
-    });
-  </script>`;
-}
-
-function routeBody(route, lang) {
-  const t = ui[lang];
-  const map = spotMap(lang);
-  const spots = (route.spots || []).map((id) => map.get(id)).filter(Boolean);
-  return `<main>
-    <section class="route-hero"><div class="wrap detail-layout">
-      <div><div class="eyebrow">${h(t.routes)}</div><h1>${h(route.title)}</h1><p class="muted">${h(route.detail || route.summary)}</p>${chips(route.tags)}</div>
-      <div class="detail-image"><img src="${h(routeImage(route, lang))}" alt="${h(route.title)}"></div>
-    </div></section>
-    <section class="section"><div class="wrap detail-layout">
-      <div class="panel"><h2>${h(t.routes)}</h2><div class="stops">${(route.stops || []).map((stop) => `<div class="stop"><div><strong>${h(stop[0])}</strong><p class="muted">${h(stop[1] || "")}</p><p>${h(stop[2] || "")}</p></div></div>`).join("")}</div></div>
-      <aside class="panel"><h3>Rezio</h3><p class="muted">${h(t.productLead)}</p><a class="btn primary" href="#" data-rezio-key="${h(route.id)}" data-unconfigured="${h(t.unavailable)}">${h(t.ctaRezio)}</a><p data-message class="notice"></p></aside>
-    </div></section>
-    <section class="section"><div class="wrap"><div class="section-head"><h2>${h(t.spots)}</h2><p>${h(route.photo_tip || "")}</p></div>
-      <div class="grid">${spots.map((spot) => `<article class="card route-card">
-        <img src="${h(stripVersion(spot.image))}" alt="${h(spot.name)}" loading="lazy">
-        <div class="card-body"><h3>${h(spot.name)}</h3><p class="muted">${h(spot.intro)}</p>
-          <div class="audio-card"><strong>${h(t.standardAudio)}</strong><audio controls preload="none" src="${h(spot.audio)}"></audio></div>
-          <div class="audio-card"><strong>${h(t.classicAudio)}</strong><audio controls preload="none" src="${h(spot.classic_audio)}"></audio></div>
-          <div class="btn-row"><a class="btn" href="/spots/${spot.id}/${pageName(lang)}">${h(t.ctaDetail)}</a></div>
-        </div></article>`).join("")}</div>
-    </div></section>
+    <section class="wrap section"><h2>${h(t.servicesTitle)}</h2><div class="quick">${servicePages.map((s) => `<a href="${relUrl(lang, `services/${s.id}`)}"><strong>${h(s.title[lang.key])}</strong><span>${h(t.bookingBoundary)}</span></a>`).join("")}</div></section>
+    <section class="wrap section"><h2>${h(t.routesTitle)}</h2>${routeGrid(lang, 5)}</section>
+    <section class="wrap section"><h2>${h(t.spotsTitle)}</h2>${spotGrid(lang, 16)}<p><a class="btn primary" href="${relUrl(lang, "spots")}">${h(t.view)}</a></p></section>
   </main>`;
+  return layout(lang, "", { title: `Japan Travel | ${t.heroTitle}`, description: t.heroLead }, body, { ld: baseLd(lang, "", "WebSite") });
 }
-
-function routesForSpot(spotId, lang) {
-  return getData(lang).routes.filter((route) => (route.spots || []).includes(spotId));
+function routesIndex(lang) {
+  const t = label[lang.key];
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.routes }])}<h1>${h(t.routesTitle)}</h1><p class="lead">${h(routeCopy[lang.key][1])}</p>${routeGrid(lang)}</main>`;
+  return layout(lang, "routes", { title: `${t.routesTitle} | Japan Travel`, description: routeCopy[lang.key][1] }, body, { ld: baseLd(lang, "routes", "CollectionPage") });
 }
-
-function nearbySpots(spot, lang) {
-  return getData(lang).all_spots.filter((item) => item.id !== spot.id && item.region === spot.region).slice(0, 4);
-}
-
-function spotBody(spot, lang) {
-  const t = ui[lang];
-  const related = routesForSpot(spot.id, lang);
-  const nearby = nearbySpots(spot, lang);
-  return `<main>
-    <section class="spot-hero"><div class="wrap detail-layout">
-      <div><div class="eyebrow">${h(spot.region)} · ${h(spot.city)}</div><h1>${h(spot.name)}</h1><p class="muted">${h(spot.intro)}</p>${chips([spot.category, spot.duration, ...(spot.tags || [])].filter(Boolean))}</div>
-      <div class="detail-image"><img src="${h(stripVersion(spot.image))}" alt="${h(spot.name)}"></div>
-    </div></section>
-    <section class="section"><div class="wrap detail-layout">
-      <article class="panel"><h2>${h(t.spots)}</h2><p>${h(spot.audio_script || spot.intro)}</p>
-        <div class="audio-card"><strong>${h(t.standardAudio)}</strong><audio controls preload="none" src="${h(spot.audio)}"></audio></div>
-        <div class="audio-card"><strong>${h(t.classicAudio)}</strong><audio controls preload="none" src="${h(spot.classic_audio)}"></audio></div>
-        <h3>${h(spot.tip ? "Tip" : "")}</h3><p class="muted">${h(spot.tip || "")}</p><p class="notice">${h(t.sourceNote)}</p>
-      </article>
-      <aside class="panel"><h3>${h(t.relatedRoutes)}</h3>${related.map((route) => `<p><a class="btn" href="/h5/routes/${route.id}/${pageName(lang)}">${h(route.title)}</a></p>`).join("") || `<p class="muted">${h(t.notConfigured)}</p>`}</aside>
-    </div></section>
-    <section class="section"><div class="wrap"><div class="section-head"><h2>${h(t.nearbySpots)}</h2><p>${h(spot.region)}</p></div><div class="grid">${nearby.map((s) => spotCard(s, lang)).join("")}</div></div></section>
+function routeDetail(lang, id) {
+  const r = routeById(lang, id);
+  const t = label[lang.key];
+  const routeSpots = (r.spots || []).map((sid) => spotById(lang, sid)).filter(Boolean);
+  const body = `<main>
+    <section class="detail-hero" style="--hero:url('${h(imageForRoute(r, lang))}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.routes, href: relUrl(lang, "routes") }, { name: r.title }])}<h1>${h(r.title)}</h1><p>${h(r.summary || r.subtitle || routeCopy[lang.key][0])}</p><div class="chips">${(r.tags || []).map((x) => `<span>${h(x)}</span>`).join("")}</div></div></section>
+    <section class="wrap page"><h2>${h(t.routes)}</h2><p>${h(r.detail || r.summary || "")}</p><p><strong>${h(r.duration || "")}</strong></p><div class="timeline">${(r.stops || []).map((s, i) => `<article><strong>${i + 1}. ${h(Array.isArray(s) ? s[0] : s)}</strong><p>${h(Array.isArray(s) ? `${s[1] || ""} ${s[2] || ""}` : "")}</p></article>`).join("")}</div>
+    <h2>${h(t.spots)}</h2><div class="stack">${routeSpots.map((s) => `<article class="media-block"><img src="${h(cleanAsset(s.image))}" alt="${h(s.name)}" loading="lazy"><div><h3><a href="${relUrl(lang, `spots/${s.id}`)}">${h(s.name)}</a></h3><p>${h(s.intro || s.card_line || "")}</p>${audioBlock(lang, s)}</div></article>`).join("")}</div>
+    <section class="panel"><h2>${h(t.rezio)}</h2><p>${h(t.rezioBoundary)}</p><a class="btn primary" href="/go/rezio/${h(r.id)}" data-server-rezio="${h(r.id)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section></section>
   </main>`;
+  return layout(lang, `routes/${id}`, { title: `${r.title} | Japan Travel`, description: r.summary || routeCopy[lang.key][0] }, body, { ld: [...baseLd(lang, `routes/${id}`, "Article"), faqLd(lang, 4)] });
 }
-
-function spotsIndexBody(lang) {
-  const data = getData(lang);
-  const t = ui[lang];
-  return `<main><section class="section"><div class="wrap">
-    <div class="section-head"><h1>${h(t.spotTitle)}</h1><p>${h(t.spotLead)}</p></div>
-    <input class="searchbar" data-spot-search placeholder="${h(t.search)}">
-    <div class="grid" style="margin-top:22px">${data.all_spots.map((spot) => spotCard(spot, lang)).join("")}</div>
-  </div></section></main>
-  <script>
-    document.querySelector('[data-spot-search]')?.addEventListener('input', (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll('.spot-card').forEach(card => card.style.display = card.dataset.name.toLowerCase().includes(q) ? '' : 'none');
-    });
-  </script>`;
+function spotsIndex(lang) {
+  const t = label[lang.key];
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.spots }])}<h1>${h(t.spotsTitle)}</h1><p class="lead">${h(t.noLogin)}</p>${spotGrid(lang)}</main>`;
+  return layout(lang, "spots", { title: `${t.spotsTitle} | Japan Travel`, description: `${spots(lang).length} Kansai spots with text and audio guides.` }, body, { ld: baseLd(lang, "spots", "CollectionPage") });
 }
-
-function memberLikeBody(lang, kind) {
-  const t = ui[lang];
+function spotDetail(lang, id) {
+  const s = spotById(lang, id);
+  const t = label[lang.key];
+  const related = routes(lang).filter((r) => (r.spots || []).includes(id));
+  const near = spots(lang).filter((x) => x.id !== id && x.region === s.region).slice(0, 4);
+  const sourceName = s.source_name || brand.default_source_name;
+  const sourceUrl = s.source_url || brand.default_source_url;
+  const body = `<main>
+    <section class="detail-hero" style="--hero:url('${h(cleanAsset(s.image))}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.spots, href: relUrl(lang, "spots") }, { name: s.name }])}<h1>${h(s.name)}</h1><p>${h(s.card_line || "")}</p><div class="chips">${(s.tags || []).map((x) => `<span>${h(x)}</span>`).join("")}</div></div></section>
+    <section class="wrap page"><p class="lead">${h(s.intro || "")}</p>${audioBlock(lang, s)}<section class="panel"><h2>${h(t.source)}</h2><p><a href="${h(sourceUrl)}" rel="nofollow noopener" target="_blank">${h(sourceName)}</a> · ${h(brand.last_reviewed_at)}</p></section>
+    <h2>${h(t.relatedRoutes)}</h2><div class="grid cards">${related.map((r) => card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || "", r.tags || [])).join("") || `<p>${h(t.unavailable)}</p>`}</div>
+    <h2>${h(t.nearby)}</h2><div class="grid cards">${near.map((x) => card(x, cleanAsset(x.image), relUrl(lang, `spots/${x.id}`), x.card_line || "", x.tags || [])).join("")}</div></section>
+  </main>`;
+  return layout(lang, `spots/${id}`, { title: `${s.name} | Japan Travel`, description: s.card_line || s.intro || "" }, body, { ld: [...baseLd(lang, `spots/${id}`, "TouristAttraction"), touristLd(lang, s)] });
+}
+function servicesIndex(lang, page) {
+  const t = label[lang.key];
+  const title = page.title[lang.key];
+  const points = [t.bookingBoundary, t.rezioBoundary, brand.vehicle_network_text[lang.key], brand.service_area_text[lang.key]];
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<h1>${h(title)}</h1><p class="lead">${h(points[0])}</p>
+    <div class="two-col"><section class="panel"><h2>${h(t.servicesTitle)}</h2><ul>${points.map((p) => `<li>${h(p)}</li>`).join("")}</ul><a class="btn primary" href="/go/rezio/${h(page.product)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>
+    <section class="panel"><h2>FAQ</h2>${faq[lang.key].slice(0, 6).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</section></div>
+    <h2>${h(t.relatedRoutes)}</h2>${routeGrid(lang, 3)}</main>`;
+  return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: points.join(" ") }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 6)] });
+}
+function vehiclePage(lang, page) {
+  const t = label[lang.key];
+  const title = page.title[lang.key];
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: "Vehicles", href: relUrl(lang, "vehicles") }, { name: title }])}<h1>${h(title)}</h1><p class="lead">${h(t.bookingBoundary)}</p><div class="panel"><ul><li>${h(brand.vehicle_boundary[lang.key])}</li><li>${h(brand.luggage_boundary[lang.key])}</li><li>${h(t.rezioBoundary)}</li></ul><a class="btn primary" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></div></main>`;
+  return layout(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.bookingBoundary}` }, body, { ld: baseLd(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, "WebPage") });
+}
+function productsIndex(lang, page) {
+  const t = label[lang.key];
+  if (!page) {
+    const body = `<main class="wrap page"><h1>${h(t.productsTitle)}</h1><p class="lead">${h(t.rezioBoundary)}</p><div class="grid cards">${productPages.map((p) => card({ title: p.title[lang.key] }, "/kansai-assets/images/osaka/osa-0007-umeda-sky-building-floating-garden-observatory-cover.jpg", relUrl(lang, `products/${p.id}`), t.rezioBoundary, ["Rezio"])).join("")}</div></main>`;
+    return layout(lang, "products", { title: `${t.productsTitle} | Japan Travel`, description: t.rezioBoundary }, body, { ld: baseLd(lang, "products", "CollectionPage") });
+  }
+  const title = page.title[lang.key];
+  const body = `<main class="wrap page"><h1>${h(title)}</h1><p class="lead">${h(t.rezioBoundary)}</p><section class="panel"><h2>Rezio</h2><p>${h(t.bookingBoundary)}</p><a class="btn primary" href="/go/rezio/${h(page.id)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>${routeGrid(lang, 2)}</main>`;
+  return layout(lang, `products/${page.id}`, { title: `${title} | Japan Travel`, description: t.rezioBoundary }, body, { ld: baseLd(lang, `products/${page.id}`, "WebPage") });
+}
+function faqPage(lang) {
+  const t = label[lang.key];
+  const body = `<main class="wrap page"><h1>FAQ</h1><div class="faq-list">${faq[lang.key].map((f) => `<article class="panel"><h2>${h(f.q)}</h2><p>${h(f.a)}</p></article>`).join("")}</div></main>`;
+  return layout(lang, "faq", { title: `FAQ | Japan Travel`, description: faq[lang.key].slice(0, 3).map((x) => x.q).join(" / ") }, body, { ld: [...baseLd(lang, "faq", "FAQPage"), faqLd(lang, 32)] });
+}
+function contactPage(lang) {
+  const t = label[lang.key];
+  const body = `<main class="wrap page"><h1>${h(t.formTitle)}</h1><p class="lead">${h(t.formLead)}</p>${contactForm(lang)}</main>`;
+  return layout(lang, "contact", { title: `${t.formTitle} | Japan Travel`, description: t.formLead }, body, { ld: baseLd(lang, "contact", "ContactPage") });
+}
+function contactForm(lang) {
+  const t = label[lang.key];
+  const fields = ["name", "email", "phone", "line_id", "wechat", "whatsapp", "service_type", "travel_date", "travel_time", "flight_number", "pickup_location", "dropoff_location", "passenger_count", "luggage_count", "vehicle_preference", "child_seat", "itinerary", "notes"];
+  return `<form class="contact-form" method="post" action="/api/inquiry.php" data-enhanced-form>
+    <input type="hidden" name="language" value="${h(lang.slug)}"><input type="hidden" name="source_url" value=""><input type="hidden" name="idempotency_key" value="">
+    <input class="hp" name="website" tabindex="-1" autocomplete="off">
+    <div class="form-grid">${fields.map((f) => `<label>${h(f.replaceAll("_", " "))}<input name="${h(f)}" ${f === "email" ? "type=\"email\" required" : f.includes("date") ? "type=\"date\"" : f.includes("time") ? "type=\"time\"" : ""} maxlength="500"></label>`).join("")}</div>
+    <label class="check"><input type="checkbox" name="privacy_consent" value="1" required> Privacy consent</label>
+    <button class="btn primary" type="submit">${h(t.consult)}</button><p class="form-status" data-form-status>${h(t.unavailable)}</p>
+  </form>`;
+}
+function memberPage(lang, slug) {
+  const t = label[lang.key];
+  const title = slug.split("-").map((x) => x[0].toUpperCase() + x.slice(1)).join(" ");
+  const body = `<main class="wrap page member-shell"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p><section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form><input type="hidden" name="action" value="${h(slug)}"><label>Email<input name="email" type="email" autocomplete="email"></label><label>Password<input name="password" type="password" autocomplete="current-password"></label><button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section></main>`;
+  return layout(lang, `member/${slug}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, `member/${slug}`, "WebPage") });
+}
+function infoPage(lang, slug) {
+  const t = label[lang.key];
   const titles = {
-    member: t.joinTitle,
+    about: t.about,
+    privacy: "Privacy Policy",
+    terms: "Terms",
     vip: "VIP",
-    referral: t.referral,
-    ambassador: "Travel Ambassador",
-    products: t.productTitle
+    referral: "Referral",
+    ambassador: "Ambassador"
   };
-  const isProducts = kind === "products";
-  return `<main><section class="section"><div class="wrap feature">
-    <div class="panel"><div class="eyebrow">${h(t.operated)}</div><h1>${h(titles[kind])}</h1><p class="muted">${h(isProducts ? t.productLead : t.joinLead)}</p>
-      <p class="notice">${h(isProducts ? t.unavailable : t.memberGate)} ${h(t.notConfigured)}</p>
-      <div class="btn-row">
-        <a class="btn primary" href="#" ${isProducts ? `data-rezio-key="default" data-unconfigured="${h(t.unavailable)}"` : `data-requires-login data-login-message="${h(t.memberGate)}"`}>${h(isProducts ? t.ctaRezio : t.member)}</a>
-        <a class="btn" href="/${pageName(lang)}">${h(t.home)}</a>
-      </div><p data-message class="muted"></p>
-    </div>
-    <form class="panel" data-member-form data-unconfigured="${h(t.notConfigured)}">
-      <h3>${h(t.member)}</h3>
-      <label>Email<br><input class="searchbar" required type="email" name="email" placeholder="you@example.com"></label><br><br>
-      <label>Nickname<br><input class="searchbar" name="nickname"></label><br><br>
-      <button class="btn primary" type="submit">${h(t.member)}</button>
-      <p data-message class="muted"></p>
-    </form>
-  </div></section></main>`;
+  const body = `<main class="wrap page"><h1>${h(titles[slug])}</h1><div class="panel"><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p><p>${h(t.bookingBoundary)}</p><p>${h(t.rezioBoundary)}</p></div>${slug === "privacy" ? privacyText(lang) : ""}${slug === "terms" ? termsText(lang) : ""}${slug === "vip" ? vipText(lang) : ""}${slug === "referral" || slug === "ambassador" ? referralText(lang) : ""}</main>`;
+  return layout(lang, slug, { title: `${titles[slug]} | Japan Travel`, description: `${titles[slug]}. ${brand.operated_by_text}. ${lang.name}.` }, body, { ld: baseLd(lang, slug, "WebPage") });
+}
+function privacyText(lang) {
+  return `<section class="panel"><h2>Privacy</h2><p>${h(brand.privacy_summary[lang.key])}</p></section>`;
+}
+function termsText(lang) {
+  return `<section class="panel"><h2>Terms</h2><p>${h(brand.terms_summary[lang.key])}</p></section>`;
+}
+function vipText(lang) {
+  return `<section class="panel"><h2>VIP</h2><ul>${brand.vip_rules[lang.key].map((x) => `<li>${h(x)}</li>`).join("")}</ul></section>`;
+}
+function referralText(lang) {
+  return `<section class="panel"><h2>Referral</h2><ul>${brand.referral_rules[lang.key].map((x) => `<li>${h(x)}</li>`).join("")}</ul></section>`;
+}
+function baseLd(lang, rest, type) {
+  return [{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Japan Travel",
+    url: siteUrl,
+    parentOrganization: { "@type": "Organization", name: "Daitora Group", url: brand.daitora_url }
+  }, {
+    "@context": "https://schema.org",
+    "@type": type || "WebPage",
+    name: "Japan Travel",
+    url: canonical(lang, rest)
+  }];
+}
+function faqLd(lang, count) {
+  return { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq[lang.key].slice(0, count).map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) };
+}
+function touristLd(lang, s) {
+  return { "@context": "https://schema.org", "@type": "TouristAttraction", name: s.name, image: siteUrl + cleanAsset(s.image), url: canonical(lang, `spots/${s.id}`), address: `${s.city || ""} ${s.region || ""}` };
+}
+function rootPage() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Japan Travel</title><meta name="description" content="Choose your language for Japan Travel Kansai guide."><link rel="canonical" href="${siteUrl}/">${pageLangAlternates("")}<link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="language-gate wrap"><h1>Japan Travel</h1><p>Operated by 株式会社大寅 / Daitora Group</p><div class="grid cards">${langs.map((l) => `<a class="card lang-card" href="${relUrl(l)}"><div class="card-body"><h2>${l.label}</h2><p>${h(l.name)}</p></div></a>`).join("")}</div></main></body></html>`;
+}
+function legacyPage(to) {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="description" content="This old Japan Travel URL has moved to the new language directory structure."><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0; url=${h(to)}"><link rel="canonical" href="${siteUrl}${to}"><title>Japan Travel Page Moved</title></head><body><h1>Japan Travel Page Moved</h1><p><a href="${h(to)}">Continue to the new page</a></p></body></html>`;
+}
+function rezioFallbackPage() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,follow"><title>Rezio link unavailable</title><meta name="description" content="This Japan Travel Rezio product link is not configured yet. No reservation has been made."><link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="wrap page"><h1>Rezio link unavailable</h1><p class="lead">This booking product is not configured yet. No reservation has been made.</p><a class="btn primary" href="/en/contact/">Contact Japan Travel</a></main></body></html>`;
+}
+function notFound(lang) {
+  return layout(lang, "404", { title: "404 | Japan Travel", description: "The requested Japan Travel page was not found." }, `<main class="wrap page"><h1>404</h1><p>Page not found.</p><a class="btn primary" href="${relUrl(lang)}">${h(label[lang.key].home)}</a></main>`, { noindex: true });
+}
+function buildConfig() {
+  const cfg = {
+    siteUrl,
+    appEnv: process.env.APP_ENV || "production",
+    instagramUrl: process.env.INSTAGRAM_URL || "",
+    tiktokUrl: process.env.TIKTOK_URL || "",
+    lineUrl: process.env.LINE_URL || "",
+    analyticsEndpoint: process.env.ANALYTICS_ENDPOINT || "",
+    metaPixelId: process.env.META_PIXEL_ID || "",
+    tiktokPixelId: process.env.TIKTOK_PIXEL_ID || "",
+    memberApiBase: process.env.MEMBER_API_BASE || "",
+    rezioConfigured: Boolean(process.env.REZIO_DEFAULT_URL || process.env.REZIO_ROUTE_URLS_JSON || process.env.REZIO_PRODUCT_URLS_JSON)
+  };
+  writeFile("assets/js/site-config.js", `window.JAPAN_TRAVEL_CONFIG = ${JSON.stringify(cfg, null, 2)};\n`);
+}
+function cleanGenerated() {
+  for (const l of langs) fs.rmSync(path.join(root, l.slug), { recursive: true, force: true });
+  for (const item of ["index-ja.html", "index-en.html", "index-ko.html", "index-zhHant.html", "h5", "spots", "member", "products", "vip", "referral", "ambassador"]) {
+    fs.rmSync(path.join(root, item), { recursive: true, force: true });
+  }
+}
+function writeLangPage(lang, rest, html) {
+  writeFile(path.join(lang.slug, rest, "index.html"), html);
+  publicPages.push({ lang, rest });
+}
+function build() {
+  cleanGenerated();
+  buildConfig();
+  writeFile("index.html", rootPage());
+  writeFile("h5/index.html", legacyPage("/zh-cn/"));
+  writeFile("404.html", notFound(langs[0]));
+  for (const lang of langs) {
+    writeLangPage(lang, "", homePage(lang));
+    writeLangPage(lang, "routes", routesIndex(lang));
+    for (const r of routes(lang)) writeLangPage(lang, `routes/${r.id}`, routeDetail(lang, r.id));
+    writeLangPage(lang, "spots", spotsIndex(lang));
+    for (const s of spots(lang)) writeLangPage(lang, `spots/${s.id}`, spotDetail(lang, s.id));
+    for (const p of servicePages) writeLangPage(lang, `services/${p.id}`, servicesIndex(lang, p));
+    writeLangPage(lang, "vehicles", vehiclePage(lang, { id: "index", title: { [lang.key]: lang.key === "en" ? "Vehicle Guide" : "车型选择" } }));
+    for (const p of vehiclePages) writeLangPage(lang, `vehicles/${p.id}`, vehiclePage(lang, p));
+    writeLangPage(lang, "products", productsIndex(lang));
+    for (const p of productPages) writeLangPage(lang, `products/${p.id}`, productsIndex(lang, p));
+    writeLangPage(lang, "faq", faqPage(lang));
+    writeLangPage(lang, "about", infoPage(lang, "about"));
+    writeLangPage(lang, "contact", contactPage(lang));
+    writeLangPage(lang, "privacy", infoPage(lang, "privacy"));
+    writeLangPage(lang, "terms", infoPage(lang, "terms"));
+    writeLangPage(lang, "vip", infoPage(lang, "vip"));
+    writeLangPage(lang, "referral", infoPage(lang, "referral"));
+    writeLangPage(lang, "ambassador", infoPage(lang, "ambassador"));
+    writeLangPage(lang, "404", notFound(lang));
+    for (const p of memberPages) writeLangPage(lang, `member/${p}`, memberPage(lang, p));
+  }
+  writeFile(path.join("go", "rezio", "not-configured", "index.html"), rezioFallbackPage());
+  writeFile("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /runtime/\nSitemap: ${siteUrl}/sitemap.xml\n`);
+  writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404").map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
+  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^go/rezio/([^/]+)/?$ /api/rezio.php?product_key=$1 [QSA,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
+  const manifest = { generatedAt: new Date().toISOString(), pages: publicPages.length + 3, sha: crypto.createHash("sha256").update([...generated].sort().join("\n")).digest("hex") };
+  writeFile("src/generated-manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
+  console.log(`Generated ${manifest.pages} html targets for ${langs.length} languages, ${spots(langs[0]).length} spots, ${routes(langs[0]).length} routes.`);
 }
 
-for (const lang of langs) {
-  const data = getData(lang);
-  writePage(root, lang, layout(lang, "Kansai Travel Guide", homeBody(lang)));
-  writePage(path.join(root, "h5"), lang, layout(lang, "Kansai Travel Guide", homeBody(lang)));
-  writePage(path.join(root, "spots"), lang, layout(lang, ui[lang].spotTitle, spotsIndexBody(lang)));
-  for (const route of data.routes) {
-    writePage(path.join(root, "h5/routes", route.id), lang, layout(lang, route.title, routeBody(route, lang), { description: route.summary }));
-  }
-  for (const spot of data.all_spots) {
-    writePage(path.join(root, "spots", spot.id), lang, layout(lang, spot.name, spotBody(spot, lang), { description: spot.intro }));
-  }
-  for (const kind of ["member", "vip", "referral", "ambassador", "products"]) {
-    writePage(path.join(root, kind), lang, layout(lang, kind, memberLikeBody(lang, kind)));
-  }
-}
-
-console.log(`Generated ${langs.length} languages, ${content.zh.routes.length} routes, ${content.zh.all_spots.length} spots.`);
+build();

@@ -1,0 +1,9 @@
+DirectoryIndex index.html
+RewriteEngine On
+RewriteRule ^h5/?$ /zh-cn/ [R=301,L]
+RewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]
+RewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]
+RewriteRule ^go/rezio/([^/]+)/?$ /api/rezio.php?product_key=$1 [QSA,L]
+<FilesMatch "^(\.env|.*\.sqlite|.*\.log)$">
+  Require all denied
+</FilesMatch>

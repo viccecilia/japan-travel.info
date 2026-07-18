@@ -1,11 +1,12 @@
 window.JAPAN_TRAVEL_CONFIG = {
-  "rezioDefaultUrl": "",
-  "rezioRouteUrls": {},
-  "rezioProductUrls": {},
+  "siteUrl": "https://japan-travel.info",
+  "appEnv": "production",
   "instagramUrl": "",
   "tiktokUrl": "",
   "lineUrl": "",
-  "memberApiBase": "",
   "analyticsEndpoint": "",
-  "daitoraGroupUrl": "https://daitora-jp.com/"
+  "metaPixelId": "",
+  "tiktokPixelId": "",
+  "memberApiBase": "",
+  "rezioConfigured": false
 };

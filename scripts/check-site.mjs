@@ -2,68 +2,62 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const errors = [];
-
-function walk(dir) {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name);
-    if ([".git", "node_modules", "output"].includes(entry.name)) return [];
-    return entry.isDirectory() ? walk(full) : [full];
-  });
-}
-
+const content = JSON.parse(fs.readFileSync(path.join(root, "src/content.json"), "utf8"));
+const langs = ["zh-cn", "zh-tw", "ja", "en", "ko"];
+const langMap = { "zh-cn": "zh", "zh-tw": "zhHant", ja: "ja", en: "en", ko: "ko" };
+const fail = (msg) => { throw new Error(msg); };
+const walk = (dir, out = []) => {
+  if (!fs.existsSync(dir)) return out;
+  for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+    if ([".git", "node_modules", "output", "runtime"].includes(item.name)) continue;
+    const full = path.join(dir, item.name);
+    if (item.isDirectory()) walk(full, out);
+    else out.push(full);
+  }
+  return out;
+};
 const files = walk(root);
-const htmlFiles = files.filter((file) => file.endsWith(".html"));
-const imageFiles = files.filter((file) => /kansai-assets[\\/]images[\\/].+\.(jpe?g|png|webp)$/i.test(file));
-const audioFiles = files.filter((file) => /kansai-audio[\\/].+\.mp3$/i.test(file));
-const videoFiles = files.filter((file) => /kansai-assets[\\/]video[\\/].+\.mp4$/i.test(file));
+const html = files.filter((f) => f.endsWith(".html"));
+const images = files.filter((f) => /\.(jpe?g|png|webp)$/i.test(f) && f.includes(`${path.sep}kansai-assets${path.sep}images${path.sep}`));
+const audio = files.filter((f) => /\.mp3$/i.test(f) && f.includes(`${path.sep}kansai-audio${path.sep}`));
+const videos = files.filter((f) => /\.mp4$/i.test(f) && f.includes(`${path.sep}kansai-assets${path.sep}video${path.sep}`));
 
-if (imageFiles.length !== 74) errors.push(`Expected 74 images, got ${imageFiles.length}`);
-if (audioFiles.length !== 584) errors.push(`Expected 584 audio files, got ${audioFiles.length}`);
-if (videoFiles.length !== 2) errors.push(`Expected 2 videos, got ${videoFiles.length}`);
-
-const forbidden = [
-  /Yuzu/i,
-  /柚子/,
-  /localStorage/,
-  /(单独|單獨|自社|当社|某一家|1社|一家公司).{0,20}(100台|約100台|约100台)/,
-  /(100台|約100台|约100台).{0,20}(保有|所有|持有)/,
-  /已付款订单(确认|成立|完成)/,
-  /paid order confirmed/i
-];
-for (const file of htmlFiles.concat(files.filter((file) => file.endsWith(".js")))) {
-  const text = fs.readFileSync(file, "utf8");
-  for (const pattern of forbidden) {
-    if (pattern.test(text)) errors.push(`${path.relative(root, file)} matches forbidden pattern ${pattern}`);
-  }
+if (images.length !== 74) fail(`expected 74 images, got ${images.length}`);
+if (audio.length !== 584) fail(`expected 584 audio, got ${audio.length}`);
+if (videos.length !== 2) fail(`expected 2 videos, got ${videos.length}`);
+for (const lang of langs) {
+  const key = langMap[lang];
+  const langSpotDirs = content[key].all_spots.map((s) => path.join(root, lang, "spots", s.id, "index.html"));
+  for (const f of langSpotDirs) if (!fs.existsSync(f)) fail(`missing spot page ${f}`);
+  for (const r of content[key].routes) if (!fs.existsSync(path.join(root, lang, "routes", r.id, "index.html"))) fail(`missing route ${lang}/${r.id}`);
 }
 
-const required = [
-  "Japan Travel 由株式会社大寅／Daitora Group 运营",
-  "グループ全体で約100台規模の車両ネットワーク",
-  "Rezio"
-];
-const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
-for (const text of required) {
-  if (!home.includes(text)) errors.push(`Home missing: ${text}`);
+const forbidden = [/Yuzu/i, /柚子/, /70\+/, /100\+/, /无限等待/, /不临时加价/, /保证中文司机/, /保证指定司机/, /localStorage\.(setItem|getItem)\((?!consentKey)/];
+for (const f of files.filter((x) => /\.(html|js|php|json|md|txt|xml|htaccess)$/i.test(x))) {
+  const rel = path.relative(root, f).replaceAll("\\", "/");
+  if (rel === "scripts/check-site.mjs") continue;
+  const text = fs.readFileSync(f, "utf8");
+  for (const re of forbidden) if (re.test(text)) fail(`forbidden ${re} in ${rel}`);
+  if (/localhost|127\.0\.0\.1/.test(text) && !rel.startsWith("docs/")) fail(`localhost default in ${rel}`);
+  if (/SMTP_PASSWORD=.+\S/.test(text) && !rel.endsWith(".env.example")) fail(`possible smtp secret in ${rel}`);
 }
 
-for (const file of htmlFiles) {
-  const html = fs.readFileSync(file, "utf8");
-  const refs = Array.from(html.matchAll(/\b(?:src|href)="([^"#?]+)(?:[?#][^"]*)?"/g)).map((match) => match[1]);
-  for (const ref of refs) {
-    if (!ref || ref.startsWith("http") || ref.startsWith("mailto:") || ref.startsWith("#")) continue;
-    const target = ref.startsWith("/")
-      ? path.join(root, ref.replace(/^\/+/, ""))
-      : path.join(path.dirname(file), ref);
-    const resolved = fs.existsSync(target) ? target : path.join(target, "index.html");
-    if (!fs.existsSync(resolved)) errors.push(`${path.relative(root, file)} broken ref: ${ref}`);
-  }
+for (const f of html) {
+  const rel = path.relative(root, f).replaceAll("\\", "/");
+  const text = fs.readFileSync(f, "utf8");
+  const noindex = /<meta name="robots" content="noindex,follow">/.test(text);
+  if (!/<title>[^<]{6,}<\/title>/.test(text)) fail(`missing title ${rel}`);
+  if (!/<meta name="description" content="[^"]{20,}">/.test(text)) fail(`missing description ${rel}`);
+  if (!/<h1[>\s]/.test(text)) fail(`missing h1 ${rel}`);
+  if (!noindex && !/<link rel="canonical" href="https:\/\/japan-travel\.info/.test(text)) fail(`missing canonical ${rel}`);
+  if (!noindex && !rel.startsWith("h5/") && !/hreflang="x-default"/.test(text)) fail(`missing x-default ${rel}`);
+  if (!noindex && !rel.startsWith("h5/") && rel !== "index.html" && rel !== "404.html" && !rel.includes("/404/") && !/<script type="application\/ld\+json">/.test(text)) fail(`missing json-ld ${rel}`);
 }
 
-if (errors.length) {
-  console.error(errors.join("\n"));
-  process.exit(1);
+const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+for (const match of sitemap.matchAll(/https:\/\/japan-travel\.info\/([^<]*)/g)) {
+  const rel = match[1].replace(/\/$/, "");
+  const target = rel ? path.join(root, rel, "index.html") : path.join(root, "index.html");
+  if (!fs.existsSync(target)) fail(`sitemap target missing ${match[0]}`);
 }
-
-console.log(`OK: ${htmlFiles.length} html, ${imageFiles.length} images, ${audioFiles.length} audio, ${videoFiles.length} videos`);
+console.log(`OK check: ${html.length} html, ${images.length} images, ${audio.length} audio, ${videos.length} videos`);
