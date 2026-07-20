@@ -11,6 +11,17 @@ function ok(bool $condition, string $message): void {
         exit(1);
     }
 }
+function expect_http(array $response, int $expectedStatus, string $message, ?callable $bodyCheck = null): array {
+    [$status, $json, $raw] = $response;
+    $passes = $status === $expectedStatus && ($bodyCheck ? $bodyCheck($json, $raw) : true);
+    if (!$passes) {
+        fwrite(STDERR, "FAIL: {$message}\n");
+        fwrite(STDERR, "HTTP status: {$status}, expected: {$expectedStatus}\n");
+        fwrite(STDERR, "Body: " . substr($raw, 0, 1000) . "\n");
+        exit(1);
+    }
+    return $response;
+}
 function request(string $method, string $url, array $fields = [], array $headers = []): array {
     global $cookieFile, $cookieJar;
     $headerLines = array_merge(['Origin: http://127.0.0.1:8099'], $headers);
@@ -50,28 +61,25 @@ function request(string $method, string $url, array $fields = [], array $headers
     return [$status, json_decode((string)$body, true) ?: [], (string)$body, $http_response_header ?? []];
 }
 
-[$status, $csrf] = request('GET', $base . '/api/csrf.php');
-ok($status === 200 && !empty($csrf['csrf_token']), 'csrf endpoint works');
+[$status, $csrf] = expect_http(request('GET', $base . '/api/csrf.php'), 200, 'csrf endpoint works', fn($json) => !empty($json['csrf_token']));
 $token = $csrf['csrf_token'];
 $email = 'http-' . bin2hex(random_bytes(3)) . '@example.com';
 
-[$status, $reg] = request('POST', $base . '/api/member.php', [
+[$status, $reg] = expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
     'action' => 'register',
     'email' => $email,
     'password' => 'Password1234',
     'nickname' => 'HTTP User',
     'language' => 'en'
-]);
-ok($status === 200 && !empty($reg['ok']), 'member register over HTTP');
+]), 200, 'member register over HTTP', fn($json) => !empty($json['ok']));
 
-[$status, $loginBlocked] = request('POST', $base . '/api/member.php', [
+expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
     'action' => 'login',
     'email' => $email,
     'password' => 'Password1234'
-]);
-ok($status === 403, 'unverified login is blocked');
+]), 403, 'unverified login is blocked');
 
 $db = new PDO('sqlite:' . getenv('APP_DATA_DIR') . '/japan_travel.sqlite');
 $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -80,30 +88,26 @@ $stmt->execute([$email, 'email_verification']);
 ok((bool)$stmt->fetch(), 'verification token stored hashed');
 $db->prepare('UPDATE member_user SET email_verified_at = ? WHERE email = ?')->execute([gmdate('c'), $email]);
 
-[$status, $login] = request('POST', $base . '/api/member.php', [
+[$status, $login] = expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
     'action' => 'login',
     'email' => $email,
     'password' => 'Password1234'
-]);
-ok($status === 200 && !empty($login['member']['id']), 'verified member login works');
+]), 200, 'verified member login works', fn($json) => !empty($json['member']['id']));
 
-[$status, $csrf] = request('GET', $base . '/api/csrf.php');
-ok($status === 200 && !empty($csrf['csrf_token']), 'csrf refresh after login works');
+[$status, $csrf] = expect_http(request('GET', $base . '/api/csrf.php'), 200, 'csrf refresh after login works', fn($json) => !empty($json['csrf_token']));
 $token = $csrf['csrf_token'];
 
-[$status, $ref] = request('POST', $base . '/api/member.php', [
+[$status, $ref] = expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
     'action' => 'referral-summary'
-]);
-ok($status === 200 && isset($ref['referral']['clicks']), 'referral-summary callable over HTTP');
+]), 200, 'referral-summary callable over HTTP', fn($json) => isset($json['referral']['clicks']));
 
-[$status, $reset] = request('POST', $base . '/api/member.php', [
+[$status, $reset] = expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
     'action' => 'reset-request',
     'email' => $email
-]);
-ok($status === 200 && !empty($reset['ok']), 'password reset request works');
+]), 200, 'password reset request works', fn($json) => !empty($json['ok']));
 
 $idem = 'idem_' . bin2hex(random_bytes(4));
 $inquiry = [
@@ -114,9 +118,9 @@ $inquiry = [
     'privacy_consent' => '1',
     'notes' => 'test inquiry'
 ];
-[$status, $inq1] = request('POST', $base . '/api/inquiry.php', $inquiry);
-[$status2, $inq2] = request('POST', $base . '/api/inquiry.php', $inquiry);
-ok($status === 200 && $status2 === 200 && $inq1['request_id'] === $inq2['request_id'], 'inquiry idempotency over HTTP');
+[$status, $inq1] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'first inquiry idempotency request');
+[$status2, $inq2] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'duplicate inquiry idempotency request');
+ok(($inq1['request_id'] ?? '') !== '' && $inq1['request_id'] === ($inq2['request_id'] ?? null), 'inquiry idempotency over HTTP');
 
 [$status, $body, $raw, $headers] = request('GET', $base . '/api/rezio.php?product_key=kyoto&utm_source=instagram&utm_medium=social&ref_code=JTSELF&language=en&visitor_id=vis_http');
 $location = implode("\n", $headers);

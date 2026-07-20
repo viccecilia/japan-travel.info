@@ -38,11 +38,13 @@ jobs:
           SITE_URL: http://127.0.0.1:8099
           REZIO_ROUTE_URLS_JSON: '{"kyoto":"https://demo.rezio.shop/products/kyoto"}'
         run: |
+          trap 'echo "::group::PHP server log"; cat "${{ runner.temp }}/php-server.log" || true; echo "::endgroup::"; kill "$(cat "${{ runner.temp }}/php-server.pid")" 2>/dev/null || true' EXIT
           php -S 127.0.0.1:8099 -t . > "${{ runner.temp }}/php-server.log" 2>&1 &
           echo $! > "${{ runner.temp }}/php-server.pid"
           sleep 2
           php tests/php/http_integration.php http://127.0.0.1:8099
           kill "$(cat "${{ runner.temp }}/php-server.pid")"
+          trap - EXIT
       - name: SMTP integration
         run: |
           python tests/smtp_server.py > "${{ runner.temp }}/smtp.log" 2>&1 &
