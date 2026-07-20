@@ -119,7 +119,7 @@ const productPages = [
   { id: "kix-nara", title: { zh: "KIX ⇄ 奈良预约导引", zhHant: "KIX ⇄ 奈良預約導引", ja: "KIX ⇄ 奈良 予約案内", en: "KIX ⇄ Nara Booking Guide", ko: "KIX ⇄ 나라 예약 안내" } },
   { id: "kix-kobe", title: { zh: "KIX ⇄ 神户预约导引", zhHant: "KIX ⇄ 神戶預約導引", ja: "KIX ⇄ 神戸 予約案内", en: "KIX ⇄ Kobe Booking Guide", ko: "KIX ⇄ 고베 예약 안내" } }
 ];
-const memberPages = ["login", "register", "reset-password", "profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
+const memberPages = ["login", "register", "verify-email", "reset-password", "profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
 
 function h(value = "") {
   return String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -296,7 +296,7 @@ function spotDetail(lang, id) {
     <h2>${h(t.relatedRoutes)}</h2><div class="grid cards">${related.map((r) => card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || "", r.tags || [])).join("") || `<p>${h(t.unavailable)}</p>`}</div>
     <h2>${h(t.nearby)}</h2><div class="grid cards">${near.map((x) => card(x, cleanAsset(x.image), relUrl(lang, `spots/${x.id}`), x.card_line || "", x.tags || [])).join("")}</div></section>
   </main>`;
-  return layout(lang, `spots/${id}`, { title: `${s.name} | Japan Travel`, description: s.card_line || s.intro || "" }, body, { ld: [...baseLd(lang, `spots/${id}`, "TouristAttraction"), touristLd(lang, s)] });
+  return layout(lang, `spots/${id}`, { title: `${s.name} | Japan Travel`, description: `${s.name} (${s.city || s.region || id}): ${s.card_line || s.intro || ""}` }, body, { ld: [...baseLd(lang, `spots/${id}`, "TouristAttraction"), touristLd(lang, s)] });
 }
 function servicesIndex(lang, page) {
   const t = label[lang.key];
@@ -306,23 +306,23 @@ function servicesIndex(lang, page) {
     <div class="two-col"><section class="panel"><h2>${h(t.servicesTitle)}</h2><ul>${points.map((p) => `<li>${h(p)}</li>`).join("")}</ul><a class="btn primary" href="/go/rezio/${h(page.product)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>
     <section class="panel"><h2>FAQ</h2>${faq[lang.key].slice(0, 6).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</section></div>
     <h2>${h(t.relatedRoutes)}</h2>${routeGrid(lang, 3)}</main>`;
-  return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: points.join(" ") }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 6)] });
+  return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${points.join(" ")}` }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 6)] });
 }
 function vehiclePage(lang, page) {
   const t = label[lang.key];
   const title = page.title[lang.key];
   const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: "Vehicles", href: relUrl(lang, "vehicles") }, { name: title }])}<h1>${h(title)}</h1><p class="lead">${h(t.bookingBoundary)}</p><div class="panel"><ul><li>${h(brand.vehicle_boundary[lang.key])}</li><li>${h(brand.luggage_boundary[lang.key])}</li><li>${h(t.rezioBoundary)}</li></ul><a class="btn primary" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></div></main>`;
-  return layout(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.bookingBoundary}` }, body, { ld: baseLd(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, "WebPage") });
+  return layout(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${brand.vehicle_boundary?.[lang.key] || t.bookingBoundary} ${t.bookingBoundary}` }, body, { ld: baseLd(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, "WebPage") });
 }
 function productsIndex(lang, page) {
   const t = label[lang.key];
   if (!page) {
     const body = `<main class="wrap page"><h1>${h(t.productsTitle)}</h1><p class="lead">${h(t.rezioBoundary)}</p><div class="grid cards">${productPages.map((p) => card({ title: p.title[lang.key] }, "/kansai-assets/images/osaka/osa-0007-umeda-sky-building-floating-garden-observatory-cover.jpg", relUrl(lang, `products/${p.id}`), t.rezioBoundary, ["Rezio"])).join("")}</div></main>`;
-    return layout(lang, "products", { title: `${t.productsTitle} | Japan Travel`, description: t.rezioBoundary }, body, { ld: baseLd(lang, "products", "CollectionPage") });
+    return layout(lang, "products", { title: `${t.productsTitle} | Japan Travel`, description: `${t.productsTitle}: ${t.rezioBoundary}` }, body, { ld: baseLd(lang, "products", "CollectionPage") });
   }
   const title = page.title[lang.key];
   const body = `<main class="wrap page"><h1>${h(title)}</h1><p class="lead">${h(t.rezioBoundary)}</p><section class="panel"><h2>Rezio</h2><p>${h(t.bookingBoundary)}</p><a class="btn primary" href="/go/rezio/${h(page.id)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>${routeGrid(lang, 2)}</main>`;
-  return layout(lang, `products/${page.id}`, { title: `${title} | Japan Travel`, description: t.rezioBoundary }, body, { ld: baseLd(lang, `products/${page.id}`, "WebPage") });
+  return layout(lang, `products/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${t.rezioBoundary}` }, body, { ld: baseLd(lang, `products/${page.id}`, "WebPage") });
 }
 function faqPage(lang) {
   const t = label[lang.key];
@@ -347,8 +347,37 @@ function contactForm(lang) {
 }
 function memberPage(lang, slug) {
   const t = label[lang.key];
-  const title = slug.split("-").map((x) => x[0].toUpperCase() + x.slice(1)).join(" ");
-  const body = `<main class="wrap page member-shell"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p><section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form><input type="hidden" name="action" value="${h(slug)}"><label>Email<input name="email" type="email" autocomplete="email"></label><label>Password<input name="password" type="password" autocomplete="current-password"></label><button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section></main>`;
+  const memberTitles = {
+    login: "Sign in",
+    register: "Join Japan Travel",
+    "verify-email": "Verify email",
+    "reset-password": "Reset password",
+    profile: "Member profile",
+    favorites: "Favorites",
+    trips: "Saved trips",
+    bookings: "Booking references",
+    vip: "VIP",
+    referrals: "Referrals",
+    ambassador: "Ambassador"
+  };
+  const title = memberTitles[slug] || slug;
+  const actionMap = {
+    favorites: "favorite-list",
+    trips: "saved-trip-list",
+    bookings: "booking-reference-list",
+    vip: "vip-summary",
+    referrals: "referral-summary",
+    ambassador: "ambassador-apply"
+  };
+  const action = slug === "verify-email" ? "verify-email" : slug === "reset-password" ? "reset-password" : actionMap[slug] || slug;
+  const emailField = ["register", "login", "reset-password"].includes(slug) ? `<label>Email<input name="email" type="email" autocomplete="email" required></label>` : "";
+  const passwordField = ["register", "login"].includes(slug) ? `<label>Password<input name="password" type="password" autocomplete="${slug === "login" ? "current-password" : "new-password"}" ${slug === "register" ? "minlength=\"10\"" : ""} required></label>` : "";
+  const resetTokenFields = slug === "reset-password" ? `<label>Reset token<input name="token" autocomplete="one-time-code"></label><label>New password<input name="new_password_display" type="password" autocomplete="new-password" minlength="10" oninput="this.form.password.value=this.value"></label><input type="hidden" name="password">` : "";
+  const verifyTokenField = slug === "verify-email" ? `<label>Verification token<input name="token" autocomplete="one-time-code" required></label>` : "";
+  const nicknameField = ["register", "profile"].includes(slug) ? `<label>Nickname<input name="nickname" maxlength="80" autocomplete="nickname"></label>` : "";
+  const ambassadorField = slug === "ambassador" ? `<label>Message<textarea name="message" maxlength="2000"></textarea></label>` : "";
+  const actionField = `<input type="hidden" name="action" value="${h(action)}">`;
+  const body = `<main class="wrap page member-shell"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p><section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section></main>`;
   return layout(lang, `member/${slug}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, `member/${slug}`, "WebPage") });
 }
 function infoPage(lang, slug) {
@@ -403,7 +432,7 @@ function legacyPage(to) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="description" content="This old Japan Travel URL has moved to the new language directory structure."><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0; url=${h(to)}"><link rel="canonical" href="${siteUrl}${to}"><title>Japan Travel Page Moved</title></head><body><h1>Japan Travel Page Moved</h1><p><a href="${h(to)}">Continue to the new page</a></p></body></html>`;
 }
 function rezioFallbackPage() {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,follow"><title>Rezio link unavailable</title><meta name="description" content="This Japan Travel Rezio product link is not configured yet. No reservation has been made."><link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="wrap page"><h1>Rezio link unavailable</h1><p class="lead">This booking product is not configured yet. No reservation has been made.</p><a class="btn primary" href="/en/contact/">Contact Japan Travel</a></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,follow"><title>Rezio link unavailable</title><meta name="description" content="This Japan Travel Rezio product link is not configured yet. No reservation has been made."><link rel="canonical" href="${siteUrl}/go/rezio/not-configured/"><link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="wrap page"><h1>Rezio link unavailable</h1><p class="lead">This booking product is not configured yet. No reservation has been made.</p><a class="btn primary" href="/en/contact/">Contact Japan Travel</a></main></body></html>`;
 }
 function notFound(lang) {
   return layout(lang, "404", { title: "404 | Japan Travel", description: "The requested Japan Travel page was not found." }, `<main class="wrap page"><h1>404</h1><p>Page not found.</p><a class="btn primary" href="${relUrl(lang)}">${h(label[lang.key].home)}</a></main>`, { noindex: true });
@@ -464,7 +493,7 @@ function build() {
   writeFile(path.join("go", "rezio", "not-configured", "index.html"), rezioFallbackPage());
   writeFile("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /runtime/\nSitemap: ${siteUrl}/sitemap.xml\n`);
   writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404").map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
-  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^go/rezio/([^/]+)/?$ /api/rezio.php?product_key=$1 [QSA,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
+  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^go/rezio/([^/]+)/?$ /api/rezio.php?product_key=$1 [QSA,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
   const manifest = { generatedAt: new Date().toISOString(), pages: publicPages.length + 3, sha: crypto.createHash("sha256").update([...generated].sort().join("\n")).digest("hex") };
   writeFile("src/generated-manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(`Generated ${manifest.pages} html targets for ${langs.length} languages, ${spots(langs[0]).length} spots, ${routes(langs[0]).length} routes.`);

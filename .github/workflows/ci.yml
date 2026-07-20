@@ -14,16 +14,32 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, mbstring, openssl
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm run verify
       - name: PHP syntax
         run: |
           php -l api/bootstrap.php
+          php -l api/csrf.php
           php -l api/inquiry.php
           php -l api/member.php
           php -l api/rezio.php
           php -l tools/import-rezio-csv.php
+          php -l tests/php/integration.php
+      - name: PHP integration
+        env:
+          APP_ENV: development
+          APP_SECRET: ci-secret-with-more-than-thirty-two-characters
+        run: php tests/php/integration.php
       - name: CSV dry run
+        env:
+          APP_ENV: development
+          APP_SECRET: ci-secret-with-more-than-thirty-two-characters
+          APP_DATA_DIR: ${{ runner.temp }}/jt-data
         run: php tools/import-rezio-csv.php docs/examples/rezio-orders-sample.csv --dry-run
       - name: Sensitive scan
         run: |

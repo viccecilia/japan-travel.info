@@ -1,5 +1,6 @@
 DirectoryIndex index.html
 RewriteEngine On
+RewriteRule ^runtime/private/ - [F,L]
 RewriteRule ^h5/?$ /zh-cn/ [R=301,L]
 RewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]
 RewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]

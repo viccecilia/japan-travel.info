@@ -14,6 +14,15 @@
   function setConsent(value) {
     try { localStorage.setItem(consentKey, value ? "accepted" : "declined"); } catch (_) {}
   }
+  let csrfPromise = null;
+  async function csrfToken() {
+    if (!csrfPromise) {
+      csrfPromise = fetch("/api/csrf.php", { credentials: "same-origin", cache: "no-store" })
+        .then((res) => res.ok ? res.json() : Promise.reject(new Error("csrf")))
+        .then((json) => json.csrf_token || "");
+    }
+    return csrfPromise;
+  }
   function track(type, payload = {}) {
     if (!config.analyticsEndpoint) return;
     const data = JSON.stringify({
@@ -97,6 +106,7 @@
         const data = new FormData(form);
         data.set("source_url", location.href);
         data.set("idempotency_key", crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+        data.set("csrf_token", await csrfToken());
         safeText(status, "Sending...");
         try {
           const res = await fetch(form.action, { method: "POST", body: data, credentials: "same-origin" });
@@ -116,7 +126,14 @@
         const status = form.querySelector("[data-member-status]");
         safeText(status, "Processing...");
         try {
-          const res = await fetch(form.action, { method: "POST", body: new FormData(form), credentials: "same-origin" });
+          const data = new FormData(form);
+          data.set("csrf_token", await csrfToken());
+          const token = new URLSearchParams(location.search).get("token");
+          if (token && !data.get("token")) data.set("token", token);
+          if (data.get("action") === "reset-password" && data.get("token") && data.get("password")) {
+            data.set("action", "reset-confirm");
+          }
+          const res = await fetch(form.action, { method: "POST", body: data, credentials: "same-origin" });
           const json = await res.json().catch(() => ({}));
           if (!res.ok || !json.ok) throw new Error("failed");
           safeText(status, json.message || "Please check the next step in your email.");
