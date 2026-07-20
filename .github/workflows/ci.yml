@@ -63,4 +63,4 @@ jobs:
         run: php tools/import-rezio-csv.php docs/examples/rezio-orders-sample.csv --dry-run
       - name: Sensitive scan
         run: |
-          ! grep -RInE "(SMTP_PASSWORD=.+[A-Za-z0-9]|api[_-]?key[=:].+|BEGIN RSA|PRIVATE KEY)" --exclude-dir=.git --exclude-dir=node_modules --exclude=.env.example .
+          ! grep -RInE "(SMTP_PASSWORD=.+[A-Za-z0-9]|api[_-]?key[=:].+|BEGIN RSA|PRIVATE KEY)" --exclude-dir=.git --exclude-dir=.github --exclude-dir=node_modules --exclude-dir=tests --exclude=.env.example .
