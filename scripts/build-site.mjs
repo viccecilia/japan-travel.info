@@ -102,13 +102,15 @@ function pageLangAlternates(rest = "") {
 }
 function nav(lang) {
   const t = label[lang.key];
+  const m = t.member;
   const links = [
     [t.home, relUrl(lang)],
     [t.routes, relUrl(lang, "routes")],
     [t.spots, relUrl(lang, "spots")],
     [t.services, relUrl(lang, "services/airport-transfer")],
     [t.products, relUrl(lang, "products")],
-    [t.contact, relUrl(lang, "contact")]
+    [t.contact, relUrl(lang, "contact")],
+    [m.dashboard, relUrl(lang, "member")]
   ];
   return `<header class="topbar"><div class="wrap nav">
     <a class="brand" href="${relUrl(lang)}">Japan Travel<small>Operated by 株式会社大寅 / Daitora Group</small></a>
@@ -315,6 +317,15 @@ function memberPage(lang, slug) {
     <section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section>${authedTools}</main>`;
   return layout(lang, `member/${slug}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, `member/${slug}`, "WebPage") });
 }
+function memberDashboard(lang) {
+  const t = label[lang.key];
+  const m = t.member;
+  const links = ["profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
+  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="dashboard"><h1>${h(m.dashboard)}</h1><p class="lead">${h(t.memberLead)}</p>
+    <section class="panel member-data" data-member-panel data-member-page="dashboard"><p data-member-status>${h(m.loading)}</p><div data-member-content></div></section>
+    <section class="grid cards member-dashboard-links">${links.map((slug) => `<a class="card" href="${relUrl(lang, `member/${slug}`)}"><div class="card-body"><h2>${h(m[slug])}</h2><p>${h(t.memberLead)}</p></div></a>`).join("")}</section></main>`;
+  return layout(lang, "member", { title: `${m.dashboard} | Japan Travel`, description: `${m.dashboard}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, "member", "WebPage") });
+}
 function infoPage(lang, slug) {
   const t = label[lang.key];
   const titles = {
@@ -423,6 +434,7 @@ function build() {
     writeLangPage(lang, "referral", infoPage(lang, "referral"));
     writeLangPage(lang, "ambassador", infoPage(lang, "ambassador"));
     writeLangPage(lang, "404", notFound(lang));
+    writeLangPage(lang, "member", memberDashboard(lang));
     for (const p of memberPages) writeLangPage(lang, `member/${p}`, memberPage(lang, p));
   }
   writeFile(path.join("go", "rezio", "not-configured", "index.html"), rezioFallbackPage());

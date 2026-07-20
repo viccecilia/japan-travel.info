@@ -101,6 +101,7 @@
   <url><loc>https://japan-travel.info/zh-cn/vip/</loc></url>
   <url><loc>https://japan-travel.info/zh-cn/referral/</loc></url>
   <url><loc>https://japan-travel.info/zh-cn/ambassador/</loc></url>
+  <url><loc>https://japan-travel.info/zh-cn/member/</loc></url>
   <url><loc>https://japan-travel.info/zh-tw/</loc></url>
   <url><loc>https://japan-travel.info/zh-tw/routes/</loc></url>
   <url><loc>https://japan-travel.info/zh-tw/routes/kyoto-nara-classic/</loc></url>
@@ -202,6 +203,7 @@
   <url><loc>https://japan-travel.info/zh-tw/vip/</loc></url>
   <url><loc>https://japan-travel.info/zh-tw/referral/</loc></url>
   <url><loc>https://japan-travel.info/zh-tw/ambassador/</loc></url>
+  <url><loc>https://japan-travel.info/zh-tw/member/</loc></url>
   <url><loc>https://japan-travel.info/ja/</loc></url>
   <url><loc>https://japan-travel.info/ja/routes/</loc></url>
   <url><loc>https://japan-travel.info/ja/routes/kyoto-nara-classic/</loc></url>
@@ -303,6 +305,7 @@
   <url><loc>https://japan-travel.info/ja/vip/</loc></url>
   <url><loc>https://japan-travel.info/ja/referral/</loc></url>
   <url><loc>https://japan-travel.info/ja/ambassador/</loc></url>
+  <url><loc>https://japan-travel.info/ja/member/</loc></url>
   <url><loc>https://japan-travel.info/en/</loc></url>
   <url><loc>https://japan-travel.info/en/routes/</loc></url>
   <url><loc>https://japan-travel.info/en/routes/kyoto-nara-classic/</loc></url>
@@ -404,6 +407,7 @@
   <url><loc>https://japan-travel.info/en/vip/</loc></url>
   <url><loc>https://japan-travel.info/en/referral/</loc></url>
   <url><loc>https://japan-travel.info/en/ambassador/</loc></url>
+  <url><loc>https://japan-travel.info/en/member/</loc></url>
   <url><loc>https://japan-travel.info/ko/</loc></url>
   <url><loc>https://japan-travel.info/ko/routes/</loc></url>
   <url><loc>https://japan-travel.info/ko/routes/kyoto-nara-classic/</loc></url>
@@ -505,4 +509,5 @@
   <url><loc>https://japan-travel.info/ko/vip/</loc></url>
   <url><loc>https://japan-travel.info/ko/referral/</loc></url>
   <url><loc>https://japan-travel.info/ko/ambassador/</loc></url>
+  <url><loc>https://japan-travel.info/ko/member/</loc></url>
 </urlset>

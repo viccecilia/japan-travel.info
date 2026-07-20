@@ -32,6 +32,7 @@
     "bookingBoundary": "车型、司机、个性化用品、预约时间、车辆状态和运营条件会优先协调，具体安排以预约确认为准。",
     "rezioBoundary": "价格、库存、日期和取消规则以对应Rezio商品及最终预约确认为准。",
     "member": {
+      "dashboard": "会员中心",
       "login": "登录",
       "register": "加入Japan Travel",
       "verify-email": "验证邮箱",
@@ -103,6 +104,7 @@
     "bookingBoundary": "車型、司機、個性化用品、預約時間、車輛狀態和營運條件會優先協調，具體安排以預約確認為準。",
     "rezioBoundary": "價格、庫存、日期和取消規則以對應Rezio商品及最終預約確認為準。",
     "member": {
+      "dashboard": "會員中心",
       "login": "登入",
       "register": "加入Japan Travel",
       "verify-email": "驗證信箱",
@@ -174,6 +176,7 @@
     "bookingBoundary": "車種、ドライバー、個別用品、予約時間、車両状況、運行条件に基づき調整します。最終手配は予約確認が基準です。",
     "rezioBoundary": "料金、在庫、日付、取消条件は該当Rezio商品と最終予約確認が基準です。",
     "member": {
+      "dashboard": "会員センター",
       "login": "ログイン",
       "register": "Japan Travelに参加",
       "verify-email": "メール確認",
@@ -245,6 +248,7 @@
     "bookingBoundary": "Vehicle type, driver and personalized items are coordinated according to reservation time, vehicle availability and operation conditions. Final arrangements follow booking confirmation.",
     "rezioBoundary": "Prices, inventory, dates and cancellation rules follow the relevant Rezio product and final booking confirmation.",
     "member": {
+      "dashboard": "Member Center",
       "login": "Sign in",
       "register": "Join Japan Travel",
       "verify-email": "Verify email",
@@ -316,6 +320,7 @@
     "bookingBoundary": "차종, 기사, 개별 용품, 예약 시간, 차량 상황과 운행 조건에 따라 조정합니다. 최종 배정은 예약 확인을 기준으로 합니다.",
     "rezioBoundary": "가격, 재고, 날짜와 취소 규정은 해당 Rezio 상품 및 최종 예약 확인을 기준으로 합니다.",
     "member": {
+      "dashboard": "회원 센터",
       "login": "로그인",
       "register": "Japan Travel 참여",
       "verify-email": "이메일 확인",

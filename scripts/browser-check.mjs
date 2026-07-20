@@ -31,22 +31,27 @@ const pages = [
   ["/zh-cn/products/kix-osaka/", "KIX"],
   ["/zh-cn/contact/", "定制咨询"],
   ["/zh-cn/member/login/", "登录"],
+  ["/zh-cn/member/", "会员中心"],
   ["/zh-tw/", "森有靜之氣"],
   ["/zh-tw/spots/kyo-0001/", "清水寺"],
   ["/zh-tw/services/airport-transfer/", "機場"],
   ["/zh-tw/faq/", "FAQ"],
+  ["/zh-tw/member/", "會員中心"],
   ["/ja/", "森に息づき"],
   ["/ja/spots/kyo-0001/", "清水寺"],
   ["/ja/vehicles/alphard/", "Alphard"],
   ["/ja/contact/", "カスタム相談"],
+  ["/ja/member/", "会員センター"],
   ["/en/", "Still forests"],
   ["/en/spots/kyo-0001/", "Kiyomizu"],
   ["/en/services/airport-transfer/", "Airport"],
   ["/en/faq/", "FAQ"],
+  ["/en/member/", "Member Center"],
   ["/ko/", "고요한 숲"],
   ["/ko/spots/kyo-0001/", "기요미즈데라"],
   ["/ko/services/airport-transfer/", "공항"],
   ["/ko/member/register/", "Japan Travel 참여"],
+  ["/ko/member/", "회원 센터"],
   ["/en/routes/", "Popular"],
   ["/en/routes/kyoto-nara-classic/", "Kyoto"],
   ["/en/spots/", "Kansai"],
@@ -66,7 +71,7 @@ for (const [url, text] of pages) {
   });
   const res = await page.goto(base + url, { waitUntil: "networkidle" });
   if (!res || res.status() >= 500) throw new Error(`bad status ${url}: ${res?.status()}`);
-  await page.getByText(text, { exact: false }).first().waitFor({ timeout: 5000 });
+  await page.getByRole("heading", { name: text, exact: false }).first().waitFor({ timeout: 5000 });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   if (overflow) throw new Error(`horizontal overflow ${url}`);
   await page.screenshot({ path: path.join(process.cwd(), "output/playwright", url.replaceAll("/", "_") + ".png"), fullPage: false });

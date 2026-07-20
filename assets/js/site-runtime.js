@@ -229,6 +229,16 @@
       return;
     }
     safeText(status, `${member.email}${member.nickname ? ` · ${member.nickname}` : ""}`);
+    if (slug === "dashboard") {
+      content.innerHTML = `<a class="btn primary" href="profile/">${esc(memberText.profile || "Profile")}</a> <button class="btn" type="button" data-member-logout>${esc(memberText.logout || "Sign out")}</button>`;
+      content.querySelector("[data-member-logout]").addEventListener("click", async () => {
+        const data = new FormData();
+        data.set("action", "logout");
+        await postMember(data);
+        location.href = "login/";
+      });
+      return;
+    }
     if (slug === "profile") {
       content.innerHTML = `<form class="member-form" data-member-profile><label>${esc(memberText.nickname || "Nickname")}<input name="nickname" value="${esc(member.nickname || "")}" maxlength="80"></label><button class="btn primary">${esc(memberText.save || "Save")}</button></form>`;
       content.querySelector("form").addEventListener("submit", async (event) => {
