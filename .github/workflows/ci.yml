@@ -20,6 +20,8 @@ jobs:
           extensions: pdo_sqlite, mbstring, openssl
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Install media audit tools
+        run: sudo apt-get install -y ffmpeg
       - run: npm run verify
       - name: PHP syntax
         run: |
