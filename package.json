@@ -9,9 +9,12 @@
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:i18n": "node scripts/audit-i18n.mjs",
     "audit:security": "node scripts/audit-security.mjs",
+    "audit:content": "node scripts/audit-content.mjs",
+    "audit:media": "node scripts/audit-media.mjs",
+    "audit:ui": "node scripts/audit-ui.mjs",
     "test": "node scripts/test-rules.mjs",
     "test:e2e": "node scripts/browser-check.mjs",
-    "verify": "npm run build && npm run check && npm run audit:seo && npm run audit:i18n && npm run audit:security && npm run test && npm run test:e2e",
+    "verify": "npm run build && npm run check && npm run audit:seo && npm run audit:i18n && npm run audit:security && npm run audit:content && npm run audit:media && npm run audit:ui && npm run test && npm run test:e2e",
     "verify:full": "npm run verify"
   },
   "devDependencies": {

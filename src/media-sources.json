@@ -1,0 +1,46 @@
+{
+  "/kansai-assets/images/nara/nar-0006-horyu-ji-temple-cover.jpg": {
+    "source_url": "https://commons.wikimedia.org/wiki/File:Horyu-ji,_November_2016.jpg",
+    "author": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "reviewed_at": "2026-07-20",
+    "people": "Distant incidental visitors only",
+    "clear_faces": false,
+    "review": "Approved",
+    "official_name": "Horyuji Temple official website",
+    "official_url": "https://www.horyuji.or.jp/"
+  },
+  "/kansai-assets/images/kyoto/kyo-0002-fushimi-inari-taisha-cover.jpg": {
+    "source_url": "https://commons.wikimedia.org/wiki/File:Fushimi_Inari_Taisha_tunnel_droit.jpg",
+    "author": "Hyppolyte de Saint-Rambert",
+    "license": "CC BY-SA 4.0",
+    "reviewed_at": "2026-07-20",
+    "people": "None",
+    "clear_faces": false,
+    "review": "Approved",
+    "official_name": "Fushimi Inari Taisha official website",
+    "official_url": "https://inari.jp/"
+  },
+  "/kansai-assets/images/kyoto/kyo-0014-amanohashidate-seasonal.jpg": {
+    "source_url": "https://commons.wikimedia.org/wiki/File:Amanohashidate_view_from_Kasamatsu_Park01s3s4410.jpg",
+    "author": "663highland",
+    "license": "CC BY 2.5",
+    "reviewed_at": "2026-07-20",
+    "people": "None",
+    "clear_faces": false,
+    "review": "Approved",
+    "official_name": "Amanohashidate Tourism Association",
+    "official_url": "https://www.amanohashidate.jp/"
+  },
+  "/kansai-assets/images/wakayama/wky-0004-kumano-kodo-cover.jpg": {
+    "source_url": "https://commons.wikimedia.org/wiki/File:Kumano_Kodo_Pilgrimage_Trail,_Koguchi_to_Nachisan,_Japan_(48912307128).jpg",
+    "author": "Steve Shattuck",
+    "license": "CC BY-SA 2.0",
+    "reviewed_at": "2026-07-20",
+    "people": "None",
+    "clear_faces": false,
+    "review": "Approved as a neutral forest visual; a stronger trail view remains desirable",
+    "official_name": "Kumano Travel official tourism guide",
+    "official_url": "https://www.tb-kumano.jp/"
+  }
+}

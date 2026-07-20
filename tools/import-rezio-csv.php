@@ -56,7 +56,7 @@ function referral_owner_id(PDO $pdo, string $referralCode): int {
 
 $pdo = jt_db();
 $fh = fopen($file, 'r');
-$header = fgetcsv($fh);
+$header = fgetcsv($fh, null, ',', '"', '\\');
 if (!is_array($header)) {
     fwrite(STDERR, "CSV header missing\n");
     exit(2);
@@ -67,7 +67,7 @@ $validCount = 0;
 $manualCount = 0;
 $revokedCount = 0;
 $affectedUsers = [];
-while (($row = fgetcsv($fh)) !== false) {
+while (($row = fgetcsv($fh, null, ',', '"', '\\')) !== false) {
     $data = array_combine($header, $row);
     if (!is_array($data)) continue;
     $id = row_value($data, ['rezio_order_id', 'order_id']);

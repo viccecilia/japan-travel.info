@@ -56,6 +56,19 @@ for (const f of html) {
   if (!noindex && !/<link rel="canonical" href="https:\/\/japan-travel\.info/.test(text)) fail(`missing canonical ${rel}`);
   if (!noindex && !rel.startsWith("h5/") && !/hreflang="x-default"/.test(text)) fail(`missing x-default ${rel}`);
   if (!noindex && !rel.startsWith("h5/") && rel !== "index.html" && rel !== "404.html" && !rel.includes("/404/") && !/<script type="application\/ld\+json">/.test(text)) fail(`missing json-ld ${rel}`);
+  for (const match of text.matchAll(/(?:src|poster|href)="(\/(?:assets|kansai-assets|kansai-audio)\/[^"?#]+)(?:[?#][^"]*)?"/g)) {
+    const asset = path.join(root, match[1].replace(/^\/+/, ""));
+    if (!fs.existsSync(asset)) fail(`missing local asset ${match[1]} referenced by ${rel}`);
+  }
+}
+
+for (const cssFile of files.filter((f) => f.endsWith(".css"))) {
+  const rel = path.relative(root, cssFile).replaceAll("\\", "/");
+  const text = fs.readFileSync(cssFile, "utf8");
+  for (const match of text.matchAll(/url\(["']?(\/(?:assets|kansai-assets)\/[^)'"?#]+)["']?\)/g)) {
+    const asset = path.join(root, match[1].replace(/^\/+/, ""));
+    if (!fs.existsSync(asset)) fail(`missing local asset ${match[1]} referenced by ${rel}`);
+  }
 }
 
 const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");

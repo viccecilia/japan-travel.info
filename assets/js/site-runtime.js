@@ -4,6 +4,13 @@
   const memberText = i18n.member || {};
   const cookieText = i18n.cookie || {};
   const formText = i18n.form || {};
+  const memberFields = ({
+    "zh-cn": { code: "推荐码", clicks: "访问次数", valid: "有效订单", tier: "当前等级", item: "内容类型", id: "内容", created: "保存时间", updated: "更新时间", order: "预约编号", status: "状态", reason: "变更原因", routeTitle: "路线名称", routeDefault: "我的关西路线" },
+    "zh-tw": { code: "推薦碼", clicks: "訪問次數", valid: "有效訂單", tier: "目前等級", item: "內容類型", id: "內容", created: "儲存時間", updated: "更新時間", order: "預約編號", status: "狀態", reason: "變更原因", routeTitle: "路線名稱", routeDefault: "我的關西路線" },
+    ja: { code: "紹介コード", clicks: "アクセス数", valid: "有効注文", tier: "現在のランク", item: "内容種別", id: "内容", created: "保存日時", updated: "更新日時", order: "予約番号", status: "状態", reason: "変更理由", routeTitle: "ルート名", routeDefault: "マイ関西ルート" },
+    en: { code: "Referral code", clicks: "Visits", valid: "Valid orders", tier: "Current tier", item: "Content type", id: "Item", created: "Saved", updated: "Updated", order: "Booking reference", status: "Status", reason: "Change reason", routeTitle: "Route name", routeDefault: "My Kansai route" },
+    ko: { code: "추천 코드", clicks: "방문 수", valid: "유효 주문", tier: "현재 등급", item: "콘텐츠 유형", id: "콘텐츠", created: "저장 시간", updated: "업데이트", order: "예약 번호", status: "상태", reason: "변경 이유", routeTitle: "코스 이름", routeDefault: "나의 간사이 코스" }
+  })[document.body.dataset.lang] || {};
   const consentCookie = "jt_cookie_consent";
   const necessaryCookies = ["jt_visitor_id", "jt_ref_code", "jt_landing_page", "jt_language"];
   const analyticsCookies = ["jt_utm_source", "jt_utm_medium", "jt_utm_campaign", "jt_utm_content"];
@@ -158,23 +165,40 @@
     });
   }
   function initSearch() {
-    bySel(".search").forEach((input) => {
-      const scope = input.closest(".page, .section, main") || document;
-      input.addEventListener("input", () => {
-        const q = input.value.trim().toLowerCase();
+    bySel(".filter-panel").forEach((panel) => {
+      const scope = panel.closest(".page, .section, main") || document;
+      const input = panel.querySelector(".search");
+      let region = "all";
+      let category = "all";
+      const apply = () => {
+        const q = (input?.value || "").trim().toLowerCase();
+        let count = 0;
         bySel("[data-search]", scope).forEach((node) => {
-          node.hidden = q && !node.dataset.search.toLowerCase().includes(q);
+          const visible = (!q || node.dataset.search.toLowerCase().includes(q)) && (region === "all" || node.dataset.region === region) && (category === "all" || node.dataset.category === category);
+          node.hidden = !visible;
+          if (visible) count++;
         });
-      });
+        safeText(panel.querySelector("[data-result-count]"), count);
+      };
+      input?.addEventListener("input", apply);
+      bySel("[data-filter]", panel).forEach((button) => button.addEventListener("click", () => {
+        region = button.dataset.filter;
+        bySel("[data-filter]", panel).forEach((x) => { x.classList.toggle("active", x === button); x.setAttribute("aria-pressed", x === button ? "true" : "false"); });
+        apply();
+      }));
+      bySel("[data-category]", panel).forEach((button) => button.addEventListener("click", () => {
+        category = button.dataset.category;
+        bySel("[data-category]", panel).forEach((x) => { x.classList.toggle("active", x === button); x.setAttribute("aria-pressed", x === button ? "true" : "false"); });
+        apply();
+      }));
     });
-    bySel("[data-filter]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const scope = button.closest(".page, .section, main") || document;
-        const key = button.dataset.filter;
-        bySel("[data-region]", scope).forEach((node) => {
-          node.hidden = key !== "all" && node.dataset.region !== key;
-        });
-      });
+    bySel("[data-route-filters]").forEach((panel) => {
+      const scope = panel.closest("main") || document;
+      bySel("[data-route-filter]", panel).forEach((button) => button.addEventListener("click", () => {
+        const key = button.dataset.routeFilter.toLowerCase();
+        bySel("[data-route-filter]", panel).forEach((x) => { x.classList.toggle("active", x === button); x.setAttribute("aria-pressed", x === button ? "true" : "false"); });
+        bySel(".route-card", scope).forEach((card) => { card.hidden = key !== "all" && !card.textContent.toLowerCase().includes(key); });
+      }));
     });
   }
   function rezioUrl(original, productKey) {
@@ -240,15 +264,7 @@
       return;
     }
     if (slug === "profile") {
-      content.innerHTML = `<form class="member-form" data-member-profile><label>${esc(memberText.nickname || "Nickname")}<input name="nickname" value="${esc(member.nickname || "")}" maxlength="80"></label><button class="btn primary">${esc(memberText.save || "Save")}</button></form>`;
-      content.querySelector("form").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        data.set("action", "profile");
-        data.set("language", lang());
-        await postMember(data);
-        safeText(status, memberText.save || "Saved");
-      });
+      content.innerHTML = `<div class="mini-card"><p><strong>${esc(memberText.email || "Email")}:</strong> ${esc(member.email || "")}</p><p><strong>${esc(memberText.nickname || "Nickname")}:</strong> ${esc(member.nickname || "")}</p></div>`;
       return;
     }
     const action = { favorites: "favorite-list", trips: "saved-trip-list", bookings: "booking-reference-list", referrals: "referral-summary", vip: "vip-summary" }[slug];
@@ -258,8 +274,8 @@
     data.set("language", lang());
     const json = await postMember(data);
     if (slug === "favorites") {
-      content.innerHTML = renderList(json.favorites, ["item_type", "item_id", "created_at"], memberText.empty || "No records yet.");
-      content.insertAdjacentHTML("beforeend", `<form class="member-form" data-favorite-remove><input name="item_id" placeholder="spot id"><button class="btn">${esc(memberText.remove || "Remove")}</button></form>`);
+      content.innerHTML = renderListLocalized(json.favorites, [["item_type",memberFields.item],["item_id",memberFields.id],["created_at",memberFields.created]], memberText.empty);
+      content.insertAdjacentHTML("beforeend", `<form class="member-form" data-favorite-remove><label>${esc(memberFields.id)}<input name="item_id"></label><button class="btn">${esc(memberText.remove || "Remove")}</button></form>`);
       content.querySelector("[data-favorite-remove]").addEventListener("submit", async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
@@ -269,7 +285,7 @@
         await renderMemberPanel(shell, member);
       });
     } else if (slug === "trips") {
-      content.innerHTML = `<form class="member-form" data-trip-save><input name="title" value="Kansai route"><input type="hidden" name="payload_json" value='{"source":"member_page"}'><button class="btn primary">${esc(memberText.save || "Save")}</button></form>` + renderList(json.trips, ["title", "created_at", "updated_at"], memberText.empty || "No records yet.");
+      content.innerHTML = `<form class="member-form" data-trip-save><label>${esc(memberFields.routeTitle)}<input name="title" value="${esc(memberFields.routeDefault)}"></label><input type="hidden" name="payload_json" value='{"source":"member_page"}'><button class="btn primary">${esc(memberText.save || "Save")}</button></form>` + renderListLocalized(json.trips, [["title",memberFields.routeTitle],["created_at",memberFields.created],["updated_at",memberFields.updated]], memberText.empty);
       content.querySelector("[data-trip-save]").addEventListener("submit", async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
@@ -278,12 +294,16 @@
         await renderMemberPanel(shell, member);
       });
     } else if (slug === "bookings") {
-      content.innerHTML = renderList(json.bookings, ["rezio_order_id", "status", "created_at"], memberText.empty || "No records yet.");
+      content.innerHTML = renderListLocalized(json.bookings, [["rezio_order_id",memberFields.order],["status",memberFields.status],["created_at",memberFields.created]], memberText.empty);
     } else if (slug === "referrals") {
-      content.innerHTML = `<div class="member-list"><article class="mini-card"><p><strong>Code:</strong> ${esc(json.referral?.referral_code || "")}</p><p><strong>Clicks:</strong> ${esc(json.referral?.clicks || 0)}</p><p><strong>Valid orders:</strong> ${esc(json.referral?.valid_orders || 0)}</p></article></div>`;
+      content.innerHTML = `<div class="member-list"><article class="mini-card"><p><strong>${esc(memberFields.code)}:</strong> ${esc(json.referral?.referral_code || "")}</p><p><strong>${esc(memberFields.clicks)}:</strong> ${esc(json.referral?.clicks || 0)}</p><p><strong>${esc(memberFields.valid)}:</strong> ${esc(json.referral?.valid_orders || 0)}</p></article></div>`;
     } else if (slug === "vip") {
-      content.innerHTML = `<div class="member-list"><article class="mini-card"><p><strong>Tier:</strong> ${esc(json.vip?.tier || "Visitor")}</p><p><strong>Valid orders:</strong> ${esc(json.vip?.valid_orders || 0)}</p></article></div>` + renderList(json.vip?.history, ["tier", "reason", "created_at"], memberText.empty || "No records yet.");
+      content.innerHTML = `<div class="member-list"><article class="mini-card"><p><strong>${esc(memberFields.tier)}:</strong> ${esc(json.vip?.tier || "Visitor")}</p><p><strong>${esc(memberFields.valid)}:</strong> ${esc(json.vip?.valid_orders || 0)}</p></article></div>` + renderListLocalized(json.vip?.history, [["tier",memberFields.tier],["reason",memberFields.reason],["created_at",memberFields.created]], memberText.empty);
     }
+  }
+  function renderListLocalized(items, fields, empty) {
+    if (!items || !items.length) return `<p class="member-empty">${esc(empty || memberText.empty || "No records yet.")}</p>`;
+    return `<div class="member-list">${items.map((item) => `<article class="mini-card">${fields.map(([key,label]) => `<p><strong>${esc(label || key)}:</strong> ${esc(item[key] ?? "")}</p>`).join("")}</article>`).join("")}</div>`;
   }
   function initMember() {
     bySel("[data-member-form]").forEach((form) => {
@@ -311,6 +331,11 @@
     });
   }
   function initForms() {
+    bySel("[data-contact-method]").forEach((select) => {
+      const update = () => bySel("[data-contact-field]", select.closest("form")).forEach((node) => node.classList.toggle("active", node.dataset.contactField === select.value));
+      select.addEventListener("change", update);
+      update();
+    });
     bySel("[data-enhanced-form]").forEach((form) => {
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -335,6 +360,9 @@
       });
     });
   }
+  bySel("[data-member-logout]").forEach((button) => button.addEventListener("click", async () => {
+    try { const data = new FormData(); data.set("action", "logout"); await postMember(data); location.href = `/${lang()}/member/login/`; } catch (_) {}
+  }));
   initSocial();
   initSearch();
   initForms();

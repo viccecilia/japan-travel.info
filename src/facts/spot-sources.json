@@ -1,0 +1,26 @@
+{
+  "bySpot": {
+    "osa-0001": {"name":"Osaka Castle official website","url":"https://www.osakacastle.net/"},
+    "kyo-0001": {"name":"Kiyomizu-dera official website","url":"https://www.kiyomizudera.or.jp/"},
+    "kyo-0002": {"name":"Fushimi Inari Taisha official website","url":"https://inari.jp/"},
+    "kyo-0014": {"name":"Amanohashidate Tourism Association","url":"https://www.amanohashidate.jp/"},
+    "nar-0001": {"name":"Nara Park official prefectural guide","url":"https://www3.pref.nara.jp/park/"},
+    "nar-0002": {"name":"Todaiji Temple official website","url":"https://www.todaiji.or.jp/"},
+    "nar-0003": {"name":"Kasugataisha Shrine official website","url":"https://www.kasugataisha.or.jp/"},
+    "nar-0006": {"name":"Horyuji Temple official website","url":"https://www.horyuji.or.jp/"},
+    "hyg-0001": {"name":"Himeji Castle official website","url":"https://www.city.himeji.lg.jp/castle/"},
+    "hyg-0004": {"name":"Arima Onsen Tourism Association","url":"https://www.arima-onsen.com/"},
+    "wky-0004": {"name":"Kumano Travel official tourism guide","url":"https://www.tb-kumano.jp/"}
+  },
+  "byRegion": {
+    "大阪": {"name":"Osaka official tourism guide","url":"https://osaka-info.jp/"},
+    "京都": {"name":"Kyoto City Official Travel Guide","url":"https://kyoto.travel/"},
+    "奈良": {"name":"Official Nara Travel Guide","url":"https://www.visitnara.jp/"},
+    "兵库": {"name":"Hyogo official tourism guide","url":"https://www.hyogo-tourism.jp/"},
+    "兵庫": {"name":"Hyogo official tourism guide","url":"https://www.hyogo-tourism.jp/"},
+    "滋贺": {"name":"Shiga Biwako official tourism guide","url":"https://www.biwako-visitors.jp/"},
+    "滋賀": {"name":"Shiga Biwako official tourism guide","url":"https://www.biwako-visitors.jp/"},
+    "和歌山": {"name":"Wakayama official tourism guide","url":"https://en.visitwakayama.jp/"},
+    "三重": {"name":"Mie official tourism guide","url":"https://www.kankomie.or.jp/"}
+  }
+}

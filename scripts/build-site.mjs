@@ -6,6 +6,10 @@ const root = process.cwd();
 const content = JSON.parse(fs.readFileSync(path.join(root, "src/content.json"), "utf8"));
 const brand = JSON.parse(fs.readFileSync(path.join(root, "src/facts/brand.json"), "utf8"));
 const faq = JSON.parse(fs.readFileSync(path.join(root, "src/facts/faq.json"), "utf8"));
+const pageCopy = JSON.parse(fs.readFileSync(path.join(root, "src/page-copy.json"), "utf8"));
+const spotSources = JSON.parse(fs.readFileSync(path.join(root, "src/facts/spot-sources.json"), "utf8"));
+const mediaSourcesFile = path.join(root, "src/media-sources.json");
+const mediaSources = fs.existsSync(mediaSourcesFile) ? JSON.parse(fs.readFileSync(mediaSourcesFile, "utf8")) : {};
 
 const langs = [
   { key: "zh", slug: "zh-cn", html: "zh-CN", label: "CN", name: "简体中文" },
@@ -55,6 +59,48 @@ const productPages = [
 ];
 const memberPages = ["login", "register", "verify-email", "reset-password", "profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
 
+const serviceDetails = {
+  "airport-transfer": {
+    image: "/kansai-assets/images/osaka/osa-0007-umeda-sky-building-floating-garden-observatory-cover.jpg",
+    zh: ["机场与酒店、民宿之间的直接移动，适合带行李、家庭同行与深夜抵达。", "航班信息与集合方式", "行李数量与尺寸", "航班延误与等待边界", "深夜抵达与推荐车型"],
+    zhHant: ["機場與飯店、民宿之間的直接移動，適合攜帶行李、家庭同行與深夜抵達。", "航班資訊與集合方式", "行李數量與尺寸", "航班延誤與等候邊界", "深夜抵達與建議車型"],
+    ja: ["空港からホテル・宿泊先までの直接移動。荷物の多い方、家族旅行、深夜到着にも適しています。", "便名と待ち合わせ方法", "荷物の個数とサイズ", "遅延時の待機範囲", "深夜到着と車種の目安"],
+    en: ["Direct travel between the airport and your accommodation, suited to luggage, families and late arrivals.", "Flight details and meeting method", "Luggage count and size", "Delay and waiting boundaries", "Late arrivals and vehicle guidance"],
+    ko: ["공항과 호텔·숙소 사이를 바로 이동하며 수하물, 가족 여행, 심야 도착에 적합합니다.", "항공편과 미팅 방법", "수하물 개수와 크기", "지연 시 대기 범위", "심야 도착과 차량 안내"]
+  },
+  charter: {
+    image: "/kansai-assets/images/kyoto/kyo-0001-kiyomizu-dera-temple-cover.jpg",
+    zh: ["在大阪、京都、奈良、兵库及周边地区，把分散景点整理为一段更从容的行程。", "服务时长与出发地点", "途中路线调整", "远郊与停车条件", "超时和景点组合"],
+    zhHant: ["在大阪、京都、奈良、兵庫及周邊地區，把分散景點整理成更從容的行程。", "服務時長與出發地點", "途中路線調整", "遠郊與停車條件", "超時和景點組合"],
+    ja: ["大阪・京都・奈良・兵庫など、離れた見どころを無理のない一日にまとめます。", "利用時間と出発地", "途中のルート調整", "郊外と駐車条件", "延長とスポット構成"],
+    en: ["Connect dispersed places across Osaka, Kyoto, Nara, Hyogo and beyond into a calmer day.", "Service duration and departure point", "Route adjustments", "Outlying areas and parking", "Overtime and place combinations"],
+    ko: ["오사카, 교토, 나라, 효고와 주변의 떨어진 명소를 여유로운 하루로 연결합니다.", "이용 시간과 출발지", "중간 코스 조정", "교외와 주차 조건", "초과 시간과 명소 조합"]
+  },
+  family: {
+    image: "/kansai-assets/images/nara/nar-0001-nara-park-cover.jpg",
+    zh: ["为儿童、长辈和多件行李预留上下车、休息与移动节奏。", "儿童座椅提前确认", "婴儿车与行李空间", "老人儿童上下车", "休息节奏与亲子路线"],
+    zhHant: ["為兒童、長輩和多件行李預留上下車、休息與移動節奏。", "兒童座椅提前確認", "嬰兒車與行李空間", "長輩兒童上下車", "休息節奏與親子路線"],
+    ja: ["子ども、シニア、荷物に合わせて乗降・休憩・移動のペースを整えます。", "チャイルドシートの事前確認", "ベビーカーと荷物スペース", "子ども・シニアの乗降", "休憩と家族向けルート"],
+    en: ["Plan boarding, breaks and pace around children, older guests, strollers and luggage.", "Child seats confirmed in advance", "Stroller and luggage space", "Safer boarding for family members", "Breaks and family routes"],
+    ko: ["어린이, 어르신, 유모차와 수하물에 맞춰 승하차와 휴식 속도를 조정합니다.", "유아 시트 사전 확인", "유모차와 수하물 공간", "가족의 편한 승하차", "휴식과 가족 코스"]
+  },
+  business: {
+    image: "/kansai-assets/images/hyogo/hyg-0002-kobe-port-and-harborland-cover.jpg",
+    zh: ["围绕企业来宾、酒店与旅行社合作，重视时间管理、接待表达与多车协调。", "时间与接待节点", "举牌和来宾信息", "多车调度", "临时行程变更"],
+    zhHant: ["圍繞企業來賓、飯店與旅行社合作，重視時間管理、接待表達與多車協調。", "時間與接待節點", "舉牌和來賓資訊", "多車調度", "臨時行程變更"],
+    ja: ["企業ゲスト、ホテル、旅行会社との連携を想定し、時間管理と複数台調整を重視します。", "時間と受付ポイント", "ネームボードとゲスト情報", "複数台の調整", "行程変更への対応"],
+    en: ["For corporate guests and hotel or agency coordination, with emphasis on timing and multi-vehicle planning.", "Timing and reception points", "Name board and guest details", "Multi-vehicle coordination", "Itinerary changes"],
+    ko: ["기업 방문객, 호텔·여행사 협업을 위해 시간 관리와 여러 대의 차량 조정을 중시합니다.", "시간과 접객 지점", "피켓과 방문객 정보", "다차량 조정", "일정 변경 대응"]
+  }
+};
+
+const productMedia = {
+  "kix-osaka": "/kansai-assets/images/osaka/osa-0001-osaka-castle-park-cover.jpg",
+  "kix-kyoto": "/kansai-assets/images/kyoto/kyo-0001-kiyomizu-dera-temple-cover.jpg",
+  "kix-nara": "/kansai-assets/images/nara/nar-0001-nara-park-cover.jpg",
+  "kix-kobe": "/kansai-assets/images/hyogo/hyg-0002-kobe-port-and-harborland-cover.jpg"
+};
+
 function h(value = "") {
   return String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -100,34 +146,33 @@ function pageLangAlternates(rest = "") {
   return langs.map((l) => `<link rel="alternate" hreflang="${l.html}" href="${canonical(l, rest)}">`).join("\n  ") +
     `\n  <link rel="alternate" hreflang="x-default" href="${siteUrl}/">`;
 }
-function nav(lang) {
+function nav(lang, rest = "") {
   const t = label[lang.key];
-  const m = t.member;
-  const links = [
-    [t.home, relUrl(lang)],
-    [t.routes, relUrl(lang, "routes")],
-    [t.spots, relUrl(lang, "spots")],
-    [t.services, relUrl(lang, "services/airport-transfer")],
-    [t.products, relUrl(lang, "products")],
-    [t.contact, relUrl(lang, "contact")],
-    [m.dashboard, relUrl(lang, "member")]
-  ];
-  return `<header class="topbar"><div class="wrap nav">
-    <a class="brand" href="${relUrl(lang)}">Japan Travel<small>Operated by 株式会社大寅 / Daitora Group</small></a>
-    <nav class="nav-links" aria-label="Main">${links.map(([n, u]) => `<a href="${u}">${h(n)}</a>`).join("")}</nav>
-    <div class="lang" aria-label="Language">${langs.map((l) => `<a class="${l.key === lang.key ? "active" : ""}" href="${relUrl(l)}">${l.label}</a>`).join("")}</div>
+  const c = pageCopy[lang.key];
+  const links = [[t.home, ""], [t.routes, "routes"], [t.spots, "spots"], [t.services, "services/airport-transfer"], [c.nav.booking, "products"], [c.nav.about, "about"]];
+  const current = `/${rest}`;
+  const navLinks = links.map(([name, target]) => `<a href="${relUrl(lang, target)}" ${current === `/${target}` ? 'aria-current="page"' : ""}>${h(name)}</a>`).join("");
+  const languageLinks = langs.map((l) => `<a class="${l.key === lang.key ? "active" : ""}" href="${relUrl(l, rest)}"><span>${h(l.name)}</span><strong>${l.label}</strong></a>`).join("");
+  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="topbar"><div class="wrap nav">
+    <a class="brand" href="${relUrl(lang)}">Japan Travel<small>株式会社大寅 / Daitora Group</small></a>
+    <nav class="nav-links" aria-label="Main">${navLinks}</nav>
+    <div class="nav-actions"><a class="nav-member" href="${relUrl(lang, "member")}">${h(c.nav.member)}</a><a class="nav-cta" href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a>
+      <details class="lang-menu"><summary aria-label="${h(c.nav.language)}">${lang.label}</summary><div class="lang-popover">${languageLinks}</div></details>
+      <details class="mobile-menu"><summary aria-label="${h(c.nav.menu)}">☰</summary><nav class="mobile-popover">${navLinks}<a href="${relUrl(lang, "member")}">${h(c.nav.member)}</a><a href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a></nav></details>
+    </div>
   </div></header>`;
 }
 function footer(lang) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const social = ["instagramUrl", "tiktokUrl", "lineUrl"].map((key) => `<span data-social="${key}"></span>`).join("");
   return `<footer class="footer"><div class="wrap footer-grid">
-    <div><strong>Japan Travel</strong><p>${h(brand.operated_by_text)}</p><p>${h(t.bookingBoundary)}</p></div>
-    <div><strong>${h(t.services)}</strong><a href="${relUrl(lang, "services/airport-transfer")}">${h(servicePages[0].title[lang.key])}</a><a href="${relUrl(lang, "services/charter")}">${h(servicePages[1].title[lang.key])}</a></div>
-    <div><strong>${h(t.faq)}</strong><a href="${relUrl(lang, "faq")}">FAQ</a><a href="${relUrl(lang, "privacy")}">Privacy Policy</a><a href="${relUrl(lang, "terms")}">Terms</a></div>
-    <div><strong>Social</strong><div class="social-links">${social}</div></div>
-  </div></footer>
-  <nav class="bottom-nav" aria-label="Mobile">${[[t.home, relUrl(lang)], [t.routes, relUrl(lang, "routes")], [t.spots, relUrl(lang, "spots")], [t.contact, relUrl(lang, "contact")]].map(([n, u]) => `<a href="${u}">${h(n)}</a>`).join("")}</nav>`;
+    <div><strong>Japan Travel</strong><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p></div>
+    <div><strong>${h(t.services)}</strong>${servicePages.map((s) => `<a href="${relUrl(lang, `services/${s.id}`)}">${h(s.title[lang.key])}</a>`).join("")}</div>
+    <div><strong>${h(t.routes)}</strong><a href="${relUrl(lang, "routes")}">${h(t.routesTitle)}</a><a href="${relUrl(lang, "spots")}">${h(t.spotsTitle)}</a><a href="${relUrl(lang, "products")}">${h(c.nav.booking)}</a><a href="${relUrl(lang, "member")}">${h(c.nav.member)}</a></div>
+    <div><strong>${h(c.nav.about)}</strong><a href="${relUrl(lang, "about")}">${h(c.info.about)}</a><a href="${relUrl(lang, "faq")}">FAQ</a><a href="${relUrl(lang, "privacy")}">${h(c.info.privacy)}</a><a href="${relUrl(lang, "terms")}">${h(c.info.terms)}</a><div class="social-links">${social}</div></div>
+  </div><div class="wrap footer-legal"><p>${h(t.bookingBoundary)}</p></div></footer>
+  <nav class="bottom-nav" aria-label="Mobile">${[[t.home, ""], [t.routes, "routes"], [t.spots, "spots"], [c.nav.booking, "products"], [c.nav.my, "member"]].map(([n, u]) => `<a href="${relUrl(lang, u)}">${h(n)}</a>`).join("")}</nav>`;
 }
 function jsonLd(obj) {
   return `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
@@ -159,8 +204,8 @@ function layout(lang, rest, meta, body, options = {}) {
   ${ld}
 </head>
 <body data-page="${h(rest || "home")}" data-lang="${lang.slug}">
-${nav(lang)}
-${body}
+${nav(lang, rest)}
+<div id="main-content">${body}</div>
 ${footer(lang)}
 </body>
 </html>`;
@@ -168,56 +213,73 @@ ${footer(lang)}
 function breadcrumb(lang, items) {
   return `<nav class="breadcrumb" aria-label="Breadcrumb">${items.map((it, i) => it.href ? `<a href="${it.href}">${h(it.name)}</a>` : `<span>${h(it.name)}</span>`).join("<span>/</span>")}</nav>`;
 }
-function card(routeOrSpot, img, href, text, chips = []) {
-  return `<article class="card"><a href="${href}"><img src="${h(img)}" alt="${h(routeOrSpot.title || routeOrSpot.name)}" loading="lazy"></a><div class="card-body"><h3><a href="${href}">${h(routeOrSpot.title || routeOrSpot.name)}</a></h3><p>${h(text)}</p><div class="chips">${chips.slice(0, 4).map((c) => `<span>${h(c)}</span>`).join("")}</div></div></article>`;
+function card(routeOrSpot, img, href, text, chips = [], meta = [], className = "") {
+  return `<article class="card ${h(className)}"><a href="${href}"><img src="${h(img)}" alt="${h(routeOrSpot.title || routeOrSpot.name)}" loading="lazy"></a><div class="card-body">${meta.length ? `<div class="card-meta">${meta.map((x) => `<span>${h(x)}</span>`).join("")}</div>` : ""}<h3><a href="${href}">${h(routeOrSpot.title || routeOrSpot.name)}</a></h3><p>${h(text)}</p><div class="chips">${chips.slice(0, 4).map((c) => `<span>${h(c)}</span>`).join("")}</div><a class="btn-link" href="${href}">→</a></div></article>`;
 }
 function audioBlock(lang, spot) {
-  const t = label[lang.key];
-  return `<section class="panel"><h2>${h(t.standard)}</h2><audio controls preload="none" src="${h(cleanAsset(spot.audio))}"></audio><h2>${h(t.classic)}</h2><audio controls preload="none" src="${h(cleanAsset(spot.classic_audio))}"></audio></section>`;
+  const s = pageCopy[lang.key].spot;
+  return `<section class="audio-guide"><h2>${h(s.audio)}</h2><details open><summary>${h(s.standard)}<span>01</span></summary><audio controls preload="none" src="${h(cleanAsset(spot.audio))}"></audio></details><details><summary>${h(s.deep)}<span>02</span></summary><audio controls preload="none" src="${h(cleanAsset(spot.classic_audio))}"></audio></details></section>`;
 }
 function routeGrid(lang, limit) {
-  return `<div class="grid cards">${routes(lang).slice(0, limit || 99).map((r) => card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || routeCopy[lang.key][0], r.tags || [])).join("")}</div>`;
+  const c = pageCopy[lang.key].route;
+  return `<div class="grid cards">${routes(lang).slice(0, limit || 99).map((r) => {
+    const rs = (r.spots || []).map((id) => spotById(lang, id)).filter(Boolean);
+    const areas = [...new Set(rs.map((s) => s.region))].slice(0, 3).join(" · ");
+    return card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || routeCopy[lang.key][0], r.tags || [], [r.duration || c.duration, areas || c.areas, (r.best_for || []).slice(0, 2).join(" · ")], "route-card");
+  }).join("")}</div>`;
 }
 function spotGrid(lang, limit) {
-  return `<div class="spot-tools"><input class="search" type="search" placeholder="${h(label[lang.key].search)}" aria-label="${h(label[lang.key].search)}"><div class="filters"><button data-filter="all">${h(label[lang.key].allArea)}</button>${Object.values(regionLocal[lang.key]).map((r) => `<button data-filter="${h(r)}">${h(r)}</button>`).join("")}</div></div>
-  <div class="grid spot-grid">${spots(lang).slice(0, limit || 99).map((s) => {
+  const c = pageCopy[lang.key].spot;
+  const source = spots(lang).slice(0, limit || 99);
+  const categories = [...new Set(spots(lang).map((s) => s.category).filter(Boolean))];
+  return `<div class="filter-panel"><input class="search" type="search" placeholder="${h(label[lang.key].search)}" aria-label="${h(label[lang.key].search)}"><div class="filters" data-filter-group="region"><button class="active" data-filter="all" aria-pressed="true">${h(label[lang.key].allArea)}</button>${Object.values(regionLocal[lang.key]).map((r) => `<button data-filter="${h(r)}" aria-pressed="false">${h(r)}</button>`).join("")}</div><div class="filters" data-filter-group="category"><button class="active" data-category="all" aria-pressed="true">${h(c.allTypes)}</button>${categories.map((x) => `<button data-category="${h(x)}" aria-pressed="false">${h(x)}</button>`).join("")}</div><p class="result-count"><strong data-result-count>${source.length}</strong> ${h(c.results)}</p></div>
+  <div class="grid spot-grid">${source.map((s) => {
     const reg = regionLocal[lang.key][s.region] || s.region;
-    return `<a class="spot-tile" href="${relUrl(lang, `spots/${s.id}`)}" data-region="${h(reg)}" data-search="${h([s.name, s.city, reg, ...(s.tags || [])].join(" "))}"><img src="${h(cleanAsset(s.image))}" alt="${h(s.name)}" loading="lazy"><span>${h(s.name)}</span></a>`;
+    return card(s, cleanAsset(s.image), relUrl(lang, `spots/${s.id}`), s.card_line || s.intro || "", (s.tags || []).slice(0, 2), [reg, s.category, s.duration], "spot-card")
+      .replace('class="card spot-card"', `class="card spot-card" data-region="${h(reg)}" data-category="${h(s.category || "")}" data-search="${h([s.name, s.city, reg, s.category, ...(s.tags || [])].join(" "))}"`);
   }).join("")}</div>`;
 }
 function homePage(lang) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const body = `<main>
     <section class="hero">
       <video autoplay muted loop playsinline poster="/kansai-assets/images/nara/nar-0003-kasuga-taisha-shrine-cover.jpg"><source src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4" type="video/mp4"></video>
-      <div class="hero-overlay wrap"><p class="eyebrow">Japan Travel</p><h1>${h(t.heroTitle)}</h1><p>${h(t.heroLead)}</p><div class="hero-actions"><a class="btn primary" href="${relUrl(lang, "routes")}">${h(t.routes)}</a><a class="btn" href="${relUrl(lang, "services/airport-transfer")}">${h(t.services)}</a></div></div>
+      <div class="hero-overlay wrap"><p class="eyebrow">${h(c.home.kicker)}</p><h1>${h(c.home.title)}</h1><p class="lead">${h(c.home.lead)}</p><div class="hero-actions"><a class="btn primary" href="${relUrl(lang, "products")}">${h(c.nav.booking)}</a><a class="btn" href="${relUrl(lang, "routes")}">${h(t.routes)}</a></div></div>
     </section>
-    <section class="wrap section"><h2>${h(t.servicesTitle)}</h2><div class="quick">${servicePages.map((s) => `<a href="${relUrl(lang, `services/${s.id}`)}"><strong>${h(s.title[lang.key])}</strong><span>${h(t.bookingBoundary)}</span></a>`).join("")}</div></section>
-    <section class="wrap section"><h2>${h(t.routesTitle)}</h2>${routeGrid(lang, 5)}</section>
-    <section class="wrap section"><h2>${h(t.spotsTitle)}</h2>${spotGrid(lang, 16)}<p><a class="btn primary" href="${relUrl(lang, "spots")}">${h(t.view)}</a></p></section>
+    <section class="trust-strip wrap"><div class="trust-grid">${c.home.trust.map(([a,b]) => `<div class="trust-item"><strong>${h(a)}</strong><span>${h(b)}</span></div>`).join("")}</div></section>
+    <section class="wrap section"><div class="section-head"><div><p class="eyebrow">01 · ${h(t.services)}</p><h2>${h(t.servicesTitle)}</h2></div></div><div class="service-grid">${servicePages.map((s, i) => { const d=serviceDetails[s.id][lang.key]; return `<a class="service-card" href="${relUrl(lang, `services/${s.id}`)}"><span class="number">0${i+1}</span><h3>${h(s.title[lang.key])}</h3><p>${h(d[0])}</p><span class="btn-link">${h(t.view)} →</span></a>`; }).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></section>
+    <section class="surface-band"><div class="wrap section"><div class="section-head"><div><p class="eyebrow">02 · ${h(c.nav.booking)}</p><h2>${h(c.home.products)}</h2></div><a class="btn-link" href="${relUrl(lang, "products")}">${h(t.view)} →</a></div>${productCards(lang)}</div></section>
+    <section class="wrap section"><div class="section-head"><div><p class="eyebrow">03 · ${h(t.routes)}</p><h2>${h(c.home.routes)}</h2></div><a class="btn-link" href="${relUrl(lang, "routes")}">${h(t.view)} →</a></div>${routeGrid(lang, 3)}</section>
+    <section class="warm-band"><div class="wrap section"><div class="section-head"><div><p class="eyebrow">04 · ${h(t.spots)}</p><h2>${h(c.home.areas)}</h2></div><a class="btn-link" href="${relUrl(lang, "spots")}">${h(t.view)} →</a></div>${spotGrid(lang, 9)}</div></section>
+    <section class="wrap section two-col"><div><p class="eyebrow">05 · Daitora Group</p><h2>${h(c.home.operation)}</h2><p class="lead">${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "about")}">${h(c.info.about)} →</a></div><ol class="process">${c.service.steps.map((x) => `<li>${h(x)}</li>`).join("")}</ol></section>
+    <section class="surface-band"><div class="wrap section"><div class="section-head"><div><p class="eyebrow">06 · FAQ</p><h2>${h(c.home.faq)}</h2></div><a class="btn-link" href="${relUrl(lang, "faq")}">FAQ →</a></div><div class="faq-list">${faq[lang.key].slice(0,4).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div></div></section>
+    <section class="wrap section"><div class="panel two-col"><div><p class="eyebrow">Japan Travel</p><h2>${h(c.home.ctaTitle)}</h2></div><div><a class="btn primary" href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a><a class="btn secondary" href="${relUrl(lang, "products")}">${h(c.nav.booking)}</a></div></div></section>
   </main>`;
-  return layout(lang, "", { title: `Japan Travel | ${t.heroTitle}`, description: t.heroLead }, body, { ld: baseLd(lang, "", "WebSite") });
+  return layout(lang, "", { title: `Japan Travel | ${c.home.title}`, description: c.home.lead }, body, { ld: baseLd(lang, "", "WebSite") });
 }
 function routesIndex(lang) {
   const t = label[lang.key];
-  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.routes }])}<h1>${h(t.routesTitle)}</h1><p class="lead">${h(routeCopy[lang.key][1])}</p>${routeGrid(lang)}</main>`;
+  const c = pageCopy[lang.key].route;
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.routes }])}<p class="eyebrow">Kansai day routes</p><h1>${h(t.routesTitle)}</h1><p class="lead">${h(routeCopy[lang.key][1])}</p><div class="filters" data-route-filters>${c.filters.map((x,i) => `<button class="${i===0?"active":""}" data-route-filter="${i===0?"all":h(x)}" aria-pressed="${i===0?"true":"false"}">${h(x)}</button>`).join("")}</div>${routeGrid(lang)}</main>`;
   return layout(lang, "routes", { title: `${t.routesTitle} | Japan Travel`, description: routeCopy[lang.key][1] }, body, { ld: baseLd(lang, "routes", "CollectionPage") });
 }
 function routeDetail(lang, id) {
   const r = routeById(lang, id);
   const t = label[lang.key];
   const routeSpots = (r.spots || []).map((sid) => spotById(lang, sid)).filter(Boolean);
+  const c = pageCopy[lang.key].route;
+  const areas = [...new Set(routeSpots.map((s) => s.region))].join(" · ");
   const body = `<main>
     <section class="detail-hero" style="--hero:url('${h(imageForRoute(r, lang))}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.routes, href: relUrl(lang, "routes") }, { name: r.title }])}<h1>${h(r.title)}</h1><p>${h(r.summary || r.subtitle || routeCopy[lang.key][0])}</p><div class="chips">${(r.tags || []).map((x) => `<span>${h(x)}</span>`).join("")}</div></div></section>
-    <section class="wrap page"><h2>${h(t.routes)}</h2><p>${h(r.detail || r.summary || "")}</p><p><strong>${h(r.duration || "")}</strong></p><div class="timeline">${(r.stops || []).map((s, i) => `<article><strong>${i + 1}. ${h(Array.isArray(s) ? s[0] : s)}</strong><p>${h(Array.isArray(s) ? `${s[1] || ""} ${s[2] || ""}` : "")}</p></article>`).join("")}</div>
-    <h2>${h(t.spots)}</h2><div class="stack">${routeSpots.map((s) => `<article class="media-block"><img src="${h(cleanAsset(s.image))}" alt="${h(s.name)}" loading="lazy"><div><h3><a href="${relUrl(lang, `spots/${s.id}`)}">${h(s.name)}</a></h3><p>${h(s.intro || s.card_line || "")}</p>${audioBlock(lang, s)}</div></article>`).join("")}</div>
-    <section class="panel"><h2>${h(t.rezio)}</h2><p>${h(t.rezioBoundary)}</p><a class="btn primary" href="/go/rezio/${h(r.id)}" data-server-rezio="${h(r.id)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section></section>
+    <section class="wrap page"><div class="route-summary"><div><strong>${h(c.duration)}</strong>${h(r.duration || "")}</div><div><strong>${h(c.areas)}</strong>${h(areas)}</div><div><strong>${h(c.bestFor)}</strong>${h((r.best_for || []).join(" · "))}</div><div><strong>${h(c.walking)}</strong>${h(c.walkValue)}</div></div><div class="btn-row"><a class="btn primary" href="/go/rezio/${h(r.id)}" data-server-rezio="${h(r.id)}">${h(c.topCta)}</a><a class="btn secondary" href="${relUrl(lang, "contact")}">${h(c.custom)}</a></div><div class="reading"><h2>${h(c.summary)}</h2><p>${h(r.detail || r.summary || "")}</p></div><h2>${h(c.timeline)}</h2><div class="timeline">${routeSpots.map((s, i) => `<article data-step="${String(i+1).padStart(2,"0")}"><img src="${h(cleanAsset(s.image))}" alt="${h(s.name)}" loading="lazy"><div><h3>${h(s.name)}</h3><p>${h(s.card_line || s.intro || "")}</p><p class="meta-note">${h(s.duration || "")}</p><a class="btn-link" href="${relUrl(lang, `spots/${s.id}`)}">${h(c.spotCta)} →</a></div></article>`).join("")}</div>
+    <section class="panel"><h2>${h(c.topCta)}</h2><p>${h(t.rezioBoundary)}</p><a class="btn primary" href="/go/rezio/${h(r.id)}" data-server-rezio="${h(r.id)}">${h(c.topCta)}</a><a class="btn secondary" href="${relUrl(lang, "contact")}">${h(c.custom)}</a></section></section><div class="sticky-booking"><a class="btn primary" href="/go/rezio/${h(r.id)}">${h(c.topCta)}</a></div>
   </main>`;
   return layout(lang, `routes/${id}`, { title: `${r.title} | Japan Travel`, description: r.summary || routeCopy[lang.key][0] }, body, { ld: [...baseLd(lang, `routes/${id}`, "Article"), faqLd(lang, 4)] });
 }
 function spotsIndex(lang) {
   const t = label[lang.key];
-  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.spots }])}<h1>${h(t.spotsTitle)}</h1><p class="lead">${h(t.noLogin)}</p>${spotGrid(lang)}</main>`;
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.spots }])}<p class="eyebrow">73 Kansai places</p><h1>${h(t.spotsTitle)}</h1><p class="lead">${h(t.noLogin)}</p>${spotGrid(lang)}</main>`;
   return layout(lang, "spots", { title: `${t.spotsTitle} | Japan Travel`, description: `${spots(lang).length} Kansai spots with text and audio guides.` }, body, { ld: baseLd(lang, "spots", "CollectionPage") });
 }
 function spotDetail(lang, id) {
@@ -225,11 +287,16 @@ function spotDetail(lang, id) {
   const t = label[lang.key];
   const related = routes(lang).filter((r) => (r.spots || []).includes(id));
   const near = spots(lang).filter((x) => x.id !== id && x.region === s.region).slice(0, 4);
-  const sourceName = s.source_name || brand.default_source_name;
-  const sourceUrl = s.source_url || brand.default_source_url;
+  const c = pageCopy[lang.key].spot;
+  const media = mediaSources[cleanAsset(s.image)] || {};
+  const originalRegion = spotById(langByKey.get("zh"), id)?.region;
+  const source = spotSources.bySpot[id] || spotSources.byRegion[originalRegion] || {};
+  const sourceName = s.source_name || source.name || media.official_name || brand.default_source_name;
+  const sourceUrl = s.source_url || source.url || media.official_url || brand.default_source_url;
+  const best = [...(s.best_for || []), ...(s.tags || [])].slice(0, 4);
   const body = `<main>
     <section class="detail-hero" style="--hero:url('${h(cleanAsset(s.image))}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.spots, href: relUrl(lang, "spots") }, { name: s.name }])}<h1>${h(s.name)}</h1><p>${h(s.card_line || "")}</p><div class="chips">${(s.tags || []).map((x) => `<span>${h(x)}</span>`).join("")}</div></div></section>
-    <section class="wrap page"><p class="lead">${h(s.intro || "")}</p>${audioBlock(lang, s)}<section class="panel"><h2>${h(t.source)}</h2><p><a href="${h(sourceUrl)}" rel="nofollow noopener" target="_blank">${h(sourceName)}</a> · ${h(brand.last_reviewed_at)}</p></section>
+    <section class="wrap page"><div class="facts-grid"><div class="fact"><strong>${h(c.type)}</strong>${h(s.category || "")}</div><div class="fact"><strong>${h(c.stay)}</strong>${h(s.duration || "")}</div><div class="fact"><strong>${h(c.bestFor)}</strong>${h(best.join(" · "))}</div></div><div class="two-col"><div class="reading"><p class="lead">${h(s.intro || "")}</p><h2>${h(c.family)}</h2><p>${h(s.tip || c.before)}</p><h2>${h(c.combine)}</h2><p>${h(related.map((r) => r.title).join(" · ") || c.before)}</p></div>${audioBlock(lang, s)}</div><section class="source-box"><h2>${h(c.official)}</h2><p><a href="${h(sourceUrl)}" rel="nofollow noopener" target="_blank">${h(sourceName)}</a> · ${h(c.checked)}: ${h(brand.last_reviewed_at)}</p><p>${h(c.before)}</p></section>
     <h2>${h(t.relatedRoutes)}</h2><div class="grid cards">${related.map((r) => card(r, imageForRoute(r, lang), relUrl(lang, `routes/${r.id}`), r.summary || "", r.tags || [])).join("") || `<p>${h(t.unavailable)}</p>`}</div>
     <h2>${h(t.nearby)}</h2><div class="grid cards">${near.map((x) => card(x, cleanAsset(x.image), relUrl(lang, `spots/${x.id}`), x.card_line || "", x.tags || [])).join("")}</div></section>
   </main>`;
@@ -237,42 +304,58 @@ function spotDetail(lang, id) {
 }
 function servicesIndex(lang, page) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const title = page.title[lang.key];
-  const points = [t.bookingBoundary, t.rezioBoundary, brand.vehicle_network_text[lang.key], brand.service_area_text[lang.key]];
-  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<h1>${h(title)}</h1><p class="lead">${h(points[0])}</p>
-    <div class="two-col"><section class="panel"><h2>${h(t.servicesTitle)}</h2><ul>${points.map((p) => `<li>${h(p)}</li>`).join("")}</ul><a class="btn primary" href="/go/rezio/${h(page.product)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>
-    <section class="panel"><h2>FAQ</h2>${faq[lang.key].slice(0, 6).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</section></div>
-    <h2>${h(t.relatedRoutes)}</h2>${routeGrid(lang, 3)}</main>`;
-  return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${points.join(" ")}` }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 6)] });
+  const d = serviceDetails[page.id];
+  const points = d[lang.key];
+  const body = `<main><section class="detail-hero" style="--hero:url('${h(d.image)}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(title)}</h1><p>${h(points[0])}</p><div class="btn-row"><a class="btn primary" href="/go/rezio/${h(page.product)}">${h(c.product.book)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a></div></div></section>
+    <section class="wrap section"><div class="section-head"><div><h2>${h(c.service.scenes)}</h2><p>${h(points[0])}</p></div></div><ul class="feature-list">${points.slice(1).map((p) => `<li><strong>${h(p)}</strong></li>`).join("")}</ul></section>
+    <section class="surface-band"><div class="wrap section"><h2>${h(c.service.process)}</h2><ol class="process">${c.service.steps.map((x) => `<li>${h(x)}</li>`).join("")}</ol></div></section>
+    <section class="wrap section two-col"><div><h2>${h(c.service.vehicles)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "vehicles")}">${h(pageCopy[lang.key].vehicles.title)} →</a></div><div><h2>${h(c.service.products)}</h2><p>${h(t.rezioBoundary)}</p><a class="btn primary" href="/go/rezio/${h(page.product)}">${h(c.product.book)}</a></div></section>
+    <section class="warm-band"><div class="wrap section"><h2>${h(c.service.faq)}</h2><div class="faq-list">${faq[lang.key].slice(0, 5).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></div></section></main>`;
+  return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${points.join(" ")}` }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 5)] });
 }
 function vehiclePage(lang, page) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const title = page.title[lang.key];
-  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: "Vehicles", href: relUrl(lang, "vehicles") }, { name: title }])}<h1>${h(title)}</h1><p class="lead">${h(t.bookingBoundary)}</p><div class="panel"><ul><li>${h(brand.vehicle_boundary[lang.key])}</li><li>${h(brand.luggage_boundary[lang.key])}</li><li>${h(t.rezioBoundary)}</li></ul><a class="btn primary" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></div></main>`;
+  const types = page.id === "index" ? vehiclePages : [page];
+  const body = `<main class="wrap page">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: c.vehicles.title, href: relUrl(lang, "vehicles") }, ...(page.id === "index" ? [] : [{ name: title }])])}<p class="eyebrow">Vehicle planning</p><h1>${h(title)}</h1><p class="lead">${h(c.vehicles.lead)}</p><div class="grid cards">${types.map((v) => `<article class="card"><div class="vehicle-visual" role="img" aria-label="${h(v.title[lang.key])}">${h(v.title[lang.key])}</div><div class="card-body"><h2>${h(v.title[lang.key])}</h2><div class="card-meta"><span>${h(c.vehicles.people)}</span><span>${h(c.vehicles.luggage)}</span></div><p>${h(brand.vehicle_boundary[lang.key])}</p>${page.id === "index" ? `<a class="btn-link" href="${relUrl(lang, `vehicles/${v.id}`)}">${h(t.view)} →</a>` : ""}</div></article>`).join("")}</div><section class="section"><h2>${h(c.vehicles.compare)}</h2><table class="comparison"><thead><tr><th>${h(c.vehicles.title)}</th><th>${h(c.vehicles.people)}</th><th>${h(c.vehicles.luggage)}</th><th>${h(c.vehicles.scene)}</th></tr></thead><tbody><tr><td>Alphard</td><td>1–4</td><td>${h(c.vehicles.luggage)}</td><td>${h(c.vehicles.child)}</td></tr><tr><td>Hiace</td><td>5–9</td><td>${h(c.vehicles.large)}</td><td>${h(c.vehicles.scene)}</td></tr></tbody></table><p class="boundary">${h(c.vehicles.pending)}</p><a class="btn primary" href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a></section></main>`;
   return layout(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${brand.vehicle_boundary?.[lang.key] || t.bookingBoundary} ${t.bookingBoundary}` }, body, { ld: baseLd(lang, page.id === "index" ? "vehicles" : `vehicles/${page.id}`, "WebPage") });
+}
+function productCards(lang) {
+  const t = label[lang.key];
+  const c = pageCopy[lang.key].product;
+  return `<div class="grid cards">${productPages.map((p) => card({ title: p.title[lang.key] }, productMedia[p.id], relUrl(lang, `products/${p.id}`), c.traffic, [c.people, c.vehicle], ["KIX", p.id.replace("kix-", "").toUpperCase()], "product-card")).join("")}</div>`;
 }
 function productsIndex(lang, page) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   if (!page) {
-    const body = `<main class="wrap page"><h1>${h(t.productsTitle)}</h1><p class="lead">${h(t.rezioBoundary)}</p><div class="grid cards">${productPages.map((p) => card({ title: p.title[lang.key] }, "/kansai-assets/images/osaka/osa-0007-umeda-sky-building-floating-garden-observatory-cover.jpg", relUrl(lang, `products/${p.id}`), t.rezioBoundary, ["Rezio"])).join("")}</div></main>`;
+    const body = `<main class="wrap page"><p class="eyebrow">Kansai airport transfer</p><h1>${h(t.productsTitle)}</h1><p class="lead">${h(t.rezioBoundary)}</p>${productCards(lang)}<p class="boundary">${h(c.product.traffic)} ${h(c.product.specialNote)}</p></main>`;
     return layout(lang, "products", { title: `${t.productsTitle} | Japan Travel`, description: `${t.productsTitle}: ${t.rezioBoundary}` }, body, { ld: baseLd(lang, "products", "CollectionPage") });
   }
   const title = page.title[lang.key];
-  const body = `<main class="wrap page"><h1>${h(title)}</h1><p class="lead">${h(t.rezioBoundary)}</p><section class="panel"><h2>Rezio</h2><p>${h(t.bookingBoundary)}</p><a class="btn primary" href="/go/rezio/${h(page.id)}">${h(t.rezio)}</a><a class="btn" href="${relUrl(lang, "contact")}">${h(t.consult)}</a></section>${routeGrid(lang, 2)}</main>`;
+  const dest = page.id.replace("kix-", "").toUpperCase();
+  const body = `<main class="wrap page"><div class="product-hero"><img src="${h(productMedia[page.id])}" alt="${h(title)}"><div><p class="eyebrow">KIX → ${h(dest)}</p><h1>${h(title)}</h1><p>${h(c.product.traffic)}</p><a class="btn primary" href="/go/rezio/${h(page.id)}">${h(c.product.book)}</a></div></div><section class="section"><div class="facts-grid"><div class="fact"><strong>${h(c.product.fromTo)}</strong>KIX → ${h(dest)}</div><div class="fact"><strong>${h(c.product.time)}</strong>${h(c.product.traffic)}</div><div class="fact"><strong>${h(c.product.people)}</strong>${h(brand.luggage_boundary[lang.key])}</div></div><div class="two-col"><div><h2>${h(c.product.scene)}</h2><p>${h(t.bookingBoundary)}</p><h2>${h(c.product.vehicle)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p></div><div class="panel"><h2>${h(c.product.inventory)}</h2><p>${h(t.rezioBoundary)}</p><a class="btn primary" href="/go/rezio/${h(page.id)}">${h(c.product.safe)}</a><a class="btn secondary" href="${relUrl(lang, "contact")}">${h(c.nav.cta)}</a></div></div><p class="boundary">${h(c.product.specialNote)}</p></section></main>`;
   return layout(lang, `products/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${t.rezioBoundary}` }, body, { ld: baseLd(lang, `products/${page.id}`, "WebPage") });
 }
 function faqPage(lang) {
   const t = label[lang.key];
-  const body = `<main class="wrap page"><h1>FAQ</h1><div class="faq-list">${faq[lang.key].map((f) => `<article class="panel"><h2>${h(f.q)}</h2><p>${h(f.a)}</p></article>`).join("")}</div></main>`;
+  const c = pageCopy[lang.key];
+  const groups = c.faqCategories.map((name, i) => ({ name, items: faq[lang.key].filter((_, n) => n % c.faqCategories.length === i) })).filter((g) => g.items.length);
+  const body = `<main class="wrap page"><p class="eyebrow">Japan Travel guide</p><h1>FAQ</h1><nav class="faq-directory" aria-label="FAQ categories">${groups.map((g,i) => `<a href="#faq-${i}">${h(g.name)}</a>`).join("")}</nav>${groups.map((g,i) => `<section class="faq-group" id="faq-${i}"><h2>${h(g.name)}</h2><div class="faq-list">${g.items.map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div></section>`).join("")}</main>`;
   return layout(lang, "faq", { title: `FAQ | Japan Travel`, description: faq[lang.key].slice(0, 3).map((x) => x.q).join(" / ") }, body, { ld: [...baseLd(lang, "faq", "FAQPage"), faqLd(lang, 32)] });
 }
 function contactPage(lang) {
   const t = label[lang.key];
-  const body = `<main class="wrap page"><h1>${h(t.formTitle)}</h1><p class="lead">${h(t.formLead)}</p>${contactForm(lang)}</main>`;
+  const c = pageCopy[lang.key];
+  const body = `<main class="wrap page"><p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(t.formTitle)}</h1><p class="lead">${h(c.contact.help)}</p>${contactForm(lang)}</main>`;
   return layout(lang, "contact", { title: `${t.formTitle} | Japan Travel`, description: t.formLead }, body, { ld: baseLd(lang, "contact", "ContactPage") });
 }
 function contactForm(lang) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const formLabels = {
     zh: { name: "姓名", email: "邮箱", phone: "电话", line_id: "LINE", wechat: "微信", whatsapp: "WhatsApp", service_type: "服务类型", travel_date: "出行日期", travel_time: "出行时间", flight_number: "航班号", pickup_location: "上车地点", dropoff_location: "下车地点", passenger_count: "乘客人数", luggage_count: "行李数量", vehicle_preference: "车型偏好", child_seat: "儿童座椅", itinerary: "行程", notes: "备注" },
     zhHant: { name: "姓名", email: "信箱", phone: "電話", line_id: "LINE", wechat: "微信", whatsapp: "WhatsApp", service_type: "服務類型", travel_date: "出行日期", travel_time: "出行時間", flight_number: "航班號", pickup_location: "上車地點", dropoff_location: "下車地點", passenger_count: "乘客人數", luggage_count: "行李數量", vehicle_preference: "車型偏好", child_seat: "兒童座椅", itinerary: "行程", notes: "備註" },
@@ -280,13 +363,15 @@ function contactForm(lang) {
     en: { name: "Name", email: "Email", phone: "Phone", line_id: "LINE", wechat: "WeChat", whatsapp: "WhatsApp", service_type: "Service type", travel_date: "Travel date", travel_time: "Travel time", flight_number: "Flight number", pickup_location: "Pickup location", dropoff_location: "Drop-off location", passenger_count: "Passengers", luggage_count: "Luggage", vehicle_preference: "Vehicle preference", child_seat: "Child seat", itinerary: "Itinerary", notes: "Notes" },
     ko: { name: "이름", email: "이메일", phone: "전화", line_id: "LINE", wechat: "WeChat", whatsapp: "WhatsApp", service_type: "서비스 종류", travel_date: "이용일", travel_time: "이용 시간", flight_number: "항공편", pickup_location: "승차 장소", dropoff_location: "하차 장소", passenger_count: "인원", luggage_count: "수하물", vehicle_preference: "차종 희망", child_seat: "유아 시트", itinerary: "일정", notes: "메모" }
   }[lang.key];
-  const fields = ["name", "email", "phone", "line_id", "wechat", "whatsapp", "service_type", "travel_date", "travel_time", "flight_number", "pickup_location", "dropoff_location", "passenger_count", "luggage_count", "vehicle_preference", "child_seat", "itinerary", "notes"];
+  const field = (name, options = {}) => { const id = `contact-${name}`; const type = options.type || (name === "email" ? "email" : name.includes("date") ? "date" : name.includes("time") ? "time" : "text"); return `<label for="${id}" class="${options.full ? "full" : ""}">${h(formLabels[name] || name)}${options.required ? ` <span class="required" aria-hidden="true"></span>` : ""}${options.textarea ? `<textarea id="${id}" name="${name}" maxlength="2000"></textarea>` : `<input id="${id}" name="${name}" type="${type}" ${options.required ? "required" : ""} maxlength="500">`}</label>`; };
   return `<form class="contact-form" method="post" action="/api/inquiry.php" data-enhanced-form>
     <input type="hidden" name="language" value="${h(lang.slug)}"><input type="hidden" name="source_url" value=""><input type="hidden" name="idempotency_key" value="">
     <input class="hp" name="website" tabindex="-1" autocomplete="off">
-    <div class="form-grid">${fields.map((f) => `<label>${h(formLabels[f] || f)}<input name="${h(f)}" ${f === "email" ? "type=\"email\" required" : f.includes("date") ? "type=\"date\"" : f.includes("time") ? "type=\"time\"" : ""} maxlength="500"></label>`).join("")}</div>
+    <div class="form-sections"><fieldset class="form-section"><legend>${h(c.contact.contact)}</legend><div class="form-grid">${field("name",{required:true})}${field("email",{required:true})}<label for="contact-method">${h(c.contact.method)}<select id="contact-method" name="contact_method" data-contact-method><option value="email">Email</option><option value="phone">${h(formLabels.phone)}</option><option value="line_id">LINE</option><option value="wechat">WeChat</option><option value="whatsapp">WhatsApp</option></select></label><div class="contact-method-fields">${["phone","line_id","wechat","whatsapp"].map((x) => `<div data-contact-field="${x}">${field(x,{full:true})}</div>`).join("")}</div></div></fieldset>
+    <fieldset class="form-section"><legend>${h(c.contact.transport)}</legend><div class="form-grid">${field("service_type")}${field("travel_date")}${field("travel_time")}${field("flight_number")}${field("pickup_location",{required:true})}${field("dropoff_location",{required:true})}${field("passenger_count")}${field("luggage_count")}</div></fieldset>
+    <fieldset class="form-section"><legend>${h(c.contact.special)}</legend><div class="form-grid">${field("vehicle_preference")}${field("child_seat")}${field("itinerary",{textarea:true,full:true})}${field("notes",{textarea:true,full:true})}</div></fieldset></div>
     <label class="check"><input type="checkbox" name="privacy_consent" value="1" required> ${h(t.form.privacy)}</label>
-    <button class="btn primary" type="submit">${h(t.consult)}</button><p class="form-status" data-form-status>${h(t.unavailable)}</p>
+    <button class="btn primary" type="submit">${h(t.consult)}</button><p class="form-status" data-form-status></p>
   </form>`;
 }
 function memberPage(lang, slug) {
@@ -310,46 +395,64 @@ function memberPage(lang, slug) {
   const nicknameField = ["register", "profile"].includes(slug) ? `<label>${h(m.nickname)}<input name="nickname" maxlength="80" autocomplete="nickname"></label>` : "";
   const ambassadorField = slug === "ambassador" ? `<label>${h(m.message)}<textarea name="message" maxlength="2000"></textarea></label>` : "";
   const actionField = `<input type="hidden" name="action" value="${h(action)}">`;
-  const authedTools = !["login", "register", "verify-email", "reset-password"].includes(slug)
-    ? `<section class="panel member-data" data-member-panel data-member-page="${h(slug)}"><p data-member-status>${h(m.loading)}</p><div data-member-content></div></section>`
-    : "";
-  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="${h(slug)}"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p>
-    <section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section>${authedTools}</main>`;
+  const publicAuth = ["login", "register", "verify-email", "reset-password"].includes(slug);
+  const formNeeded = publicAuth || ["profile", "ambassador"].includes(slug);
+  const form = formNeeded ? `<section class="panel"><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status></p></form></section>` : "";
+  const authedTools = !publicAuth ? `<section class="panel member-data" data-member-panel data-member-page="${h(slug)}"><p data-member-status></p><div data-member-content></div></section>` : "";
+  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="${h(slug)}"><p class="eyebrow">Japan Travel member</p><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p><div class="${publicAuth ? "reading" : "sidebar-layout"}">${publicAuth ? "" : memberSideNav(lang, slug)}<div>${form}${authedTools}</div></div></main>`;
   return layout(lang, `member/${slug}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, `member/${slug}`, "WebPage") });
 }
 function memberDashboard(lang) {
   const t = label[lang.key];
   const m = t.member;
   const links = ["profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
-  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="dashboard"><h1>${h(m.dashboard)}</h1><p class="lead">${h(t.memberLead)}</p>
-    <section class="panel member-data" data-member-panel data-member-page="dashboard"><p data-member-status>${h(m.loading)}</p><div data-member-content></div></section>
-    <section class="grid cards member-dashboard-links">${links.map((slug) => `<a class="card" href="${relUrl(lang, `member/${slug}`)}"><div class="card-body"><h2>${h(m[slug])}</h2><p>${h(t.memberLead)}</p></div></a>`).join("")}</section></main>`;
+  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="dashboard"><p class="eyebrow">Japan Travel member</p><h1>${h(m.dashboard)}</h1><p class="lead">${h(t.memberLead)}</p><div class="sidebar-layout">${memberSideNav(lang, "dashboard")}<div><section class="panel member-data" data-member-panel data-member-page="dashboard"><p data-member-status></p><div data-member-content></div></section><section class="grid cards member-dashboard-links">${links.map((slug) => `<a class="card" href="${relUrl(lang, `member/${slug}`)}"><div class="card-body"><h2>${h(m[slug])}</h2><span class="btn-link">→</span></div></a>`).join("")}</section></div></div></main>`;
   return layout(lang, "member", { title: `${m.dashboard} | Japan Travel`, description: `${m.dashboard}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, "member", "WebPage") });
+}
+function memberSideNav(lang, current) {
+  const m = label[lang.key].member;
+  return `<nav class="side-nav" aria-label="Member">${["dashboard","profile","favorites","trips","bookings","referrals","vip","ambassador"].map((slug) => `<a href="${relUrl(lang, slug === "dashboard" ? "member" : `member/${slug}`)}" ${slug === current ? 'aria-current="page"' : ""}>${h(m[slug])}</a>`).join("")}<button class="btn-link" type="button" data-member-logout>${h(m.logout)}</button></nav>`;
 }
 function infoPage(lang, slug) {
   const t = label[lang.key];
+  const c = pageCopy[lang.key];
   const titles = {
-    about: t.about,
-    privacy: "Privacy Policy",
-    terms: "Terms",
-    vip: "VIP",
-    referral: "Referral",
-    ambassador: "Ambassador"
+    about: c.info.about,
+    privacy: c.info.privacy,
+    terms: c.info.terms,
+    vip: c.info.vip,
+    referral: c.info.referral,
+    ambassador: c.info.ambassador
   };
-  const body = `<main class="wrap page"><h1>${h(titles[slug])}</h1><div class="panel"><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p><p>${h(t.bookingBoundary)}</p><p>${h(t.rezioBoundary)}</p></div>${slug === "privacy" ? privacyText(lang) : ""}${slug === "terms" ? termsText(lang) : ""}${slug === "vip" ? vipText(lang) : ""}${slug === "referral" || slug === "ambassador" ? referralText(lang) : ""}</main>`;
+  const lead = slug === "vip" ? c.info.vipLead : slug === "referral" ? c.info.referralLead : slug === "ambassador" ? c.info.ambassadorLead : brand.operated_by_text;
+  const body = `<main class="wrap page"><p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(titles[slug])}</h1><p class="lead">${h(lead)}</p>${slug === "about" ? aboutText(lang) : ""}${slug === "privacy" ? privacyText(lang) : ""}${slug === "terms" ? termsText(lang) : ""}${slug === "vip" ? vipText(lang) : ""}${slug === "referral" ? referralText(lang, false) : ""}${slug === "ambassador" ? referralText(lang, true) : ""}</main>`;
   return layout(lang, slug, { title: `${titles[slug]} | Japan Travel`, description: `${titles[slug]}. ${brand.operated_by_text}. ${lang.name}.` }, body, { ld: baseLd(lang, slug, "WebPage") });
 }
+function aboutText(lang) {
+  const t = label[lang.key];
+  const c = pageCopy[lang.key];
+  return `<div class="two-col"><section><h2>${h(c.info.about)}</h2><p>${h(brand.operated_by_text)}</p><p>${h(brand.service_area_text[lang.key])}</p><p>${h(brand.vehicle_network_text[lang.key])}</p><a class="btn-link" href="${h(brand.daitora_url)}" rel="noopener" target="_blank">Daitora Group →</a></section><section class="panel"><h2>${h(c.home.operation)}</h2><ol class="process">${c.service.steps.map((x) => `<li>${h(x)}</li>`).join("")}</ol></section></div><p class="boundary">${h(t.bookingBoundary)} ${h(t.rezioBoundary)}</p>`;
+}
 function privacyText(lang) {
-  return `<section class="panel"><h2>Privacy</h2><p>${h(brand.privacy_summary[lang.key])}</p></section>`;
+  const c = pageCopy[lang.key];
+  const headings = [c.contact.contact, "Cookie", "Meta / TikTok", "Rezio", "Email", c.info.about];
+  return `<section class="reading">${headings.map((x,i) => `<h2>${h(x)}</h2><p>${h(brand.privacy_summary[lang.key])}${i===1 ? ` ${h(label[lang.key].cookie.message)}` : ""}</p>`).join("")}<p class="meta-note">${h(c.spot.checked)}: ${h(brand.last_reviewed_at)}</p></section>`;
 }
 function termsText(lang) {
-  return `<section class="panel"><h2>Terms</h2><p>${h(brand.terms_summary[lang.key])}</p></section>`;
+  const c = pageCopy[lang.key];
+  const headings = [c.info.terms, c.product.book, "Rezio", c.product.inventory, c.product.special, c.info.referral, c.contact.contact];
+  return `<section class="reading">${headings.map((x) => `<h2>${h(x)}</h2><p>${h(brand.terms_summary[lang.key])}</p>`).join("")}<p class="meta-note">${h(c.spot.checked)}: ${h(brand.last_reviewed_at)}</p></section>`;
 }
 function vipText(lang) {
-  return `<section class="panel"><h2>VIP</h2><ul>${brand.vip_rules[lang.key].map((x) => `<li>${h(x)}</li>`).join("")}</ul></section>`;
+  const c = pageCopy[lang.key];
+  const tiers = ["Member", "VIP Friend", "Circle Host", "Premier Host"];
+  return `<section><h2>${h(c.info.vip)}</h2><div class="grid cards">${tiers.map((x,i) => `<article class="panel"><p class="eyebrow">0${i+1}</p><h3>${x}</h3><p>${h(brand.vip_rules[lang.key][Math.min(i, brand.vip_rules[lang.key].length-1)])}</p></article>`).join("")}</div><p class="boundary">${h(label[lang.key].bookingBoundary)}</p><div class="btn-row"><a class="btn primary" href="${relUrl(lang, "member/vip")}">${h(c.info.login)}</a><a class="btn secondary" href="${relUrl(lang, "products")}">${h(c.nav.booking)}</a></div></section>`;
 }
-function referralText(lang) {
-  return `<section class="panel"><h2>Referral</h2><ul>${brand.referral_rules[lang.key].map((x) => `<li>${h(x)}</li>`).join("")}</ul></section>`;
+function referralText(lang, ambassador = false) {
+  const c = pageCopy[lang.key];
+  const title = ambassador ? c.info.ambassador : c.info.referral;
+  const rules = ambassador ? [c.info.ambassadorLead, ...brand.referral_rules[lang.key].slice(0, 2)] : brand.referral_rules[lang.key];
+  return `<section><h2>${h(title)}</h2><ul class="feature-list">${rules.map((x) => `<li>${h(x)}</li>`).join("")}</ul><p class="boundary">${h(c.contact.help)}</p><a class="btn primary" href="${relUrl(lang, ambassador ? "member/ambassador" : "member/referrals")}">${h(c.info.login)}</a></section>`;
 }
 function baseLd(lang, rest, type) {
   return [{
@@ -372,7 +475,7 @@ function touristLd(lang, s) {
   return { "@context": "https://schema.org", "@type": "TouristAttraction", name: s.name, image: siteUrl + cleanAsset(s.image), url: canonical(lang, `spots/${s.id}`), address: `${s.city || ""} ${s.region || ""}` };
 }
 function rootPage() {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Japan Travel</title><meta name="description" content="Choose your language for Japan Travel Kansai guide."><link rel="canonical" href="${siteUrl}/">${pageLangAlternates("")}<link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="language-gate wrap"><h1>Japan Travel</h1><p>Operated by 株式会社大寅 / Daitora Group</p><div class="grid cards">${langs.map((l) => `<a class="card lang-card" href="${relUrl(l)}"><div class="card-body"><h2>${l.label}</h2><p>${h(l.name)}</p></div></a>`).join("")}</div></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Japan Travel | Kansai travel and transport</title><meta name="description" content="Kansai airport transfers, private charters, day routes and guides to 73 places, operated by Daitora Group."><link rel="canonical" href="${siteUrl}/">${pageLangAlternates("")}<link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="root-hero"><video autoplay muted loop playsinline poster="/kansai-assets/images/nara/nar-0003-kasuga-taisha-shrine-cover.jpg"><source src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4" type="video/mp4"></video><div class="root-inner wrap"><p class="eyebrow">Kansai · Japan</p><h1>Japan Travel</h1><p>Kansai travel content, airport transfers, private charters and day routes. Operated by 株式会社大寅 / Daitora Group, supported by a group-wide vehicle network of about 100 vehicles.</p><div class="language-grid">${langs.map((l) => `<a href="${relUrl(l)}"><span>${l.label}</span><small>${h(l.name)}</small></a>`).join("")}</div></div></main></body></html>`;
 }
 function legacyPage(to) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="description" content="This old Japan Travel URL has moved to the new language directory structure."><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0; url=${h(to)}"><link rel="canonical" href="${siteUrl}${to}"><title>Japan Travel Page Moved</title></head><body><h1>Japan Travel Page Moved</h1><p><a href="${h(to)}">Continue to the new page</a></p></body></html>`;
