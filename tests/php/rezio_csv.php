@@ -31,7 +31,13 @@ file_put_contents($csv, "rezio_order_id,email,referral_code,click_id,status,paid
     "RZ1,friend@example.com,JTOWNCSV,clk_friend,completed,paid,10000,JPY\n" .
     "RZ2,owner@example.com,JTOWNCSV,,completed,paid,10000,JPY\n" .
     "RZ3,,JTOWNCSV,,completed,paid,10000,JPY\n");
-exec('php ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out, $code);
+$php = escapeshellarg(PHP_BINARY);
+if ($extDir = getenv('PHP_TEST_EXTENSION_DIR')) {
+    $php .= ' -d ' . escapeshellarg('extension_dir=' . $extDir)
+        . ' -d extension=pdo_sqlite -d extension=mbstring -d extension=openssl';
+}
+exec($php . ' ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out, $code);
+if ($code !== 0) fwrite(STDERR, "CSV import output:\n" . implode("\n", $out) . "\n");
 ok($code === 0, 'csv import exits 0');
 $valid = (int)$pdo->query("SELECT COUNT(*) FROM booking_reference WHERE status = 'valid_order'")->fetchColumn();
 $manual = (int)$pdo->query("SELECT COUNT(*) FROM booking_reference WHERE status = 'manual_review'")->fetchColumn();
@@ -40,11 +46,13 @@ $self = $pdo->query("SELECT payload_json FROM booking_reference WHERE rezio_orde
 ok(!str_contains((string)$self, 'JTOWNCSV'), 'self referral is removed');
 ok(jt_vip_tier_for($pdo, $ownerId) === 'VIP Friend', 'owner upgraded by direct referral');
 
-exec('php ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out2, $code2);
+exec($php . ' ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out2, $code2);
+if ($code2 !== 0) fwrite(STDERR, "CSV duplicate import output:\n" . implode("\n", $out2) . "\n");
 ok($code2 === 0 && (int)$pdo->query("SELECT COUNT(*) FROM booking_reference WHERE rezio_order_id = 'RZ1'")->fetchColumn() === 1, 'duplicate import is idempotent');
 
 file_put_contents($csv, "rezio_order_id,email,referral_code,click_id,status,paid_status,amount,currency\nRZ1,friend@example.com,JTOWNCSV,clk_friend,refunded,refunded,10000,JPY\n");
-exec('php ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out3, $code3);
+exec($php . ' ' . escapeshellarg($root . '/tools/import-rezio-csv.php') . ' ' . escapeshellarg($csv), $out3, $code3);
+if ($code3 !== 0) fwrite(STDERR, "CSV refund import output:\n" . implode("\n", $out3) . "\n");
 ok($code3 === 0, 'refund import exits 0');
 ok($pdo->query("SELECT status FROM booking_reference WHERE rezio_order_id = 'RZ1'")->fetchColumn() === 'revoked', 'refunded order revokes valid state');
 jt_update_vip_tier($pdo, $ownerId, 'refund-test');

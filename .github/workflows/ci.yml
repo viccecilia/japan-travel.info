@@ -36,6 +36,7 @@ jobs:
           APP_DATA_DIR: ${{ runner.temp }}/jt-http-data
           MAIL_TRANSPORT: spool
           SITE_URL: http://127.0.0.1:8099
+          REZIO_DEFAULT_URL: https://demo.rezio.shop/products/default
           REZIO_ROUTE_URLS_JSON: '{"kyoto":"https://demo.rezio.shop/products/kyoto"}'
         run: |
           trap 'echo "::group::PHP server log"; cat "${{ runner.temp }}/php-server.log" || true; echo "::endgroup::"; kill "$(cat "${{ runner.temp }}/php-server.pid")" 2>/dev/null || true' EXIT

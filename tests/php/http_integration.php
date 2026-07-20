@@ -29,6 +29,8 @@ function request(string $method, string $url, array $fields = [], array $headers
         'http' => [
             'method' => $method,
             'ignore_errors' => true,
+            'follow_location' => 0,
+            'max_redirects' => 0,
             'header' => implode("\r\n", $headerLines) . "\r\n"
         ]
     ];
@@ -87,6 +89,8 @@ $stmt = $db->prepare('SELECT token_hash FROM token_hash th JOIN member_user u ON
 $stmt->execute([$email, 'email_verification']);
 ok((bool)$stmt->fetch(), 'verification token stored hashed');
 $db->prepare('UPDATE member_user SET email_verified_at = ? WHERE email = ?')->execute([gmdate('c'), $email]);
+$stmt = null;
+$db = null;
 
 [$status, $login] = expect_http(request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
@@ -124,6 +128,11 @@ ok(($inq1['request_id'] ?? '') !== '' && $inq1['request_id'] === ($inq2['request
 
 [$status, $body, $raw, $headers] = request('GET', $base . '/api/rezio.php?product_key=kyoto&utm_source=instagram&utm_medium=social&ref_code=JTSELF&language=en&visitor_id=vis_http');
 $location = implode("\n", $headers);
-ok($status === 302 && str_contains($location, 'click_id=clk_') && str_contains($location, 'utm_source=instagram'), 'Rezio redirect appends click attribution');
+if (!($status === 302 && str_contains($location, 'click_id=clk_') && str_contains($location, 'utm_source=instagram'))) {
+    fwrite(STDERR, "FAIL: Rezio redirect appends click attribution\n");
+    fwrite(STDERR, "HTTP status: {$status}, headers: {$location}\n");
+    fwrite(STDERR, "Body: " . substr($raw, 0, 1000) . "\n");
+    exit(1);
+}
 
 echo "OK php HTTP integration\n";
