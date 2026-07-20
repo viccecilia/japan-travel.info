@@ -19,105 +19,39 @@ const siteUrl = (process.env.SITE_URL || "https://japan-travel.info").replace(/\
 const generated = new Set();
 const publicPages = [];
 
-const label = {
-  zh: {
-    home: "首页", routes: "一日路线", spots: "景点", services: "交通服务", products: "预约导引", faq: "FAQ", about: "运营主体", contact: "咨询",
-    heroTitle: "森有静之气，海有远之意，古都有余音。",
-    heroLead: "把关西的海、森林、古都、湖景和温泉整理成清晰的旅行资料。公开内容可直接浏览，收藏、VIP和推荐功能登录后使用。",
-    routesTitle: "热门一日路线", spotsTitle: "关西景点资料库", servicesTitle: "关西交通服务", productsTitle: "Rezio预约导引",
-    view: "查看详情", rezio: "前往Rezio", consult: "定制咨询", search: "搜索景点、城市或标签", allArea: "全部地区",
-    standard: "标准讲解", classic: "Classic讲解", nearby: "附近景点", relatedRoutes: "相关路线",
-    source: "资料来源", unavailable: "该预约入口尚未配置，请使用咨询表单联系确认。", noLogin: "公开内容无需登录。",
-    formTitle: "定制咨询", formLead: "提交后我们只表示已收到咨询，尚未确认预约。价格、库存、日期和取消规则以Rezio商品及最终预约确认为准。",
-    memberLead: "会员功能用于收藏、偏好、VIP和推荐记录。公开内容与Rezio预约导引无需登录。",
-    bookingBoundary: "车型、司机及个性化用品将根据预约时间、车辆情况和运营条件优先协调，具体安排以预约确认为准。",
-    rezioBoundary: "价格、库存、日期和取消规则以Rezio对应商品及最终预约确认为准。"
-  },
-  zhHant: {
-    home: "首頁", routes: "一日路線", spots: "景點", services: "交通服務", products: "預約導引", faq: "FAQ", about: "營運主體", contact: "諮詢",
-    heroTitle: "森有靜之氣，海有遠之意，古都有餘音。",
-    heroLead: "把關西的海、森林、古都、湖景與溫泉整理成清楚的旅行資料。公開內容可直接瀏覽，收藏、VIP與推薦功能登入後使用。",
-    routesTitle: "熱門一日路線", spotsTitle: "關西景點資料庫", servicesTitle: "關西交通服務", productsTitle: "Rezio 預約導引",
-    view: "查看詳情", rezio: "前往 Rezio", consult: "客製諮詢", search: "搜尋景點、城市或標籤", allArea: "全部地區",
-    standard: "標準講解", classic: "Classic 講解", nearby: "附近景點", relatedRoutes: "相關路線",
-    source: "資料來源", unavailable: "此預約入口尚未設定，請使用諮詢表單聯絡確認。", noLogin: "公開內容無需登入。",
-    formTitle: "客製諮詢", formLead: "送出後僅代表已收到諮詢，尚未確認預約。價格、庫存、日期與取消規則以 Rezio 商品及最終預約確認為準。",
-    memberLead: "會員功能用於收藏、偏好、VIP 與推薦記錄。公開內容與 Rezio 預約導引無需登入。",
-    bookingBoundary: "車型、司機及個人化用品會依預約時間、車輛狀況與營運條件優先協調，具體安排以預約確認為準。",
-    rezioBoundary: "價格、庫存、日期與取消規則以 Rezio 對應商品及最終預約確認為準。"
-  },
-  ja: {
-    home: "ホーム", routes: "日帰りルート", spots: "スポット", services: "送迎サービス", products: "予約案内", faq: "FAQ", about: "運営主体", contact: "相談",
-    heroTitle: "森に息づき、海にひらき、古都に還る。",
-    heroLead: "関西の海、森、古都、湖、温泉を、出発前に読みやすい旅行資料として整理しています。公開コンテンツはログインなしで閲覧できます。",
-    routesTitle: "人気の日帰りルート", spotsTitle: "関西スポット資料庫", servicesTitle: "関西送迎サービス", productsTitle: "Rezio予約案内",
-    view: "詳しく見る", rezio: "Rezioへ", consult: "相談する", search: "スポット、都市、タグを検索", allArea: "全エリア",
-    standard: "標準ガイド", classic: "Classicガイド", nearby: "近くのスポット", relatedRoutes: "関連ルート",
-    source: "参照元", unavailable: "この予約入口は未設定です。相談フォームからお問い合わせください。", noLogin: "公開コンテンツはログイン不要です。",
-    formTitle: "カスタム相談", formLead: "送信後は相談受付であり、予約確定ではありません。料金、在庫、日付、取消規定はRezio商品と最終確認が基準です。",
-    memberLead: "会員機能は保存、好み、VIP、紹介記録に使います。公開コンテンツとRezio案内はログイン不要です。",
-    bookingBoundary: "車種、ドライバー、個別用品は予約時間、車両状況、運行条件に基づき優先調整し、具体的な手配は予約確認が基準です。",
-    rezioBoundary: "料金、在庫、日付、取消規定はRezioの該当商品および最終予約確認が基準です。"
-  },
-  en: {
-    home: "Home", routes: "Day Routes", spots: "Spots", services: "Transfers", products: "Booking Guide", faq: "FAQ", about: "About", contact: "Contact",
-    heroTitle: "Still forests, open seas, and echoes of old capitals.",
-    heroLead: "A clear Kansai travel guide for seasides, forests, old capitals, lakes and hot springs. Public pages are open; favorites, VIP and referrals require sign-in.",
-    routesTitle: "Popular Day Routes", spotsTitle: "Kansai Spot Library", servicesTitle: "Kansai Transfer Services", productsTitle: "Rezio Booking Guide",
-    view: "View Details", rezio: "Open Rezio", consult: "Custom Inquiry", search: "Search spots, cities or tags", allArea: "All Areas",
-    standard: "Standard Audio", classic: "Classic Audio", nearby: "Nearby Spots", relatedRoutes: "Related Routes",
-    source: "Source", unavailable: "This booking link is not configured yet. Please use the inquiry form.", noLogin: "Public content does not require sign-in.",
-    formTitle: "Custom Inquiry", formLead: "Submission means we received your inquiry; it is not a confirmed reservation. Prices, inventory, dates and cancellation rules follow Rezio and final confirmation.",
-    memberLead: "Member features support favorites, preferences, VIP and referrals. Public content and Rezio booking guidance do not require sign-in.",
-    bookingBoundary: "Vehicle type, driver and personalized items are coordinated according to reservation time, vehicle availability and operation conditions. Final arrangements follow booking confirmation.",
-    rezioBoundary: "Prices, inventory, dates and cancellation rules follow the relevant Rezio product and final booking confirmation."
-  },
-  ko: {
-    home: "홈", routes: "당일 코스", spots: "스팟", services: "전용 차량", products: "예약 안내", faq: "FAQ", about: "운영 주체", contact: "문의",
-    heroTitle: "숲은 고요하고, 바다는 멀리 열리며, 고도에는 여운이 남습니다.",
-    heroLead: "간사이의 바다, 숲, 고도, 호수와 온천을 여행 전 읽기 좋은 자료로 정리했습니다. 공개 콘텐츠는 로그인 없이 볼 수 있습니다.",
-    routesTitle: "인기 당일 코스", spotsTitle: "간사이 스팟 자료실", servicesTitle: "간사이 전용 차량 서비스", productsTitle: "Rezio 예약 안내",
-    view: "자세히 보기", rezio: "Rezio로 이동", consult: "맞춤 문의", search: "스팟, 도시, 태그 검색", allArea: "전체 지역",
-    standard: "표준 오디오", classic: "Classic 오디오", nearby: "주변 스팟", relatedRoutes: "관련 코스",
-    source: "자료 출처", unavailable: "이 예약 링크는 아직 설정되지 않았습니다. 문의 양식을 이용해 주세요.", noLogin: "공개 콘텐츠는 로그인 없이 이용할 수 있습니다.",
-    formTitle: "맞춤 문의", formLead: "제출은 문의 접수이며 예약 확정이 아닙니다. 가격, 재고, 날짜와 취소 규정은 Rezio 상품과 최종 확인을 기준으로 합니다.",
-    memberLead: "회원 기능은 저장, 선호, VIP와 추천 기록에 사용됩니다. 공개 콘텐츠와 Rezio 안내는 로그인이 필요 없습니다.",
-    bookingBoundary: "차종, 기사 및 개인화 용품은 예약 시간, 차량 상황과 운영 조건에 따라 우선 조율되며 구체적인 배정은 예약 확인을 기준으로 합니다.",
-    rezioBoundary: "가격, 재고, 날짜와 취소 규정은 해당 Rezio 상품 및 최종 예약 확인을 기준으로 합니다."
-  }
-};
+const label = JSON.parse(fs.readFileSync(path.join(root, "src/ui-labels.json"), "utf8"));
 
 const regionLocal = {
-  zh: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵库", 滋贺: "滋贺", 和歌山: "和歌山", 三重: "三重" },
-  zhHant: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵庫", 滋贺: "滋賀", 和歌山: "和歌山", 三重: "三重" },
-  ja: { 大阪: "大阪", 京都: "京都", 奈良: "奈良", 兵库: "兵庫", 滋贺: "滋賀", 和歌山: "和歌山", 三重: "三重" },
-  en: { 大阪: "Osaka", 京都: "Kyoto", 奈良: "Nara", 兵库: "Hyogo", 滋贺: "Shiga", 和歌山: "Wakayama", 三重: "Mie" },
-  ko: { 大阪: "오사카", 京都: "교토", 奈良: "나라", 兵库: "효고", 滋贺: "시가", 和歌山: "와카야마", 三重: "미에" }
+  zh: { "大阪": "大阪", "京都": "京都", "奈良": "奈良", "兵库": "兵库", "滋贺": "滋贺", "和歌山": "和歌山", "三重": "三重" },
+  zhHant: { "大阪": "大阪", "京都": "京都", "奈良": "奈良", "兵库": "兵庫", "滋贺": "滋賀", "和歌山": "和歌山", "三重": "三重" },
+  ja: { "大阪": "大阪", "京都": "京都", "奈良": "奈良", "兵库": "兵庫", "滋贺": "滋賀", "和歌山": "和歌山", "三重": "三重" },
+  en: { "大阪": "Osaka", "京都": "Kyoto", "奈良": "Nara", "兵库": "Hyogo", "滋贺": "Shiga", "和歌山": "Wakayama", "三重": "Mie" },
+  ko: { "大阪": "오사카", "京都": "교토", "奈良": "나라", "兵库": "효고", "滋贺": "시가", "和歌山": "와카야마", "三重": "미에" }
 };
 
 const routeCopy = {
-  zh: ["从大阪出发，把经典景点串成容易理解的一天。", "路线内容可直接浏览，预约与库存以Rezio最终确认为准。"],
-  zhHant: ["從大阪出發，把經典景點串成容易理解的一天。", "路線內容可直接瀏覽，預約與庫存以 Rezio 最終確認為準。"],
-  ja: ["大阪発で、定番スポットを一日で分かりやすくつなぎます。", "内容は自由に閲覧でき、予約と在庫はRezioの最終確認が基準です。"],
+  zh: ["从大阪出发，把关西代表性景点串成清晰的一日动线。", "路线内容可自由浏览；价格、日期和库存以 Rezio 最终确认为准。"],
+  zhHant: ["從大阪出發，把關西代表性景點串成清晰的一日動線。", "路線內容可自由瀏覽；價格、日期和庫存以 Rezio 最終確認為準。"],
+  ja: ["大阪発で、関西の代表的な見どころを一日の流れにまとめました。", "ルート内容は自由に閲覧できます。料金、日付、在庫は Rezio の最終確認が基準です。"],
   en: ["Start from Osaka and connect signature Kansai stops into one clear day.", "Route content is open; booking and inventory follow final Rezio confirmation."],
-  ko: ["오사카 출발 기준으로 간사이의 대표 스팟을 하루 코스로 연결합니다.", "코스 내용은 공개되어 있으며 예약과 재고는 Rezio 최종 확인을 기준으로 합니다."]
+  ko: ["오사카 출발 기준으로 간사이 대표 명소를 하루 동선으로 정리했습니다.", "노선 내용은 자유롭게 볼 수 있으며 가격, 날짜, 재고는 Rezio 최종 확인을 기준으로 합니다."]
 };
 
 const servicePages = [
-  { id: "airport-transfer", product: "kix-osaka", title: { zh: "机场接送服务", zhHant: "機場接送服務", ja: "空港送迎サービス", en: "Airport Transfer", ko: "공항 송영" } },
-  { id: "charter", product: "charter-kansai", title: { zh: "关西包车服务", zhHant: "關西包車服務", ja: "関西貸切車サービス", en: "Kansai Private Charter", ko: "간사이 전용 차량" } },
-  { id: "family", product: "family-transfer", title: { zh: "家庭与亲子用车", zhHant: "家庭與親子用車", ja: "家族旅行向け送迎", en: "Family Transfer", ko: "가족 여행 차량" } },
-  { id: "business", product: "business-guest", title: { zh: "商务及来宾接待", zhHant: "商務及來賓接待", ja: "ビジネス・来賓対応", en: "Business Guest Transport", ko: "비즈니스 의전 차량" } }
+  { id: "airport-transfer", product: "kix-osaka", title: { zh: "机场接送服务", zhHant: "機場接送服務", ja: "空港送迎サービス", en: "Airport Transfer", ko: "공항 이동 서비스" } },
+  { id: "charter", product: "charter-kansai", title: { zh: "关西包车服务", zhHant: "關西包車服務", ja: "関西貸切送迎", en: "Kansai Private Charter", ko: "간사이 전용 차량" } },
+  { id: "family", product: "family-transfer", title: { zh: "家庭与亲子用车", zhHant: "家庭與親子用車", ja: "家族向け移動", en: "Family Transfer", ko: "가족 여행 차량" } },
+  { id: "business", product: "business-guest", title: { zh: "商务访客接待", zhHant: "商務訪客接待", ja: "ビジネス送迎", en: "Business Guest Transport", ko: "비즈니스 의전 이동" } }
 ];
 const vehiclePages = [
-  { id: "alphard", title: { zh: "Alphard车型", zhHant: "Alphard 車型", ja: "Alphard", en: "Alphard", ko: "알파드" } },
-  { id: "hiace", title: { zh: "Hiace车型", zhHant: "Hiace 車型", ja: "Hiace", en: "Hiace", ko: "하이에이스" } }
+  { id: "alphard", title: { zh: "Alphard 车型", zhHant: "Alphard 車型", ja: "Alphard", en: "Alphard", ko: "알파드" } },
+  { id: "hiace", title: { zh: "Hiace 车型", zhHant: "Hiace 車型", ja: "Hiace", en: "Hiace", ko: "하이에이스" } }
 ];
 const productPages = [
-  { id: "kix-osaka", title: { zh: "KIX ⇄ 大阪预约导引", zhHant: "KIX ⇄ 大阪預約導引", ja: "KIX ⇄ 大阪 予約案内", en: "KIX ⇄ Osaka Booking Guide", ko: "KIX ⇄ 오사카 예약 안내" } },
-  { id: "kix-kyoto", title: { zh: "KIX ⇄ 京都预约导引", zhHant: "KIX ⇄ 京都預約導引", ja: "KIX ⇄ 京都 予約案内", en: "KIX ⇄ Kyoto Booking Guide", ko: "KIX ⇄ 교토 예약 안내" } },
-  { id: "kix-nara", title: { zh: "KIX ⇄ 奈良预约导引", zhHant: "KIX ⇄ 奈良預約導引", ja: "KIX ⇄ 奈良 予約案内", en: "KIX ⇄ Nara Booking Guide", ko: "KIX ⇄ 나라 예약 안내" } },
-  { id: "kix-kobe", title: { zh: "KIX ⇄ 神户预约导引", zhHant: "KIX ⇄ 神戶預約導引", ja: "KIX ⇄ 神戸 予約案内", en: "KIX ⇄ Kobe Booking Guide", ko: "KIX ⇄ 고베 예약 안내" } }
+  { id: "kix-osaka", title: { zh: "KIX 至大阪预约指南", zhHant: "KIX 至大阪預約指南", ja: "KIX から大阪への予約ガイド", en: "KIX to Osaka Booking Guide", ko: "KIX-오사카 예약 가이드" } },
+  { id: "kix-kyoto", title: { zh: "KIX 至京都预约指南", zhHant: "KIX 至京都預約指南", ja: "KIX から京都への予約ガイド", en: "KIX to Kyoto Booking Guide", ko: "KIX-교토 예약 가이드" } },
+  { id: "kix-nara", title: { zh: "KIX 至奈良预约指南", zhHant: "KIX 至奈良預約指南", ja: "KIX から奈良への予約ガイド", en: "KIX to Nara Booking Guide", ko: "KIX-나라 예약 가이드" } },
+  { id: "kix-kobe", title: { zh: "KIX 至神户预约指南", zhHant: "KIX 至神戶預約指南", ja: "KIX から神戸への予約ガイド", en: "KIX to Kobe Booking Guide", ko: "KIX-고베 예약 가이드" } }
 ];
 const memberPages = ["login", "register", "verify-email", "reset-password", "profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
 
@@ -218,6 +152,7 @@ function layout(lang, rest, meta, body, options = {}) {
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="/assets/css/site.css">
   <script defer src="/assets/js/site-config.js"></script>
+  <script>window.JT_I18N=${JSON.stringify(label[lang.key]).replace(/</g, "\\u003c")};</script>
   <script defer src="/assets/js/site-runtime.js"></script>
   ${ld}
 </head>
@@ -336,30 +271,26 @@ function contactPage(lang) {
 }
 function contactForm(lang) {
   const t = label[lang.key];
+  const formLabels = {
+    zh: { name: "姓名", email: "邮箱", phone: "电话", line_id: "LINE", wechat: "微信", whatsapp: "WhatsApp", service_type: "服务类型", travel_date: "出行日期", travel_time: "出行时间", flight_number: "航班号", pickup_location: "上车地点", dropoff_location: "下车地点", passenger_count: "乘客人数", luggage_count: "行李数量", vehicle_preference: "车型偏好", child_seat: "儿童座椅", itinerary: "行程", notes: "备注" },
+    zhHant: { name: "姓名", email: "信箱", phone: "電話", line_id: "LINE", wechat: "微信", whatsapp: "WhatsApp", service_type: "服務類型", travel_date: "出行日期", travel_time: "出行時間", flight_number: "航班號", pickup_location: "上車地點", dropoff_location: "下車地點", passenger_count: "乘客人數", luggage_count: "行李數量", vehicle_preference: "車型偏好", child_seat: "兒童座椅", itinerary: "行程", notes: "備註" },
+    ja: { name: "お名前", email: "メール", phone: "電話", line_id: "LINE", wechat: "WeChat", whatsapp: "WhatsApp", service_type: "サービス種別", travel_date: "利用日", travel_time: "利用時間", flight_number: "便名", pickup_location: "乗車地", dropoff_location: "降車地", passenger_count: "人数", luggage_count: "荷物数", vehicle_preference: "車種希望", child_seat: "チャイルドシート", itinerary: "行程", notes: "備考" },
+    en: { name: "Name", email: "Email", phone: "Phone", line_id: "LINE", wechat: "WeChat", whatsapp: "WhatsApp", service_type: "Service type", travel_date: "Travel date", travel_time: "Travel time", flight_number: "Flight number", pickup_location: "Pickup location", dropoff_location: "Drop-off location", passenger_count: "Passengers", luggage_count: "Luggage", vehicle_preference: "Vehicle preference", child_seat: "Child seat", itinerary: "Itinerary", notes: "Notes" },
+    ko: { name: "이름", email: "이메일", phone: "전화", line_id: "LINE", wechat: "WeChat", whatsapp: "WhatsApp", service_type: "서비스 종류", travel_date: "이용일", travel_time: "이용 시간", flight_number: "항공편", pickup_location: "승차 장소", dropoff_location: "하차 장소", passenger_count: "인원", luggage_count: "수하물", vehicle_preference: "차종 희망", child_seat: "유아 시트", itinerary: "일정", notes: "메모" }
+  }[lang.key];
   const fields = ["name", "email", "phone", "line_id", "wechat", "whatsapp", "service_type", "travel_date", "travel_time", "flight_number", "pickup_location", "dropoff_location", "passenger_count", "luggage_count", "vehicle_preference", "child_seat", "itinerary", "notes"];
   return `<form class="contact-form" method="post" action="/api/inquiry.php" data-enhanced-form>
     <input type="hidden" name="language" value="${h(lang.slug)}"><input type="hidden" name="source_url" value=""><input type="hidden" name="idempotency_key" value="">
     <input class="hp" name="website" tabindex="-1" autocomplete="off">
-    <div class="form-grid">${fields.map((f) => `<label>${h(f.replaceAll("_", " "))}<input name="${h(f)}" ${f === "email" ? "type=\"email\" required" : f.includes("date") ? "type=\"date\"" : f.includes("time") ? "type=\"time\"" : ""} maxlength="500"></label>`).join("")}</div>
-    <label class="check"><input type="checkbox" name="privacy_consent" value="1" required> Privacy consent</label>
+    <div class="form-grid">${fields.map((f) => `<label>${h(formLabels[f] || f)}<input name="${h(f)}" ${f === "email" ? "type=\"email\" required" : f.includes("date") ? "type=\"date\"" : f.includes("time") ? "type=\"time\"" : ""} maxlength="500"></label>`).join("")}</div>
+    <label class="check"><input type="checkbox" name="privacy_consent" value="1" required> ${h(t.form.privacy)}</label>
     <button class="btn primary" type="submit">${h(t.consult)}</button><p class="form-status" data-form-status>${h(t.unavailable)}</p>
   </form>`;
 }
 function memberPage(lang, slug) {
   const t = label[lang.key];
-  const memberTitles = {
-    login: "Sign in",
-    register: "Join Japan Travel",
-    "verify-email": "Verify email",
-    "reset-password": "Reset password",
-    profile: "Member profile",
-    favorites: "Favorites",
-    trips: "Saved trips",
-    bookings: "Booking references",
-    vip: "VIP",
-    referrals: "Referrals",
-    ambassador: "Ambassador"
-  };
+  const m = t.member;
+  const memberTitles = m;
   const title = memberTitles[slug] || slug;
   const actionMap = {
     favorites: "favorite-list",
@@ -370,14 +301,18 @@ function memberPage(lang, slug) {
     ambassador: "ambassador-apply"
   };
   const action = slug === "verify-email" ? "verify-email" : slug === "reset-password" ? "reset-password" : actionMap[slug] || slug;
-  const emailField = ["register", "login", "reset-password"].includes(slug) ? `<label>Email<input name="email" type="email" autocomplete="email" required></label>` : "";
-  const passwordField = ["register", "login"].includes(slug) ? `<label>Password<input name="password" type="password" autocomplete="${slug === "login" ? "current-password" : "new-password"}" ${slug === "register" ? "minlength=\"10\"" : ""} required></label>` : "";
-  const resetTokenFields = slug === "reset-password" ? `<label>Reset token<input name="token" autocomplete="one-time-code"></label><label>New password<input name="new_password_display" type="password" autocomplete="new-password" minlength="10" oninput="this.form.password.value=this.value"></label><input type="hidden" name="password">` : "";
-  const verifyTokenField = slug === "verify-email" ? `<label>Verification token<input name="token" autocomplete="one-time-code" required></label>` : "";
-  const nicknameField = ["register", "profile"].includes(slug) ? `<label>Nickname<input name="nickname" maxlength="80" autocomplete="nickname"></label>` : "";
-  const ambassadorField = slug === "ambassador" ? `<label>Message<textarea name="message" maxlength="2000"></textarea></label>` : "";
+  const emailField = ["register", "login", "reset-password"].includes(slug) ? `<label>${h(m.email)}<input name="email" type="email" autocomplete="email" required></label>` : "";
+  const passwordField = ["register", "login"].includes(slug) ? `<label>${h(m.password)}<input name="password" type="password" autocomplete="${slug === "login" ? "current-password" : "new-password"}" ${slug === "register" ? "minlength=\"10\"" : ""} required></label>` : "";
+  const resetTokenFields = slug === "reset-password" ? `<label>${h(m.token)}<input name="token" autocomplete="one-time-code"></label><label>${h(m.newPassword)}<input name="new_password_display" type="password" autocomplete="new-password" minlength="10" oninput="this.form.password.value=this.value"></label><input type="hidden" name="password">` : "";
+  const verifyTokenField = slug === "verify-email" ? `<label>${h(m.token)}<input name="token" autocomplete="one-time-code" required></label>` : "";
+  const nicknameField = ["register", "profile"].includes(slug) ? `<label>${h(m.nickname)}<input name="nickname" maxlength="80" autocomplete="nickname"></label>` : "";
+  const ambassadorField = slug === "ambassador" ? `<label>${h(m.message)}<textarea name="message" maxlength="2000"></textarea></label>` : "";
   const actionField = `<input type="hidden" name="action" value="${h(action)}">`;
-  const body = `<main class="wrap page member-shell"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p><section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section></main>`;
+  const authedTools = !["login", "register", "verify-email", "reset-password"].includes(slug)
+    ? `<section class="panel member-data" data-member-panel data-member-page="${h(slug)}"><p data-member-status>${h(m.loading)}</p><div data-member-content></div></section>`
+    : "";
+  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="${h(slug)}"><h1>${h(title)}</h1><p class="lead">${h(t.memberLead)}</p>
+    <section class="panel"><p>${h(t.noLogin)}</p><form class="member-form" method="post" action="/api/member.php" data-member-form>${actionField}<input type="hidden" name="language" value="${h(lang.slug)}">${emailField}${passwordField}${verifyTokenField}${resetTokenFields}${nicknameField}${ambassadorField}<button class="btn primary" type="submit">${h(title)}</button><p data-member-status>${h(t.unavailable)}</p></form></section>${authedTools}</main>`;
   return layout(lang, `member/${slug}`, { title: `${title} | Japan Travel`, description: `${title}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, `member/${slug}`, "WebPage") });
 }
 function infoPage(lang, slug) {
@@ -494,7 +429,22 @@ function build() {
   writeFile("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /runtime/\nSitemap: ${siteUrl}/sitemap.xml\n`);
   writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404").map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
   writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^go/rezio/([^/]+)/?$ /api/rezio.php?product_key=$1 [QSA,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
-  const manifest = { generatedAt: new Date().toISOString(), pages: publicPages.length + 3, sha: crypto.createHash("sha256").update([...generated].sort().join("\n")).digest("hex") };
+  const sha = crypto.createHash("sha256")
+    .update(JSON.stringify(content))
+    .update(JSON.stringify(brand))
+    .update(JSON.stringify(faq))
+    .update([...generated].sort().join("\n"))
+    .digest("hex");
+  const manifestFile = path.join(root, "src/generated-manifest.json");
+  let previous = {};
+  if (fs.existsSync(manifestFile)) {
+    try { previous = JSON.parse(fs.readFileSync(manifestFile, "utf8")); } catch (_) { previous = {}; }
+  }
+  const manifest = {
+    generatedAt: previous.sha === sha && previous.generatedAt ? previous.generatedAt : new Date().toISOString(),
+    pages: publicPages.length + 3,
+    sha
+  };
   writeFile("src/generated-manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(`Generated ${manifest.pages} html targets for ${langs.length} languages, ${spots(langs[0]).length} spots, ${routes(langs[0]).length} routes.`);
 }

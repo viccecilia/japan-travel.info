@@ -23,18 +23,35 @@ jobs:
       - run: npm run verify
       - name: PHP syntax
         run: |
-          php -l api/bootstrap.php
-          php -l api/csrf.php
-          php -l api/inquiry.php
-          php -l api/member.php
-          php -l api/rezio.php
-          php -l tools/import-rezio-csv.php
-          php -l tests/php/integration.php
+          find api tools tests/php -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: PHP integration
         env:
           APP_ENV: development
           APP_SECRET: ci-secret-with-more-than-thirty-two-characters
         run: php tests/php/integration.php
+      - name: PHP HTTP integration
+        env:
+          APP_ENV: development
+          APP_SECRET: ci-secret-with-more-than-thirty-two-characters
+          APP_DATA_DIR: ${{ runner.temp }}/jt-http-data
+          MAIL_TRANSPORT: spool
+          SITE_URL: http://127.0.0.1:8099
+          REZIO_ROUTE_URLS_JSON: '{"kyoto":"https://demo.rezio.shop/products/kyoto"}'
+        run: |
+          php -S 127.0.0.1:8099 -t . > "${{ runner.temp }}/php-server.log" 2>&1 &
+          echo $! > "${{ runner.temp }}/php-server.pid"
+          sleep 2
+          php tests/php/http_integration.php http://127.0.0.1:8099
+          kill "$(cat "${{ runner.temp }}/php-server.pid")"
+      - name: SMTP integration
+        run: |
+          python tests/smtp_server.py > "${{ runner.temp }}/smtp.log" 2>&1 &
+          echo $! > "${{ runner.temp }}/smtp.pid"
+          sleep 1
+          php tests/php/smtp.php
+          kill "$(cat "${{ runner.temp }}/smtp.pid")"
+      - name: Rezio CSV business rules
+        run: php tests/php/rezio_csv.php
       - name: CSV dry run
         env:
           APP_ENV: development

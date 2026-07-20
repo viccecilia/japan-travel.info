@@ -31,12 +31,20 @@ $finalUrl = jt_url_with_query($destination, $utm);
 
 $pdo = jt_db();
 $userId = jt_current_user_id() ?: null;
+$refCode = (string)($_GET['ref_code'] ?? '');
+if ($userId && $refCode !== '') {
+    $self = $pdo->prepare('SELECT referral_code FROM member_user WHERE id = ?');
+    $self->execute([$userId]);
+    if (hash_equals((string)($self->fetchColumn() ?: ''), $refCode)) $refCode = '';
+}
+$utm['ref_code'] = $refCode;
+$finalUrl = jt_url_with_query($destination, $utm);
 $stmt = $pdo->prepare('INSERT INTO rezio_click (click_id, visitor_id, user_id, ref_code, product_key, language, landing_page, source_page, utm_source, utm_medium, utm_campaign, utm_content, destination_url_key, destination_url, ip_hash, user_agent_hash, clicked_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 $stmt->execute([
     $clickId,
     (string)($_GET['visitor_id'] ?? ''),
     $userId,
-    (string)($_GET['ref_code'] ?? ''),
+    $refCode,
     $key,
     (string)($_GET['language'] ?? ''),
     (string)($_GET['landing_page'] ?? ''),
@@ -51,9 +59,9 @@ $stmt->execute([
     jt_hash($_SERVER['HTTP_USER_AGENT'] ?? ''),
     gmdate('c')
 ]);
-if (!empty($_GET['ref_code'])) {
+if ($refCode !== '') {
     $pdo->prepare('INSERT OR IGNORE INTO referral_click (referral_code, click_id, landing_page, ip_hash, user_agent_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-        ->execute([(string)$_GET['ref_code'], $clickId, (string)($_GET['landing_page'] ?? ''), jt_hash($_SERVER['REMOTE_ADDR'] ?? ''), jt_hash($_SERVER['HTTP_USER_AGENT'] ?? ''), gmdate('c')]);
+        ->execute([$refCode, $clickId, (string)($_GET['landing_page'] ?? ''), jt_hash($_SERVER['REMOTE_ADDR'] ?? ''), jt_hash($_SERVER['HTTP_USER_AGENT'] ?? ''), gmdate('c')]);
 }
 jt_audit_log('rezio_click', ['click_id' => $clickId, 'product_key' => $key], $userId);
 header('Location: ' . $finalUrl, true, 302);

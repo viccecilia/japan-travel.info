@@ -377,19 +377,31 @@ function jt_smtp_send(string $to, string $subject, string $body): array {
         } while (isset($chunk[3]) && $chunk[3] === '-');
         return $out;
     };
-    $read();
-    $cmd('EHLO japan-travel.info');
+    $expect = function (string $response, array $codes, string $step) use ($fp): ?array {
+        $code = substr($response, 0, 3);
+        if (!in_array($code, $codes, true)) {
+            fclose($fp);
+            return jt_mail_status('failed', 'SMTP ' . $step . ' failed');
+        }
+        return null;
+    };
+    $greeting = $read();
+    if ($bad = $expect($greeting, ['220'], 'greeting')) return $bad;
+    if ($bad = $expect($cmd('EHLO japan-travel.info'), ['250'], 'EHLO')) return $bad;
     if ($port !== 465 && jt_env('SMTP_TLS', '1') !== '0') {
-        $cmd('STARTTLS');
-        stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-        $cmd('EHLO japan-travel.info');
+        if ($bad = $expect($cmd('STARTTLS'), ['220'], 'STARTTLS')) return $bad;
+        if (@stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) !== true) {
+            fclose($fp);
+            return jt_mail_status('failed', 'SMTP TLS failed');
+        }
+        if ($bad = $expect($cmd('EHLO japan-travel.info'), ['250'], 'EHLO after TLS')) return $bad;
     }
-    $cmd('AUTH LOGIN');
-    $cmd(base64_encode($user));
-    $cmd(base64_encode($pass));
-    $cmd('MAIL FROM:<' . $from . '>');
-    $cmd('RCPT TO:<' . $to . '>');
-    $cmd('DATA');
+    if ($bad = $expect($cmd('AUTH LOGIN'), ['334'], 'AUTH')) return $bad;
+    if ($bad = $expect($cmd(base64_encode($user)), ['334'], 'AUTH user')) return $bad;
+    if ($bad = $expect($cmd(base64_encode($pass)), ['235'], 'AUTH password')) return $bad;
+    if ($bad = $expect($cmd('MAIL FROM:<' . $from . '>'), ['250'], 'MAIL FROM')) return $bad;
+    if ($bad = $expect($cmd('RCPT TO:<' . $to . '>'), ['250', '251'], 'RCPT TO')) return $bad;
+    if ($bad = $expect($cmd('DATA'), ['354'], 'DATA')) return $bad;
     $headers = [
         'From: Japan Travel <' . $from . '>',
         'To: <' . $to . '>',
@@ -480,4 +492,45 @@ function jt_same_origin_return(string $url): string {
     $site = rtrim(jt_env('SITE_URL', 'https://japan-travel.info'), '/');
     if (str_starts_with($url, '/')) return $url;
     return str_starts_with($url, $site) ? $url : '/';
+}
+
+function jt_vip_tier_for(PDO $pdo, int $userId): string {
+    $stmt = $pdo->prepare('SELECT email, referral_code FROM member_user WHERE id = ?');
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    if (!$user) return 'Visitor';
+    $email = strtolower((string)$user['email']);
+    $code = (string)$user['referral_code'];
+    $ownStmt = $pdo->prepare('SELECT COUNT(*) FROM booking_reference WHERE user_id = ? AND status = ?');
+    $ownStmt->execute([$userId, 'valid_order']);
+    $own = (int)$ownStmt->fetchColumn();
+    $directStmt = $pdo->prepare('SELECT payload_json, created_at FROM booking_reference WHERE status = ? ORDER BY created_at DESC');
+    $directStmt->execute(['valid_order']);
+    $directAll = [];
+    $direct12 = [];
+    $since = strtotime('-12 months');
+    foreach ($directStmt->fetchAll() as $row) {
+        $payload = json_decode((string)$row['payload_json'], true);
+        if (!is_array($payload) || (string)($payload['referral_code'] ?? '') !== $code) continue;
+        if (strtolower((string)($payload['email'] ?? '')) === $email) continue;
+        $orderEmail = strtolower((string)($payload['email'] ?? $payload['customer_email'] ?? 'unknown'));
+        $directAll[$orderEmail] = true;
+        if (strtotime((string)$row['created_at']) >= $since) $direct12[$orderEmail] = true;
+    }
+    if (count($directAll) >= 10) return 'Premier Host';
+    if (count($direct12) >= 3) return 'Circle Host';
+    if ($own >= 2 || count($directAll) >= 1) return 'VIP Friend';
+    if ($own >= 1) return 'Member';
+    return 'Visitor';
+}
+
+function jt_update_vip_tier(PDO $pdo, int $userId, string $reason): string {
+    $tier = jt_vip_tier_for($pdo, $userId);
+    $stmt = $pdo->prepare('SELECT tier FROM vip_tier_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 1');
+    $stmt->execute([$userId]);
+    if ((string)($stmt->fetchColumn() ?: '') !== $tier) {
+        $pdo->prepare('INSERT INTO vip_tier_history (user_id, tier, reason, created_at) VALUES (?, ?, ?, ?)')
+            ->execute([$userId, $tier, $reason, gmdate('c')]);
+    }
+    return $tier;
 }

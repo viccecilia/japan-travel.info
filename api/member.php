@@ -197,10 +197,10 @@ if ($action === 'referral-summary') {
     $stmt = $pdo->prepare('SELECT referral_code FROM member_user WHERE id = ?');
     $stmt->execute([$userId]);
     $code = (string)$stmt->fetchColumn();
-    $clickStmt = $pdo->prepare('SELECT COUNT(*) FROM referral_click WHERE ref_code = ?');
+    $clickStmt = $pdo->prepare('SELECT COUNT(*) FROM referral_click WHERE referral_code = ?');
     $clickStmt->execute([$code]);
-    $orderStmt = $pdo->prepare('SELECT COUNT(*) FROM booking_reference WHERE user_id = ? AND status = ?');
-    $orderStmt->execute([$userId, 'valid_order']);
+    $orderStmt = $pdo->prepare('SELECT COUNT(*) FROM booking_reference WHERE status = ? AND payload_json LIKE ?');
+    $orderStmt->execute(['valid_order', '%"referral_code":"' . str_replace(['%', '_'], ['\\%', '\\_'], $code) . '"%']);
     jt_json(['ok' => true, 'referral' => [
         'referral_code' => $code,
         'clicks' => (int)$clickStmt->fetchColumn(),
@@ -213,7 +213,7 @@ if ($action === 'vip-summary') {
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM booking_reference WHERE user_id = ? AND status = ?');
     $stmt->execute([$userId, 'valid_order']);
     $validOrders = (int)$stmt->fetchColumn();
-    $tier = $validOrders >= 5 ? 'gold' : ($validOrders >= 2 ? 'silver' : 'standard');
+    $tier = jt_update_vip_tier($pdo, $userId, 'member_summary');
     $historyStmt = $pdo->prepare('SELECT tier, reason, created_at FROM vip_tier_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 20');
     $historyStmt->execute([$userId]);
     jt_json(['ok' => true, 'vip' => [

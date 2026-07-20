@@ -38,8 +38,8 @@ for (const f of files.filter((x) => /\.(html|js|php|json|md|txt|xml|htaccess)$/i
   if (rel === "scripts/check-site.mjs") continue;
   const text = fs.readFileSync(f, "utf8");
   for (const re of forbidden) if (re.test(text)) fail(`forbidden ${re} in ${rel}`);
-  if (/localhost|127\.0\.0\.1/.test(text) && !rel.startsWith("docs/")) fail(`localhost default in ${rel}`);
-  if (/SMTP_PASSWORD=.+\S/.test(text) && !rel.endsWith(".env.example")) fail(`possible smtp secret in ${rel}`);
+  if (/localhost|127\.0\.0\.1/.test(text) && !rel.startsWith("docs/") && !rel.startsWith("tests/") && !rel.startsWith(".github/")) fail(`localhost default in ${rel}`);
+  if (/SMTP_PASSWORD=.+\S/.test(text) && !rel.endsWith(".env.example") && !rel.startsWith("tests/") && !rel.startsWith(".github/")) fail(`possible smtp secret in ${rel}`);
 }
 
 for (const f of html) {

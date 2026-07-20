@@ -30,7 +30,7 @@ const pages = [
   ["/zh-cn/spots/kyo-0001/", "清水寺"],
   ["/zh-cn/products/kix-osaka/", "KIX"],
   ["/zh-cn/contact/", "定制咨询"],
-  ["/zh-cn/member/login/", "Sign in"],
+  ["/zh-cn/member/login/", "登录"],
   ["/zh-tw/", "森有靜之氣"],
   ["/zh-tw/spots/kyo-0001/", "清水寺"],
   ["/zh-tw/services/airport-transfer/", "機場"],
@@ -38,15 +38,15 @@ const pages = [
   ["/ja/", "森に息づき"],
   ["/ja/spots/kyo-0001/", "清水寺"],
   ["/ja/vehicles/alphard/", "Alphard"],
-  ["/ja/contact/", "カスタム"],
+  ["/ja/contact/", "カスタム相談"],
   ["/en/", "Still forests"],
   ["/en/spots/kyo-0001/", "Kiyomizu"],
   ["/en/services/airport-transfer/", "Airport"],
   ["/en/faq/", "FAQ"],
-  ["/ko/", "숲은"],
-  ["/ko/spots/kyo-0001/", "기요"],
+  ["/ko/", "고요한 숲"],
+  ["/ko/spots/kyo-0001/", "기요미즈데라"],
   ["/ko/services/airport-transfer/", "공항"],
-  ["/ko/member/register/", "Join Japan Travel"],
+  ["/ko/member/register/", "Japan Travel 참여"],
   ["/en/routes/", "Popular"],
   ["/en/routes/kyoto-nara-classic/", "Kyoto"],
   ["/en/spots/", "Kansai"],
@@ -55,9 +55,7 @@ const pages = [
   ["/en/referral/", "Referral"],
   ["/en/404/", "404"],
   ["/go/rezio/not-configured/", "Rezio link unavailable"]
-];
-
-fs.mkdirSync(path.join(process.cwd(), "output/playwright"), { recursive: true });
+];fs.mkdirSync(path.join(process.cwd(), "output/playwright"), { recursive: true });
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
 const errors = [];

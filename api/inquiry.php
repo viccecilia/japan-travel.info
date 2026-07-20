@@ -26,34 +26,45 @@ if (empty($input['privacy_consent'])) jt_json(['ok' => false, 'message' => 'Priv
 
 $idempotencyKey = $payload['idempotency_key'] !== '' ? $payload['idempotency_key'] : jt_hash(json_encode([$payload['email'], $payload['source_url'], $payload['notes']]));
 $pdo = jt_db();
-$stmt = $pdo->prepare('SELECT request_id, mail_status FROM inquiry WHERE idempotency_key = ? LIMIT 1');
-$stmt->execute([$idempotencyKey]);
-if ($existing = $stmt->fetch()) {
-    jt_json(['ok' => true, 'request_id' => $existing['request_id'], 'mail_status' => $existing['mail_status'], 'message' => 'Inquiry received, but the reservation is not confirmed yet.']);
-}
-
 $requestId = jt_random_id('inq');
 $payload['request_id'] = $requestId;
 $payload['received_notice'] = 'Inquiry received, reservation not confirmed.';
 $payload['user_id'] = jt_current_user_id() ?: null;
 $ipHash = jt_hash($_SERVER['REMOTE_ADDR'] ?? '');
 $uaHash = jt_hash($_SERVER['HTTP_USER_AGENT'] ?? '');
+$inserted = false;
+try {
+    $pdo->beginTransaction();
+    $stmt = $pdo->prepare('INSERT INTO inquiry (request_id, idempotency_key, payload_json, email, status, mail_status, mail_error, ip_hash, user_agent_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([
+        $requestId,
+        $idempotencyKey,
+        json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        $payload['email'],
+        'pending',
+        'pending',
+        null,
+        $ipHash,
+        $uaHash,
+        gmdate('c')
+    ]);
+    $pdo->commit();
+    $inserted = true;
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    $stmt = $pdo->prepare('SELECT request_id, mail_status FROM inquiry WHERE idempotency_key = ? LIMIT 1');
+    $stmt->execute([$idempotencyKey]);
+    if ($existing = $stmt->fetch()) {
+        jt_json(['ok' => true, 'request_id' => $existing['request_id'], 'mail_status' => $existing['mail_status'], 'message' => 'Inquiry received, but the reservation is not confirmed yet.']);
+    }
+    throw $e;
+}
+
 $body = "New Japan Travel inquiry\nRequest: {$requestId}\nStatus: received_not_confirmed\n\n" . json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 $mailTo = jt_env('BOOKING_TO_EMAIL', 'info@daitora-jp.com');
 $mail = jt_send_mail($mailTo, 'Japan Travel inquiry ' . $requestId, $body);
-
-$stmt = $pdo->prepare('INSERT INTO inquiry (request_id, idempotency_key, payload_json, email, status, mail_status, mail_error, ip_hash, user_agent_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-$stmt->execute([
-    $requestId,
-    $idempotencyKey,
-    json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-    $payload['email'],
-    'received_not_confirmed',
-    $mail['status'],
-    $mail['error'],
-    $ipHash,
-    $uaHash,
-    gmdate('c')
-]);
+$status = $mail['ok'] ? 'received_not_confirmed' : 'mail_failed';
+$pdo->prepare('UPDATE inquiry SET status = ?, mail_status = ?, mail_error = ? WHERE request_id = ?')
+    ->execute([$status, $mail['status'], $mail['error'], $requestId]);
 jt_audit_log('inquiry_received', ['request_id' => $requestId, 'mail_status' => $mail['status']], jt_current_user_id() ?: null);
 jt_json(['ok' => true, 'request_id' => $requestId, 'message' => 'Inquiry received, but the reservation is not confirmed yet.', 'mail_status' => $mail['status']]);
