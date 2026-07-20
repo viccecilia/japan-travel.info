@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 $base = rtrim($argv[1] ?? 'http://127.0.0.1:8099', '/');
 $cookieFile = sys_get_temp_dir() . '/jt_cookie_' . bin2hex(random_bytes(4)) . '.txt';
+$cookieJar = [];
 
 function ok(bool $condition, string $message): void {
     if (!$condition) {
@@ -11,7 +12,7 @@ function ok(bool $condition, string $message): void {
     }
 }
 function request(string $method, string $url, array $fields = [], array $headers = []): array {
-    global $cookieFile;
+    global $cookieFile, $cookieJar;
     $headerLines = array_merge(['Origin: http://127.0.0.1:8099'], $headers);
     $opts = [
         'http' => [
@@ -24,8 +25,10 @@ function request(string $method, string $url, array $fields = [], array $headers
         $opts['http']['content'] = http_build_query($fields);
         $opts['http']['header'] .= "Content-Type: application/x-www-form-urlencoded\r\n";
     }
-    if (is_file($cookieFile)) {
-        $opts['http']['header'] .= "Cookie: " . trim((string)file_get_contents($cookieFile)) . "\r\n";
+    if ($cookieJar) {
+        $pairs = [];
+        foreach ($cookieJar as $name => $value) $pairs[] = $name . '=' . $value;
+        $opts['http']['header'] .= "Cookie: " . implode('; ', $pairs) . "\r\n";
     }
     $body = file_get_contents($url, false, stream_context_create($opts));
     $status = 0;
@@ -34,10 +37,16 @@ function request(string $method, string $url, array $fields = [], array $headers
         if (preg_match('/^HTTP\/\S+\s+(\d+)/', $line, $m)) $status = (int)$m[1];
         if (stripos($line, 'Set-Cookie:') === 0) {
             $pair = explode(';', trim(substr($line, 11)), 2)[0];
+            [$name, $value] = array_pad(explode('=', $pair, 2), 2, '');
+            if ($name !== '') $cookieJar[$name] = $value;
             $cookies[] = $pair;
         }
     }
-    if ($cookies) file_put_contents($cookieFile, implode('; ', $cookies));
+    if ($cookieJar) {
+        $pairs = [];
+        foreach ($cookieJar as $name => $value) $pairs[] = $name . '=' . $value;
+        file_put_contents($cookieFile, implode('; ', $pairs));
+    }
     return [$status, json_decode((string)$body, true) ?: [], (string)$body, $http_response_header ?? []];
 }
 
@@ -78,6 +87,10 @@ $db->prepare('UPDATE member_user SET email_verified_at = ? WHERE email = ?')->ex
     'password' => 'Password1234'
 ]);
 ok($status === 200 && !empty($login['member']['id']), 'verified member login works');
+
+[$status, $csrf] = request('GET', $base . '/api/csrf.php');
+ok($status === 200 && !empty($csrf['csrf_token']), 'csrf refresh after login works');
+$token = $csrf['csrf_token'];
 
 [$status, $ref] = request('POST', $base . '/api/member.php', [
     'csrf_token' => $token,
