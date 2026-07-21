@@ -27,7 +27,9 @@ for (const [lang, data] of Object.entries(content)) {
 
 const sourceUrls = new Set([...Object.values(sources.bySpot), ...Object.values(sources.byRegion)].map((x) => x.url));
 if (sourceUrls.size < 10) fail("official source mapping is too generic");
-const productHtml = fs.readFileSync(path.join(root, "en/products/index.html"), "utf8");
+const productHtml = ["kix-osaka", "kix-kyoto", "kix-nara", "kix-kobe"]
+  .map((id) => fs.readFileSync(path.join(root, "en/products", id, "index.html"), "utf8"))
+  .join("\n");
 const productImages = [...productHtml.matchAll(/<img src="([^"]+)"/g)].map((x) => x[1]);
 if (new Set(productImages).size < 4) fail("product cards do not have distinct images");
 for (const route of content.en.routes) {

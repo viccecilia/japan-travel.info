@@ -201,31 +201,6 @@
       }));
     });
   }
-  function rezioUrl(original, productKey) {
-    const url = new URL(original, location.origin);
-    const params = new URLSearchParams(location.search);
-    url.searchParams.set("language", lang());
-    url.searchParams.set("landing_page", decodeURIComponent(getCookie("jt_landing_page")) || location.pathname);
-    url.searchParams.set("visitor_id", visitorId());
-    const ref = decodeURIComponent(getCookie("jt_ref_code")) || params.get("ref_code") || "";
-    if (ref) url.searchParams.set("ref_code", ref);
-    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content"]) {
-      const live = params.get(key);
-      const stored = analyticsAllowed() ? decodeURIComponent(getCookie(`jt_${key}`)) : "";
-      const value = live || stored || (key === "utm_source" ? "japan-travel-info" : key === "utm_medium" ? "website" : key === "utm_campaign" ? "kansai-guide" : productKey);
-      if (value) url.searchParams.set(key, value);
-    }
-    return url.href;
-  }
-  function initRezioLinks() {
-    bySel("a[href^='/go/rezio/'],a[href*='/go/rezio/']").forEach((a) => {
-      a.addEventListener("click", () => {
-        const key = a.dataset.serverRezio || a.getAttribute("href").split("/").filter(Boolean).pop() || "";
-        a.href = rezioUrl(a.getAttribute("href"), key);
-        track("RezioClick", { product_key: key });
-      });
-    });
-  }
   async function postMember(data) {
     data.set("csrf_token", await csrfToken());
     const res = await fetch("/api/member.php", { method: "POST", body: data, credentials: "same-origin" });
@@ -337,25 +312,38 @@
       update();
     });
     bySel("[data-enhanced-form]").forEach((form) => {
+      let idempotencyKey = "";
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const status = form.querySelector("[data-form-status]");
+        const submit = form.querySelector("button[type='submit']");
+        if (submit?.disabled) return;
+        submit && (submit.disabled = true);
+        form.setAttribute("aria-busy", "true");
+        status?.classList.remove("success", "error");
+        safeText(status, formText.sending || "Sending...");
         const data = new FormData(form);
         data.set("source_url", location.href);
-        data.set("idempotency_key", crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+        if (!idempotencyKey) idempotencyKey = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+        data.set("idempotency_key", idempotencyKey);
         data.set("visitor_id", visitorId());
         data.set("ref_code", decodeURIComponent(getCookie("jt_ref_code")));
-        data.set("csrf_token", await csrfToken());
-        safeText(status, formText.sending || "Sending...");
         try {
+          data.set("csrf_token", await csrfToken());
           const res = await fetch(form.action, { method: "POST", body: data, credentials: "same-origin" });
           const json = await res.json().catch(() => ({}));
           if (!res.ok || !json.ok) throw new Error(json.message || "failed");
           safeText(status, json.message || formText.received || "Inquiry received.");
+          status?.classList.add("success");
           form.reset();
+          idempotencyKey = "";
           track("Lead", { request_id: json.request_id || "" });
-        } catch (_) {
-          safeText(status, formText.failed || "Processing failed. Please try again later.");
+        } catch (error) {
+          safeText(status, error.message && error.message !== "failed" ? error.message : (formText.failed || "Processing failed. Please try again later."));
+          status?.classList.add("error");
+        } finally {
+          submit && (submit.disabled = false);
+          form.removeAttribute("aria-busy");
         }
       });
     });
@@ -367,7 +355,6 @@
   initSearch();
   initForms();
   initMember();
-  initRezioLinks();
   initCookieBanner();
   track(document.body.dataset.page?.startsWith("spots/") ? "ViewSpot" : document.body.dataset.page?.startsWith("routes/") ? "ViewRoute" : "PageView");
 })();

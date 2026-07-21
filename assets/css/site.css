@@ -209,6 +209,9 @@ label small { color: var(--muted); font-weight: 400; }
 .hp { position: absolute; left: -9999px; }
 .form-status, [data-member-status] { display: none; margin-top: 14px; color: var(--brand-dark); font-weight: 700; }
 .form-status:not(:empty), [data-member-status]:not(:empty) { display: block; }
+.form-status.success { color: #17663b; }
+.form-status.error { color: var(--danger); }
+.contact-form button[type="submit"]:disabled { cursor: wait; opacity: .6; }
 .contact-method-fields [data-contact-field] { display: none; }
 .contact-method-fields [data-contact-field].active { display: grid; }
 .check { min-height: 44px; display: flex; align-items: center; gap: 10px; cursor: pointer; }

@@ -38,17 +38,17 @@ const viewports = [
 const representative = [
   "/", "/zh-cn/", "/zh-cn/routes/", "/zh-cn/routes/kyoto-nara-classic/",
   "/zh-cn/spots/", "/zh-cn/spots/kyo-0001/", "/zh-cn/services/airport-transfer/",
-  "/zh-cn/services/charter/", "/zh-cn/products/", "/zh-cn/products/kix-osaka/",
+  "/zh-cn/services/charter/", "/zh-cn/products/kix-osaka/",
   "/zh-cn/vehicles/", "/zh-cn/vehicles/alphard/", "/zh-cn/vip/", "/zh-cn/referral/",
   "/zh-cn/ambassador/", "/zh-cn/member/login/", "/zh-cn/member/register/",
   "/zh-cn/member/profile/", "/zh-cn/member/bookings/", "/zh-cn/faq/",
-  "/zh-cn/contact/", "/zh-cn/about/", "/zh-cn/privacy/", "/zh-cn/terms/",
-  "/ja/", "/en/spots/", "/ko/routes/", "/zh-tw/services/family/"
+  "/zh-cn/contact/", "/zh-cn/privacy/", "/zh-cn/terms/",
+  "/ja/", "/ja/contact/", "/en/spots/", "/ko/routes/", "/zh-tw/services/family/"
 ];
 const screenshots = new Set([
   "/", "/zh-cn/", "/zh-cn/routes/kyoto-nara-classic/", "/zh-cn/spots/",
   "/zh-cn/spots/kyo-0001/", "/zh-cn/services/airport-transfer/", "/zh-cn/faq/",
-  "/zh-cn/contact/", "/zh-cn/member/profile/", "/en/spots/"
+  "/zh-cn/contact/", "/ja/contact/", "/zh-cn/member/profile/", "/en/spots/"
 ]);
 
 function assert(condition, message) {

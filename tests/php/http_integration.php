@@ -120,19 +120,35 @@ $inquiry = [
     'name' => 'HTTP User',
     'email' => $email,
     'privacy_consent' => '1',
-    'notes' => 'test inquiry'
+    'language' => 'en',
+    'contact_method' => 'email',
+    'service_type' => 'airport_transfer',
+    'travel_date' => '2026-09-20',
+    'travel_time' => '10:30',
+    'pickup_location' => 'Kansai International Airport',
+    'dropoff_location' => 'Kyoto Station',
+    'passenger_count' => '3',
+    'luggage_count' => '4',
+    'itinerary' => 'Please confirm this airport transfer.',
+    'source_url' => $base . '/en/contact/'
 ];
 [$status, $inq1] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'first inquiry idempotency request');
 [$status2, $inq2] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'duplicate inquiry idempotency request');
 ok(($inq1['request_id'] ?? '') !== '' && $inq1['request_id'] === ($inq2['request_id'] ?? null), 'inquiry idempotency over HTTP');
+$capture = json_decode((string)file_get_contents((string)getenv('GROUP_CONTACT_CAPTURE')), true);
+ok(($capture['count'] ?? 0) === 1, 'duplicate inquiry sends exactly one group contact request');
+ok(($capture['payload']['page_language'] ?? '') === 'en', 'group contact request preserves page language');
+ok(($capture['payload']['dropoff_location'] ?? '') === 'Kyoto Station', 'group contact request preserves travel details');
 
-[$status, $body, $raw, $headers] = request('GET', $base . '/api/rezio.php?product_key=kyoto&utm_source=instagram&utm_medium=social&ref_code=JTSELF&language=en&visitor_id=vis_http');
-$location = implode("\n", $headers);
-if (!($status === 302 && str_contains($location, 'click_id=clk_') && str_contains($location, 'utm_source=instagram'))) {
-    fwrite(STDERR, "FAIL: Rezio redirect appends click attribution\n");
-    fwrite(STDERR, "HTTP status: {$status}, headers: {$location}\n");
-    fwrite(STDERR, "Body: " . substr($raw, 0, 1000) . "\n");
-    exit(1);
-}
+$failedInquiry = $inquiry;
+$failedInquiry['idempotency_key'] = 'idem_' . bin2hex(random_bytes(4));
+$failedInquiry['itinerary'] = 'force-failure';
+expect_http(request('POST', $base . '/api/inquiry.php', $failedInquiry), 502, 'group mail failure must not report success', fn($json) => empty($json['ok']));
+expect_http(request('POST', $base . '/api/inquiry.php', $failedInquiry), 409, 'failed duplicate does not become a false success', fn($json) => empty($json['ok']));
+$capture = json_decode((string)file_get_contents((string)getenv('GROUP_CONTACT_CAPTURE')), true);
+ok(($capture['count'] ?? 0) === 2, 'failed duplicate does not send a second group contact request');
+
+[$status, $body, $raw, $headers] = request('GET', $base . '/api/rezio.php?language=en');
+ok($status === 302 && str_contains(implode("\n", $headers), 'Location: /en/contact/'), 'legacy Rezio endpoint redirects to localized inquiry');
 
 echo "OK php HTTP integration\n";

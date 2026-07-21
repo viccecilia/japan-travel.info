@@ -1,62 +1,757 @@
 {
   "zh": {
-    "nav": {"booking":"预约","about":"关于","member":"会员","cta":"咨询 / 预约","menu":"菜单","my":"我的","language":"语言"},
-    "home": {"kicker":"关西旅行内容与交通服务","title":"从一段路开始，看见关西的层次","lead":"从机场接送、关西包车和一日路线，到73个景点的文字与语音导览。Japan Travel由株式会社大寅／Daitora Group运营。","trust":[["73个景点","五语言文字与语音导览"],["关西多地","机场接送与包车服务"],["约100台规模","集团整体车辆网络"],["Rezio预约","实时日期、库存与支付"]],"products":"从抵达开始安排","routes":"精选一日路线","areas":"按地区遇见关西","operation":"从咨询到出发","faq":"出发前常见问题","ctaTitle":"把下一段关西旅程，安排得更从容"},
-    "route": {"duration":"建议时长","areas":"主要地区","bestFor":"适合人群","walking":"步行强度","highlights":"核心景点","view":"查看路线","filters":["全部","亲子","经典","海景","温泉","远郊"],"summary":"路线摘要","depart":"建议出发","timeline":"行程时间线","spotCta":"查看景点与语音导览","topCta":"确认日期与预约","custom":"定制咨询","walkValue":"适中，请根据同行者调整"},
-    "spot": {"type":"景点类型","stay":"建议停留","bestFor":"适合人群","season":"适合场景","walking":"步行强度","family":"亲子与长辈提示","combine":"路线组合建议","official":"官方信息","checked":"最后核对","before":"营业时间、休馆日、门票及临时交通规则可能变化，请在出发前查看官方页面。","audio":"语音导览","standard":"标准版","deep":"深度版","results":"个景点","allTypes":"全部类型","allTags":"全部场景"},
-    "service": {"scenes":"适合场景","process":"服务流程","vehicles":"车型建议","products":"相关预约入口","faq":"相关问题","boundary":"服务边界","steps":["提交行程信息","确认需求与车辆条件","在Rezio确认日期和预约","按确认内容提供服务"]},
-    "product": {"fromTo":"出发与目的地","scene":"适合场景","time":"通常行车时间","people":"人数与行李","vehicle":"可选车型","special":"特殊需求","details":"查看详情","book":"确认日期与预约","inventory":"查看实时库存","safe":"前往安全预约页面","traffic":"实际时间视交通、天气及上下车条件而定。","specialNote":"深夜、儿童座椅、大件行李及其他特殊需求需要提前确认。"},
-    "vehicles": {"title":"车型选择","lead":"车型会根据人数、行李、儿童座椅及实际运营条件协调。以下内容用于选择参考，不代表指定车辆承诺。","people":"建议人数","luggage":"行李参考","child":"儿童座椅","large":"婴儿车、轮椅与大型物品","scene":"适合场景","compare":"车型对比","pending":"车辆图片待补充经确认的公司实拍；现阶段使用中性视觉，不展示未经授权或无法确认归属的车辆。"},
-    "info": {"privacy":"隐私政策","terms":"使用条款","vip":"会员与VIP","referral":"推荐计划","ambassador":"关西观光大使","about":"关于运营","login":"登录查看","vipLead":"标准服务让旅程安心；VIP服务让Japan Travel还记得你。","referralLead":"把真实体验分享给朋友。只有已付款且已完成的服务才计入有效推荐。","ambassadorLead":"面向长期、真实分享关西内容的创作者与合作伙伴，和普通推荐计划分别管理。"},
-    "contact": {"contact":"联系人","transport":"用车信息","special":"特殊需求","method":"偏好联系方式","help":"只填写与本次咨询相关的信息。提交咨询不代表预约确认。","required":"必填"},
-    "faqCategories":["品牌与运营","机场接送","车型与行李","家庭与儿童","包车与路线","预约与付款","延误与取消","VIP与推荐","隐私与会员"]
+    "nav": {
+      "booking": "预约",
+      "about": "关于",
+      "member": "会员",
+      "cta": "咨询 / 预约",
+      "menu": "菜单",
+      "my": "我的",
+      "language": "语言"
+    },
+    "home": {
+      "kicker": "关西旅行内容与交通服务",
+      "title": "从一段路开始，看见关西的层次",
+      "lead": "从机场接送、关西包车和一日路线，到73个景点的文字与语音导览。Japan Travel由株式会社大寅／Daitora Group运营。",
+      "trust": [
+        [
+          "73个景点",
+          "五语言文字与语音导览"
+        ],
+        [
+          "关西多地",
+          "机场接送与包车服务"
+        ],
+        [
+          "约100台规模",
+          "集团整体车辆网络"
+        ],
+        [
+          "咨询确认",
+          "日期、车辆与费用由工作人员回复"
+        ]
+      ],
+      "products": "从抵达开始安排",
+      "routes": "精选一日路线",
+      "areas": "按地区遇见关西",
+      "operation": "从咨询到出发",
+      "faq": "出发前常见问题",
+      "ctaTitle": "把下一段关西旅程，安排得更从容"
+    },
+    "route": {
+      "duration": "建议时长",
+      "areas": "主要地区",
+      "bestFor": "适合人群",
+      "walking": "步行强度",
+      "highlights": "核心景点",
+      "view": "查看路线",
+      "filters": [
+        "全部",
+        "亲子",
+        "经典",
+        "海景",
+        "温泉",
+        "远郊"
+      ],
+      "summary": "路线摘要",
+      "depart": "建议出发",
+      "timeline": "行程时间线",
+      "spotCta": "查看景点与语音导览",
+      "topCta": "确认日期与预约",
+      "custom": "定制咨询",
+      "walkValue": "适中，请根据同行者调整"
+    },
+    "spot": {
+      "type": "景点类型",
+      "stay": "建议停留",
+      "bestFor": "适合人群",
+      "season": "适合场景",
+      "walking": "步行强度",
+      "family": "亲子与长辈提示",
+      "combine": "路线组合建议",
+      "official": "官方信息",
+      "checked": "最后核对",
+      "before": "营业时间、休馆日、门票及临时交通规则可能变化，请在出发前查看官方页面。",
+      "audio": "语音导览",
+      "standard": "标准版",
+      "deep": "深度版",
+      "results": "个景点",
+      "allTypes": "全部类型",
+      "allTags": "全部场景"
+    },
+    "service": {
+      "scenes": "适合场景",
+      "process": "服务流程",
+      "vehicles": "车型建议",
+      "products": "相关预约入口",
+      "faq": "相关问题",
+      "boundary": "服务边界",
+      "steps": [
+        "提交行程信息",
+        "确认需求与车辆条件",
+        "工作人员回复确认",
+        "按确认内容提供服务"
+      ]
+    },
+    "product": {
+      "fromTo": "出发与目的地",
+      "scene": "适合场景",
+      "time": "通常行车时间",
+      "people": "人数与行李",
+      "vehicle": "可选车型",
+      "special": "特殊需求",
+      "details": "查看详情",
+      "book": "确认日期与预约",
+      "inventory": "查看实时库存",
+      "safe": "前往安全预约页面",
+      "traffic": "实际时间视交通、天气及上下车条件而定。",
+      "specialNote": "深夜、儿童座椅、大件行李及其他特殊需求需要提前确认。"
+    },
+    "vehicles": {
+      "title": "车型选择",
+      "lead": "车型会根据人数、行李、儿童座椅及实际运营条件协调。以下内容用于选择参考，不代表指定车辆承诺。",
+      "people": "建议人数",
+      "luggage": "行李参考",
+      "child": "儿童座椅",
+      "large": "婴儿车、轮椅与大型物品",
+      "scene": "适合场景",
+      "compare": "车型对比",
+      "pending": "车辆图片待补充经确认的公司实拍；现阶段使用中性视觉，不展示未经授权或无法确认归属的车辆。"
+    },
+    "info": {
+      "privacy": "隐私政策",
+      "terms": "使用条款",
+      "vip": "会员与VIP",
+      "referral": "推荐计划",
+      "ambassador": "关西观光大使",
+      "about": "关于运营",
+      "login": "登录查看",
+      "vipLead": "标准服务让旅程安心；VIP服务让Japan Travel还记得你。",
+      "referralLead": "把真实体验分享给朋友。只有已付款且已完成的服务才计入有效推荐。",
+      "ambassadorLead": "面向长期、真实分享关西内容的创作者与合作伙伴，和普通推荐计划分别管理。"
+    },
+    "contact": {
+      "contact": "联系人",
+      "transport": "用车信息",
+      "special": "特殊需求",
+      "method": "偏好联系方式",
+      "help": "只填写与本次咨询相关的信息。提交咨询不代表预约确认。",
+      "required": "必填"
+    },
+    "faqCategories": [
+      "品牌与运营",
+      "机场接送",
+      "车型与行李",
+      "家庭与儿童",
+      "包车与路线",
+      "预约与付款",
+      "延误与取消",
+      "VIP与推荐",
+      "隐私与会员"
+    ]
   },
   "zhHant": {
-    "nav": {"booking":"預約","about":"關於","member":"會員","cta":"諮詢 / 預約","menu":"選單","my":"我的","language":"語言"},
-    "home": {"kicker":"關西旅行內容與交通服務","title":"從一段路開始，看見關西的層次","lead":"從機場接送、關西包車和一日路線，到73個景點的文字與語音導覽。Japan Travel由株式會社大寅／Daitora Group營運。","trust":[["73個景點","五語文字與語音導覽"],["關西多地","機場接送與包車服務"],["約100台規模","集團整體車輛網絡"],["Rezio預約","即時日期、庫存與付款"]],"products":"從抵達開始安排","routes":"精選一日路線","areas":"按地區遇見關西","operation":"從諮詢到出發","faq":"出發前常見問題","ctaTitle":"把下一段關西旅程，安排得更從容"},
-    "route": {"duration":"建議時長","areas":"主要地區","bestFor":"適合對象","walking":"步行強度","highlights":"核心景點","view":"查看路線","filters":["全部","親子","經典","海景","溫泉","遠郊"],"summary":"路線摘要","depart":"建議出發","timeline":"行程時間線","spotCta":"查看景點與語音導覽","topCta":"確認日期與預約","custom":"客製諮詢","walkValue":"適中，請依同行者調整"},
-    "spot": {"type":"景點類型","stay":"建議停留","bestFor":"適合對象","season":"適合場景","walking":"步行強度","family":"親子與長輩提示","combine":"路線組合建議","official":"官方資訊","checked":"最後核對","before":"營業時間、休館日、門票及臨時交通規則可能變動，請在出發前查看官方頁面。","audio":"語音導覽","standard":"標準版","deep":"深度版","results":"個景點","allTypes":"全部類型","allTags":"全部場景"},
-    "service": {"scenes":"適合場景","process":"服務流程","vehicles":"車型建議","products":"相關預約入口","faq":"相關問題","boundary":"服務邊界","steps":["提交行程資訊","確認需求與車輛條件","在Rezio確認日期和預約","依確認內容提供服務"]},
-    "product": {"fromTo":"出發與目的地","scene":"適合場景","time":"通常行車時間","people":"人數與行李","vehicle":"可選車型","special":"特殊需求","details":"查看詳情","book":"確認日期與預約","inventory":"查看即時庫存","safe":"前往安全預約頁面","traffic":"實際時間視交通、天氣及上下車條件而定。","specialNote":"深夜、兒童座椅、大件行李及其他特殊需求需要提前確認。"},
-    "vehicles": {"title":"車型選擇","lead":"車型會依人數、行李、兒童座椅及實際營運條件協調。以下內容僅供選擇參考，不代表指定車輛承諾。","people":"建議人數","luggage":"行李參考","child":"兒童座椅","large":"嬰兒車、輪椅與大型物品","scene":"適合場景","compare":"車型比較","pending":"車輛圖片待補充經確認的公司實拍；現階段使用中性視覺。"},
-    "info": {"privacy":"隱私政策","terms":"使用條款","vip":"會員與VIP","referral":"推薦計畫","ambassador":"關西觀光大使","about":"關於營運","login":"登入查看","vipLead":"標準服務讓旅程安心；VIP服務讓Japan Travel還記得你。","referralLead":"把真實體驗分享給朋友。只有已付款且已完成的服務才計入有效推薦。","ambassadorLead":"面向長期、真實分享關西內容的創作者與合作夥伴，和普通推薦計畫分開管理。"},
-    "contact": {"contact":"聯絡人","transport":"用車資訊","special":"特殊需求","method":"偏好聯絡方式","help":"只填寫與本次諮詢相關的資訊。提交諮詢不代表預約確認。","required":"必填"},
-    "faqCategories":["品牌與營運","機場接送","車型與行李","家庭與兒童","包車與路線","預約與付款","延誤與取消","VIP與推薦","隱私與會員"]
+    "nav": {
+      "booking": "預約",
+      "about": "關於",
+      "member": "會員",
+      "cta": "諮詢 / 預約",
+      "menu": "選單",
+      "my": "我的",
+      "language": "語言"
+    },
+    "home": {
+      "kicker": "關西旅行內容與交通服務",
+      "title": "從一段路開始，看見關西的層次",
+      "lead": "從機場接送、關西包車和一日路線，到73個景點的文字與語音導覽。Japan Travel由株式會社大寅／Daitora Group營運。",
+      "trust": [
+        [
+          "73個景點",
+          "五語文字與語音導覽"
+        ],
+        [
+          "關西多地",
+          "機場接送與包車服務"
+        ],
+        [
+          "約100台規模",
+          "集團整體車輛網絡"
+        ],
+        [
+          "諮詢確認",
+          "日期、車輛與費用由工作人員回覆"
+        ]
+      ],
+      "products": "從抵達開始安排",
+      "routes": "精選一日路線",
+      "areas": "按地區遇見關西",
+      "operation": "從諮詢到出發",
+      "faq": "出發前常見問題",
+      "ctaTitle": "把下一段關西旅程，安排得更從容"
+    },
+    "route": {
+      "duration": "建議時長",
+      "areas": "主要地區",
+      "bestFor": "適合對象",
+      "walking": "步行強度",
+      "highlights": "核心景點",
+      "view": "查看路線",
+      "filters": [
+        "全部",
+        "親子",
+        "經典",
+        "海景",
+        "溫泉",
+        "遠郊"
+      ],
+      "summary": "路線摘要",
+      "depart": "建議出發",
+      "timeline": "行程時間線",
+      "spotCta": "查看景點與語音導覽",
+      "topCta": "確認日期與預約",
+      "custom": "客製諮詢",
+      "walkValue": "適中，請依同行者調整"
+    },
+    "spot": {
+      "type": "景點類型",
+      "stay": "建議停留",
+      "bestFor": "適合對象",
+      "season": "適合場景",
+      "walking": "步行強度",
+      "family": "親子與長輩提示",
+      "combine": "路線組合建議",
+      "official": "官方資訊",
+      "checked": "最後核對",
+      "before": "營業時間、休館日、門票及臨時交通規則可能變動，請在出發前查看官方頁面。",
+      "audio": "語音導覽",
+      "standard": "標準版",
+      "deep": "深度版",
+      "results": "個景點",
+      "allTypes": "全部類型",
+      "allTags": "全部場景"
+    },
+    "service": {
+      "scenes": "適合場景",
+      "process": "服務流程",
+      "vehicles": "車型建議",
+      "products": "相關預約入口",
+      "faq": "相關問題",
+      "boundary": "服務邊界",
+      "steps": [
+        "提交行程資訊",
+        "確認需求與車輛條件",
+        "工作人員回覆確認",
+        "依確認內容提供服務"
+      ]
+    },
+    "product": {
+      "fromTo": "出發與目的地",
+      "scene": "適合場景",
+      "time": "通常行車時間",
+      "people": "人數與行李",
+      "vehicle": "可選車型",
+      "special": "特殊需求",
+      "details": "查看詳情",
+      "book": "確認日期與預約",
+      "inventory": "查看即時庫存",
+      "safe": "前往安全預約頁面",
+      "traffic": "實際時間視交通、天氣及上下車條件而定。",
+      "specialNote": "深夜、兒童座椅、大件行李及其他特殊需求需要提前確認。"
+    },
+    "vehicles": {
+      "title": "車型選擇",
+      "lead": "車型會依人數、行李、兒童座椅及實際營運條件協調。以下內容僅供選擇參考，不代表指定車輛承諾。",
+      "people": "建議人數",
+      "luggage": "行李參考",
+      "child": "兒童座椅",
+      "large": "嬰兒車、輪椅與大型物品",
+      "scene": "適合場景",
+      "compare": "車型比較",
+      "pending": "車輛圖片待補充經確認的公司實拍；現階段使用中性視覺。"
+    },
+    "info": {
+      "privacy": "隱私政策",
+      "terms": "使用條款",
+      "vip": "會員與VIP",
+      "referral": "推薦計畫",
+      "ambassador": "關西觀光大使",
+      "about": "關於營運",
+      "login": "登入查看",
+      "vipLead": "標準服務讓旅程安心；VIP服務讓Japan Travel還記得你。",
+      "referralLead": "把真實體驗分享給朋友。只有已付款且已完成的服務才計入有效推薦。",
+      "ambassadorLead": "面向長期、真實分享關西內容的創作者與合作夥伴，和普通推薦計畫分開管理。"
+    },
+    "contact": {
+      "contact": "聯絡人",
+      "transport": "用車資訊",
+      "special": "特殊需求",
+      "method": "偏好聯絡方式",
+      "help": "只填寫與本次諮詢相關的資訊。提交諮詢不代表預約確認。",
+      "required": "必填"
+    },
+    "faqCategories": [
+      "品牌與營運",
+      "機場接送",
+      "車型與行李",
+      "家庭與兒童",
+      "包車與路線",
+      "預約與付款",
+      "延誤與取消",
+      "VIP與推薦",
+      "隱私與會員"
+    ]
   },
   "ja": {
-    "nav": {"booking":"予約","about":"運営情報","member":"会員","cta":"相談・予約","menu":"メニュー","my":"マイページ","language":"言語"},
-    "home": {"kicker":"関西の旅行情報と移動サービス","title":"ひとつの道から、関西の奥行きへ","lead":"空港送迎、関西貸切、一日ルートから73スポットの文章・音声ガイドまで。Japan Travelは株式会社大寅／Daitora Groupが運営しています。","trust":[["73スポット","5言語の文章・音声ガイド"],["関西各地","空港送迎と貸切移動"],["約100台規模","グループ全体の車両ネットワーク"],["Rezio予約","日程・在庫・決済を確認"]],"products":"到着から整える","routes":"厳選日帰りルート","areas":"エリアから関西を探す","operation":"相談から出発まで","faq":"出発前のよくある質問","ctaTitle":"次の関西旅行を、もっと穏やかに"},
-    "route": {"duration":"目安時間","areas":"主なエリア","bestFor":"おすすめ","walking":"歩行量","highlights":"主なスポット","view":"ルートを見る","filters":["すべて","家族","定番","海景色","温泉","郊外"],"summary":"ルート概要","depart":"出発目安","timeline":"行程タイムライン","spotCta":"スポット詳細・音声ガイド","topCta":"日程確認・予約","custom":"個別相談","walkValue":"中程度。同行者に合わせて調整"},
-    "spot": {"type":"スポット種別","stay":"滞在目安","bestFor":"おすすめ","season":"向いている場面","walking":"歩行量","family":"家族・シニア向けの注意","combine":"ルートの組み合わせ","official":"公式情報","checked":"最終確認","before":"営業時間、休館日、料金、臨時交通規制は変わる場合があります。出発前に公式ページをご確認ください。","audio":"音声ガイド","standard":"スタンダード","deep":"ディープガイド","results":"件","allTypes":"すべての種類","allTags":"すべての場面"},
-    "service": {"scenes":"おすすめの場面","process":"ご利用の流れ","vehicles":"車種の目安","products":"関連予約","faq":"関連FAQ","boundary":"サービス範囲","steps":["行程情報を送信","ご希望と車両条件を確認","Rezioで日程・予約を確定","確認内容に沿って運行"]},
-    "product": {"fromTo":"出発地・目的地","scene":"おすすめの場面","time":"通常の所要時間","people":"人数と荷物","vehicle":"車種の目安","special":"特別なご要望","details":"詳細を見る","book":"日程確認・予約","inventory":"リアルタイム在庫を確認","safe":"安全な予約ページへ","traffic":"所要時間は交通、天候、乗降条件により変わります。","specialNote":"深夜、チャイルドシート、大型荷物などは事前確認が必要です。"},
-    "vehicles": {"title":"車種ガイド","lead":"人数、荷物、チャイルドシート、運行状況を確認して車種を調整します。以下は選択の目安で、特定車両を保証するものではありません。","people":"推奨人数","luggage":"荷物の目安","child":"チャイルドシート","large":"ベビーカー・車いす・大型品","scene":"おすすめの場面","compare":"車種比較","pending":"車両写真は権利と所属を確認できる自社実写を準備中です。現在は中立的なビジュアルを使用します。"},
-    "info": {"privacy":"プライバシーポリシー","terms":"利用規約","vip":"会員・VIP","referral":"紹介プログラム","ambassador":"関西観光アンバサダー","about":"運営について","login":"ログインして確認","vipLead":"通常サービスで安心を。VIPサービスで『Japan Travelが覚えている』体験を。","referralLead":"実際の体験を友人へ。支払い済みかつ完了したサービスのみ有効紹介に数えます。","ambassadorLead":"関西を継続的かつ誠実に発信する方の制度です。通常の紹介制度とは別に運営します。"},
-    "contact": {"contact":"連絡先","transport":"ご利用情報","special":"特別なご希望","method":"希望連絡方法","help":"今回の相談に必要な情報だけをご入力ください。送信は予約確定ではありません。","required":"必須"},
-    "faqCategories":["ブランド・運営","空港送迎","車種・荷物","家族・子ども","貸切・ルート","予約・支払い","遅延・キャンセル","VIP・紹介","プライバシー・会員"]
+    "nav": {
+      "booking": "予約",
+      "about": "運営情報",
+      "member": "会員",
+      "cta": "相談・予約",
+      "menu": "メニュー",
+      "my": "マイページ",
+      "language": "言語"
+    },
+    "home": {
+      "kicker": "関西の旅行情報と移動サービス",
+      "title": "ひとつの道から、関西の奥行きへ",
+      "lead": "空港送迎、関西貸切、一日ルートから73スポットの文章・音声ガイドまで。Japan Travelは株式会社大寅／Daitora Groupが運営しています。",
+      "trust": [
+        [
+          "73スポット",
+          "5言語の文章・音声ガイド"
+        ],
+        [
+          "関西各地",
+          "空港送迎と貸切移動"
+        ],
+        [
+          "約100台規模",
+          "グループ全体の車両ネットワーク"
+        ],
+        [
+          "相談受付",
+          "日程・車両・料金は担当者返信で確認"
+        ]
+      ],
+      "products": "到着から整える",
+      "routes": "厳選日帰りルート",
+      "areas": "エリアから関西を探す",
+      "operation": "相談から出発まで",
+      "faq": "出発前のよくある質問",
+      "ctaTitle": "次の関西旅行を、もっと穏やかに"
+    },
+    "route": {
+      "duration": "目安時間",
+      "areas": "主なエリア",
+      "bestFor": "おすすめ",
+      "walking": "歩行量",
+      "highlights": "主なスポット",
+      "view": "ルートを見る",
+      "filters": [
+        "すべて",
+        "家族",
+        "定番",
+        "海景色",
+        "温泉",
+        "郊外"
+      ],
+      "summary": "ルート概要",
+      "depart": "出発目安",
+      "timeline": "行程タイムライン",
+      "spotCta": "スポット詳細・音声ガイド",
+      "topCta": "日程確認・予約",
+      "custom": "個別相談",
+      "walkValue": "中程度。同行者に合わせて調整"
+    },
+    "spot": {
+      "type": "スポット種別",
+      "stay": "滞在目安",
+      "bestFor": "おすすめ",
+      "season": "向いている場面",
+      "walking": "歩行量",
+      "family": "家族・シニア向けの注意",
+      "combine": "ルートの組み合わせ",
+      "official": "公式情報",
+      "checked": "最終確認",
+      "before": "営業時間、休館日、料金、臨時交通規制は変わる場合があります。出発前に公式ページをご確認ください。",
+      "audio": "音声ガイド",
+      "standard": "スタンダード",
+      "deep": "ディープガイド",
+      "results": "件",
+      "allTypes": "すべての種類",
+      "allTags": "すべての場面"
+    },
+    "service": {
+      "scenes": "おすすめの場面",
+      "process": "ご利用の流れ",
+      "vehicles": "車種の目安",
+      "products": "関連予約",
+      "faq": "関連FAQ",
+      "boundary": "サービス範囲",
+      "steps": [
+        "行程情報を送信",
+        "ご希望と車両条件を確認",
+        "担当者から確認内容を返信",
+        "確認内容に沿って運行"
+      ]
+    },
+    "product": {
+      "fromTo": "出発地・目的地",
+      "scene": "おすすめの場面",
+      "time": "通常の所要時間",
+      "people": "人数と荷物",
+      "vehicle": "車種の目安",
+      "special": "特別なご要望",
+      "details": "詳細を見る",
+      "book": "日程確認・予約",
+      "inventory": "リアルタイム在庫を確認",
+      "safe": "安全な予約ページへ",
+      "traffic": "所要時間は交通、天候、乗降条件により変わります。",
+      "specialNote": "深夜、チャイルドシート、大型荷物などは事前確認が必要です。"
+    },
+    "vehicles": {
+      "title": "車種ガイド",
+      "lead": "人数、荷物、チャイルドシート、運行状況を確認して車種を調整します。以下は選択の目安で、特定車両を保証するものではありません。",
+      "people": "推奨人数",
+      "luggage": "荷物の目安",
+      "child": "チャイルドシート",
+      "large": "ベビーカー・車いす・大型品",
+      "scene": "おすすめの場面",
+      "compare": "車種比較",
+      "pending": "車両写真は権利と所属を確認できる自社実写を準備中です。現在は中立的なビジュアルを使用します。"
+    },
+    "info": {
+      "privacy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "vip": "会員・VIP",
+      "referral": "紹介プログラム",
+      "ambassador": "関西観光アンバサダー",
+      "about": "運営について",
+      "login": "ログインして確認",
+      "vipLead": "通常サービスで安心を。VIPサービスで『Japan Travelが覚えている』体験を。",
+      "referralLead": "実際の体験を友人へ。支払い済みかつ完了したサービスのみ有効紹介に数えます。",
+      "ambassadorLead": "関西を継続的かつ誠実に発信する方の制度です。通常の紹介制度とは別に運営します。"
+    },
+    "contact": {
+      "contact": "連絡先",
+      "transport": "ご利用情報",
+      "special": "特別なご希望",
+      "method": "希望連絡方法",
+      "help": "今回の相談に必要な情報だけをご入力ください。送信は予約確定ではありません。",
+      "required": "必須"
+    },
+    "faqCategories": [
+      "ブランド・運営",
+      "空港送迎",
+      "車種・荷物",
+      "家族・子ども",
+      "貸切・ルート",
+      "予約・支払い",
+      "遅延・キャンセル",
+      "VIP・紹介",
+      "プライバシー・会員"
+    ]
   },
   "en": {
-    "nav": {"booking":"Book","about":"About","member":"Member","cta":"Inquire / Book","menu":"Menu","my":"My account","language":"Language"},
-    "home": {"kicker":"Kansai travel content and transport","title":"See Kansai in layers, one road at a time","lead":"Airport transfers, private charters, day routes, and text and audio guides for 73 places. Japan Travel is operated by Kabushiki Kaisha Daitora / Daitora Group.","trust":[["73 places","Text and audio in five languages"],["Across Kansai","Airport transfer and charter service"],["About 100 vehicles","Group-wide vehicle network"],["Rezio booking","Live dates, inventory and payment"]],"products":"Plan from arrival","routes":"Curated day routes","areas":"Explore Kansai by area","operation":"From inquiry to departure","faq":"Before you travel","ctaTitle":"Make your next Kansai journey feel effortless"},
-    "route": {"duration":"Suggested duration","areas":"Main areas","bestFor":"Best for","walking":"Walking level","highlights":"Key stops","view":"View route","filters":["All","Family","Classic","Seaside","Onsen","Outlying"],"summary":"Route overview","depart":"Suggested start","timeline":"Itinerary timeline","spotCta":"View spot and audio guide","topCta":"Check dates and book","custom":"Custom inquiry","walkValue":"Moderate; adjust for your group"},
-    "spot": {"type":"Place type","stay":"Suggested stay","bestFor":"Best for","season":"Best setting","walking":"Walking level","family":"Family and senior note","combine":"Route pairing","official":"Official information","checked":"Last reviewed","before":"Hours, closures, admission and temporary traffic rules may change. Check the official page before departure.","audio":"Audio guide","standard":"Standard","deep":"In-depth","results":"places","allTypes":"All types","allTags":"All settings"},
-    "service": {"scenes":"Best for","process":"How it works","vehicles":"Vehicle guidance","products":"Related booking","faq":"Related questions","boundary":"Service boundaries","steps":["Send itinerary details","Confirm needs and vehicle conditions","Confirm date and booking on Rezio","Travel as confirmed"]},
-    "product": {"fromTo":"Origin and destination","scene":"Best for","time":"Typical travel time","people":"People and luggage","vehicle":"Vehicle options","special":"Special requests","details":"View details","book":"Check dates and book","inventory":"View live availability","safe":"Continue to secure booking","traffic":"Actual time varies with traffic, weather and pickup conditions.","specialNote":"Late-night travel, child seats and oversized luggage require advance confirmation."},
-    "vehicles": {"title":"Vehicle guide","lead":"We coordinate vehicle type around passengers, luggage, child seats and operating conditions. This is planning guidance, not a promise of a specific vehicle.","people":"Suggested party","luggage":"Luggage guide","child":"Child seats","large":"Strollers, wheelchairs and large items","scene":"Best for","compare":"Compare vehicles","pending":"Verified company-owned vehicle photography is pending. Neutral visuals are used instead of unverified vehicle images."},
-    "info": {"privacy":"Privacy policy","terms":"Terms of use","vip":"Membership and VIP","referral":"Referral program","ambassador":"Kansai tourism ambassador","about":"About the operator","login":"Sign in to view","vipLead":"Standard service brings reassurance. VIP service makes it feel as though Japan Travel remembers you.","referralLead":"Share a genuine experience. Only paid and completed services count as valid referrals.","ambassadorLead":"For creators and partners who share Kansai consistently and honestly, managed separately from ordinary referrals."},
-    "contact": {"contact":"Contact","transport":"Transport details","special":"Special requests","method":"Preferred contact","help":"Provide only what is relevant to this inquiry. Submitting does not confirm a booking.","required":"Required"},
-    "faqCategories":["Brand and operation","Airport transfers","Vehicles and luggage","Families and children","Charters and routes","Booking and payment","Delays and cancellation","VIP and referrals","Privacy and membership"]
+    "nav": {
+      "booking": "Book",
+      "about": "About",
+      "member": "Member",
+      "cta": "Inquire / Book",
+      "menu": "Menu",
+      "my": "My account",
+      "language": "Language"
+    },
+    "home": {
+      "kicker": "Kansai travel content and transport",
+      "title": "See Kansai in layers, one road at a time",
+      "lead": "Airport transfers, private charters, day routes, and text and audio guides for 73 places. Japan Travel is operated by Kabushiki Kaisha Daitora / Daitora Group.",
+      "trust": [
+        [
+          "73 places",
+          "Text and audio in five languages"
+        ],
+        [
+          "Across Kansai",
+          "Airport transfer and charter service"
+        ],
+        [
+          "About 100 vehicles",
+          "Group-wide vehicle network"
+        ],
+        [
+          "Inquiry first",
+          "Dates, vehicles and price confirmed by reply"
+        ]
+      ],
+      "products": "Plan from arrival",
+      "routes": "Curated day routes",
+      "areas": "Explore Kansai by area",
+      "operation": "From inquiry to departure",
+      "faq": "Before you travel",
+      "ctaTitle": "Make your next Kansai journey feel effortless"
+    },
+    "route": {
+      "duration": "Suggested duration",
+      "areas": "Main areas",
+      "bestFor": "Best for",
+      "walking": "Walking level",
+      "highlights": "Key stops",
+      "view": "View route",
+      "filters": [
+        "All",
+        "Family",
+        "Classic",
+        "Seaside",
+        "Onsen",
+        "Outlying"
+      ],
+      "summary": "Route overview",
+      "depart": "Suggested start",
+      "timeline": "Itinerary timeline",
+      "spotCta": "View spot and audio guide",
+      "topCta": "Check dates and book",
+      "custom": "Custom inquiry",
+      "walkValue": "Moderate; adjust for your group"
+    },
+    "spot": {
+      "type": "Place type",
+      "stay": "Suggested stay",
+      "bestFor": "Best for",
+      "season": "Best setting",
+      "walking": "Walking level",
+      "family": "Family and senior note",
+      "combine": "Route pairing",
+      "official": "Official information",
+      "checked": "Last reviewed",
+      "before": "Hours, closures, admission and temporary traffic rules may change. Check the official page before departure.",
+      "audio": "Audio guide",
+      "standard": "Standard",
+      "deep": "In-depth",
+      "results": "places",
+      "allTypes": "All types",
+      "allTags": "All settings"
+    },
+    "service": {
+      "scenes": "Best for",
+      "process": "How it works",
+      "vehicles": "Vehicle guidance",
+      "products": "Related booking",
+      "faq": "Related questions",
+      "boundary": "Service boundaries",
+      "steps": [
+        "Send itinerary details",
+        "Confirm needs and vehicle conditions",
+        "Receive confirmation from our team",
+        "Travel as confirmed"
+      ]
+    },
+    "product": {
+      "fromTo": "Origin and destination",
+      "scene": "Best for",
+      "time": "Typical travel time",
+      "people": "People and luggage",
+      "vehicle": "Vehicle options",
+      "special": "Special requests",
+      "details": "View details",
+      "book": "Check dates and book",
+      "inventory": "View live availability",
+      "safe": "Continue to secure booking",
+      "traffic": "Actual time varies with traffic, weather and pickup conditions.",
+      "specialNote": "Late-night travel, child seats and oversized luggage require advance confirmation."
+    },
+    "vehicles": {
+      "title": "Vehicle guide",
+      "lead": "We coordinate vehicle type around passengers, luggage, child seats and operating conditions. This is planning guidance, not a promise of a specific vehicle.",
+      "people": "Suggested party",
+      "luggage": "Luggage guide",
+      "child": "Child seats",
+      "large": "Strollers, wheelchairs and large items",
+      "scene": "Best for",
+      "compare": "Compare vehicles",
+      "pending": "Verified company-owned vehicle photography is pending. Neutral visuals are used instead of unverified vehicle images."
+    },
+    "info": {
+      "privacy": "Privacy policy",
+      "terms": "Terms of use",
+      "vip": "Membership and VIP",
+      "referral": "Referral program",
+      "ambassador": "Kansai tourism ambassador",
+      "about": "About the operator",
+      "login": "Sign in to view",
+      "vipLead": "Standard service brings reassurance. VIP service makes it feel as though Japan Travel remembers you.",
+      "referralLead": "Share a genuine experience. Only paid and completed services count as valid referrals.",
+      "ambassadorLead": "For creators and partners who share Kansai consistently and honestly, managed separately from ordinary referrals."
+    },
+    "contact": {
+      "contact": "Contact",
+      "transport": "Transport details",
+      "special": "Special requests",
+      "method": "Preferred contact",
+      "help": "Provide only what is relevant to this inquiry. Submitting does not confirm a booking.",
+      "required": "Required"
+    },
+    "faqCategories": [
+      "Brand and operation",
+      "Airport transfers",
+      "Vehicles and luggage",
+      "Families and children",
+      "Charters and routes",
+      "Booking and payment",
+      "Delays and cancellation",
+      "VIP and referrals",
+      "Privacy and membership"
+    ]
   },
   "ko": {
-    "nav": {"booking":"예약","about":"운영 안내","member":"회원","cta":"문의 / 예약","menu":"메뉴","my":"내 정보","language":"언어"},
-    "home": {"kicker":"간사이 여행 콘텐츠와 이동 서비스","title":"한 길에서 시작해, 간사이의 깊이를 만나다","lead":"공항 픽업, 간사이 전용 차량, 당일 코스와 73개 명소의 글·음성 가이드까지. Japan Travel은 주식회사 다이토라／Daitora Group이 운영합니다.","trust":[["73개 명소","5개 언어 글과 음성 가이드"],["간사이 각지","공항 픽업과 전용 차량"],["약 100대 규모","그룹 전체 차량 네트워크"],["Rezio 예약","실시간 일정·재고·결제"]],"products":"도착부터 준비하기","routes":"엄선한 당일 코스","areas":"지역별 간사이 탐색","operation":"문의에서 출발까지","faq":"출발 전 자주 묻는 질문","ctaTitle":"다음 간사이 여행을 더 여유롭게"},
-    "route": {"duration":"권장 시간","areas":"주요 지역","bestFor":"추천 대상","walking":"도보 강도","highlights":"핵심 명소","view":"코스 보기","filters":["전체","가족","클래식","바다","온천","교외"],"summary":"코스 요약","depart":"권장 출발","timeline":"일정 타임라인","spotCta":"명소와 음성 가이드 보기","topCta":"날짜 확인 및 예약","custom":"맞춤 문의","walkValue":"보통, 동행자에 맞춰 조정"},
-    "spot": {"type":"명소 유형","stay":"권장 체류","bestFor":"추천 대상","season":"추천 장면","walking":"도보 강도","family":"가족·어르신 안내","combine":"코스 조합","official":"공식 정보","checked":"최종 확인","before":"운영 시간, 휴관일, 입장료와 임시 교통 규정은 바뀔 수 있습니다. 출발 전 공식 페이지를 확인하세요.","audio":"음성 가이드","standard":"표준판","deep":"심화판","results":"곳","allTypes":"전체 유형","allTags":"전체 장면"},
-    "service": {"scenes":"추천 상황","process":"이용 절차","vehicles":"차량 안내","products":"관련 예약","faq":"관련 질문","boundary":"서비스 범위","steps":["일정 정보 전송","요청과 차량 조건 확인","Rezio에서 날짜와 예약 확정","확정 내용에 따라 운행"]},
-    "product": {"fromTo":"출발지와 목적지","scene":"추천 상황","time":"일반 소요 시간","people":"인원과 짐","vehicle":"차량 옵션","special":"특별 요청","details":"상세 보기","book":"날짜 확인 및 예약","inventory":"실시간 재고 확인","safe":"안전한 예약 페이지로","traffic":"실제 시간은 교통, 날씨와 승하차 조건에 따라 달라집니다.","specialNote":"심야, 유아 시트, 대형 수하물은 사전 확인이 필요합니다."},
-    "vehicles": {"title":"차량 가이드","lead":"인원, 수하물, 유아 시트와 운행 조건에 맞춰 차량을 조정합니다. 아래 내용은 선택 참고이며 특정 차량을 보장하지 않습니다.","people":"권장 인원","luggage":"수하물 안내","child":"유아 시트","large":"유모차·휠체어·대형 물품","scene":"추천 상황","compare":"차량 비교","pending":"소유와 사용 권한이 확인된 회사 차량 사진을 준비 중입니다. 현재는 중립적인 시각 자료를 사용합니다."},
-    "info": {"privacy":"개인정보 처리방침","terms":"이용약관","vip":"회원 및 VIP","referral":"추천 프로그램","ambassador":"간사이 관광 앰배서더","about":"운영 안내","login":"로그인하여 확인","vipLead":"일반 서비스는 안심을, VIP 서비스는 Japan Travel이 나를 기억하는 경험을 만듭니다.","referralLead":"진짜 경험을 친구와 나누세요. 결제되고 완료된 서비스만 유효 추천으로 계산합니다.","ambassadorLead":"간사이를 꾸준하고 진실하게 소개하는 크리에이터와 파트너를 위한 제도로, 일반 추천과 별도로 운영합니다."},
-    "contact": {"contact":"연락처","transport":"차량 이용 정보","special":"특별 요청","method":"선호 연락 방법","help":"이번 문의에 필요한 정보만 입력하세요. 문의 접수는 예약 확정이 아닙니다.","required":"필수"},
-    "faqCategories":["브랜드와 운영","공항 픽업","차량과 수하물","가족과 어린이","전용 차량과 코스","예약과 결제","지연과 취소","VIP와 추천","개인정보와 회원"]
+    "nav": {
+      "booking": "예약",
+      "about": "운영 안내",
+      "member": "회원",
+      "cta": "문의 / 예약",
+      "menu": "메뉴",
+      "my": "내 정보",
+      "language": "언어"
+    },
+    "home": {
+      "kicker": "간사이 여행 콘텐츠와 이동 서비스",
+      "title": "한 길에서 시작해, 간사이의 깊이를 만나다",
+      "lead": "공항 픽업, 간사이 전용 차량, 당일 코스와 73개 명소의 글·음성 가이드까지. Japan Travel은 주식회사 다이토라／Daitora Group이 운영합니다.",
+      "trust": [
+        [
+          "73개 명소",
+          "5개 언어 글과 음성 가이드"
+        ],
+        [
+          "간사이 각지",
+          "공항 픽업과 전용 차량"
+        ],
+        [
+          "약 100대 규모",
+          "그룹 전체 차량 네트워크"
+        ],
+        [
+          "문의 접수",
+          "날짜·차량·요금은 담당자 회신으로 확인"
+        ]
+      ],
+      "products": "도착부터 준비하기",
+      "routes": "엄선한 당일 코스",
+      "areas": "지역별 간사이 탐색",
+      "operation": "문의에서 출발까지",
+      "faq": "출발 전 자주 묻는 질문",
+      "ctaTitle": "다음 간사이 여행을 더 여유롭게"
+    },
+    "route": {
+      "duration": "권장 시간",
+      "areas": "주요 지역",
+      "bestFor": "추천 대상",
+      "walking": "도보 강도",
+      "highlights": "핵심 명소",
+      "view": "코스 보기",
+      "filters": [
+        "전체",
+        "가족",
+        "클래식",
+        "바다",
+        "온천",
+        "교외"
+      ],
+      "summary": "코스 요약",
+      "depart": "권장 출발",
+      "timeline": "일정 타임라인",
+      "spotCta": "명소와 음성 가이드 보기",
+      "topCta": "날짜 확인 및 예약",
+      "custom": "맞춤 문의",
+      "walkValue": "보통, 동행자에 맞춰 조정"
+    },
+    "spot": {
+      "type": "명소 유형",
+      "stay": "권장 체류",
+      "bestFor": "추천 대상",
+      "season": "추천 장면",
+      "walking": "도보 강도",
+      "family": "가족·어르신 안내",
+      "combine": "코스 조합",
+      "official": "공식 정보",
+      "checked": "최종 확인",
+      "before": "운영 시간, 휴관일, 입장료와 임시 교통 규정은 바뀔 수 있습니다. 출발 전 공식 페이지를 확인하세요.",
+      "audio": "음성 가이드",
+      "standard": "표준판",
+      "deep": "심화판",
+      "results": "곳",
+      "allTypes": "전체 유형",
+      "allTags": "전체 장면"
+    },
+    "service": {
+      "scenes": "추천 상황",
+      "process": "이용 절차",
+      "vehicles": "차량 안내",
+      "products": "관련 예약",
+      "faq": "관련 질문",
+      "boundary": "서비스 범위",
+      "steps": [
+        "일정 정보 전송",
+        "요청과 차량 조건 확인",
+        "담당자의 확인 회신 받기",
+        "확정 내용에 따라 운행"
+      ]
+    },
+    "product": {
+      "fromTo": "출발지와 목적지",
+      "scene": "추천 상황",
+      "time": "일반 소요 시간",
+      "people": "인원과 짐",
+      "vehicle": "차량 옵션",
+      "special": "특별 요청",
+      "details": "상세 보기",
+      "book": "날짜 확인 및 예약",
+      "inventory": "실시간 재고 확인",
+      "safe": "안전한 예약 페이지로",
+      "traffic": "실제 시간은 교통, 날씨와 승하차 조건에 따라 달라집니다.",
+      "specialNote": "심야, 유아 시트, 대형 수하물은 사전 확인이 필요합니다."
+    },
+    "vehicles": {
+      "title": "차량 가이드",
+      "lead": "인원, 수하물, 유아 시트와 운행 조건에 맞춰 차량을 조정합니다. 아래 내용은 선택 참고이며 특정 차량을 보장하지 않습니다.",
+      "people": "권장 인원",
+      "luggage": "수하물 안내",
+      "child": "유아 시트",
+      "large": "유모차·휠체어·대형 물품",
+      "scene": "추천 상황",
+      "compare": "차량 비교",
+      "pending": "소유와 사용 권한이 확인된 회사 차량 사진을 준비 중입니다. 현재는 중립적인 시각 자료를 사용합니다."
+    },
+    "info": {
+      "privacy": "개인정보 처리방침",
+      "terms": "이용약관",
+      "vip": "회원 및 VIP",
+      "referral": "추천 프로그램",
+      "ambassador": "간사이 관광 앰배서더",
+      "about": "운영 안내",
+      "login": "로그인하여 확인",
+      "vipLead": "일반 서비스는 안심을, VIP 서비스는 Japan Travel이 나를 기억하는 경험을 만듭니다.",
+      "referralLead": "진짜 경험을 친구와 나누세요. 결제되고 완료된 서비스만 유효 추천으로 계산합니다.",
+      "ambassadorLead": "간사이를 꾸준하고 진실하게 소개하는 크리에이터와 파트너를 위한 제도로, 일반 추천과 별도로 운영합니다."
+    },
+    "contact": {
+      "contact": "연락처",
+      "transport": "차량 이용 정보",
+      "special": "특별 요청",
+      "method": "선호 연락 방법",
+      "help": "이번 문의에 필요한 정보만 입력하세요. 문의 접수는 예약 확정이 아닙니다.",
+      "required": "필수"
+    },
+    "faqCategories": [
+      "브랜드와 운영",
+      "공항 픽업",
+      "차량과 수하물",
+      "가족과 어린이",
+      "전용 차량과 코스",
+      "예약과 결제",
+      "지연과 취소",
+      "VIP와 추천",
+      "개인정보와 회원"
+    ]
   }
 }

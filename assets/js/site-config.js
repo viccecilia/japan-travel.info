@@ -7,6 +7,5 @@ window.JAPAN_TRAVEL_CONFIG = {
   "analyticsEndpoint": "",
   "metaPixelId": "",
   "tiktokPixelId": "",
-  "memberApiBase": "",
-  "rezioConfigured": false
+  "memberApiBase": ""
 };

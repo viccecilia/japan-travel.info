@@ -436,6 +436,107 @@ function jt_send_mail(string $to, string $subject, string $body): array {
     return jt_mail_status('failed', 'Mail transport is not configured');
 }
 
+function jt_group_contact_payload(array $payload): array {
+    $language = strtolower((string)($payload['language'] ?? 'en'));
+    if (!in_array($language, ['ja', 'en', 'zh-cn', 'zh-tw', 'ko'], true)) $language = 'en';
+    $itinerary = trim((string)($payload['itinerary'] ?? ''));
+    return [
+        'type' => 'japan_travel',
+        'source_site' => 'Japan Travel',
+        'request_id' => (string)($payload['request_id'] ?? ''),
+        'name' => (string)($payload['name'] ?? ''),
+        'email' => (string)($payload['email'] ?? ''),
+        'phone' => (string)($payload['phone'] ?? ''),
+        'contact_method' => (string)($payload['contact_method'] ?? 'email'),
+        'language' => $language,
+        'page_language' => $language,
+        'site_language' => $language,
+        'privacy' => 'on',
+        'website' => '',
+        'service_type' => (string)($payload['service_type'] ?? ''),
+        'travel_date' => (string)($payload['travel_date'] ?? ''),
+        'travel_time' => (string)($payload['travel_time'] ?? ''),
+        'flight_number' => (string)($payload['flight_number'] ?? ''),
+        'pickup_location' => (string)($payload['pickup_location'] ?? ''),
+        'dropoff_location' => (string)($payload['dropoff_location'] ?? ''),
+        'passenger_count' => (string)($payload['passenger_count'] ?? ''),
+        'luggage_count' => (string)($payload['luggage_count'] ?? ''),
+        'vehicle_preference' => (string)($payload['vehicle_preference'] ?? ''),
+        'itinerary' => $itinerary,
+        'message' => $itinerary,
+        'source_page' => (string)($payload['source_url'] ?? '')
+    ];
+}
+
+function jt_forward_group_contact(array $payload): array {
+    $endpoint = jt_env('DAITORA_CONTACT_ENDPOINT');
+    $secret = jt_env('DAITORA_CONTACT_SHARED_SECRET');
+    if ($endpoint === '' || $secret === '') {
+        return ['ok' => false, 'status' => 'failed', 'error' => 'Group contact channel is not configured'];
+    }
+    $parts = parse_url($endpoint);
+    if (!is_array($parts)) {
+        return ['ok' => false, 'status' => 'failed', 'error' => 'Group contact endpoint is invalid'];
+    }
+    $host = strtolower((string)($parts['host'] ?? ''));
+    $scheme = strtolower((string)($parts['scheme'] ?? ''));
+    $local = in_array($host, ['127.0.0.1', 'localhost'], true);
+    if ($scheme !== 'https' && !($local && $scheme === 'http')) {
+        return ['ok' => false, 'status' => 'failed', 'error' => 'Group contact endpoint is invalid'];
+    }
+
+    $body = json_encode(jt_group_contact_payload($payload), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if (!is_string($body)) return ['ok' => false, 'status' => 'failed', 'error' => 'Unable to prepare inquiry'];
+    $timestamp = (string)time();
+    $signature = hash_hmac('sha256', $timestamp . "\n" . $body, $secret);
+    $headers = [
+        'Content-Type: application/json; charset=utf-8',
+        'Accept: application/json',
+        'X-Daitora-Client-Id: japan-travel',
+        'X-Daitora-Contact-Timestamp: ' . $timestamp,
+        'X-Daitora-Contact-Signature: ' . $signature
+    ];
+
+    $statusCode = 0;
+    $responseBody = '';
+    if (function_exists('curl_init')) {
+        $curl = curl_init($endpoint);
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS
+        ]);
+        $result = curl_exec($curl);
+        $statusCode = (int)curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        $responseBody = is_string($result) ? $result : '';
+        curl_close($curl);
+    } else {
+        $context = stream_context_create(['http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers) . "\r\n",
+            'content' => $body,
+            'ignore_errors' => true,
+            'timeout' => 15
+        ]]);
+        $result = @file_get_contents($endpoint, false, $context);
+        $responseBody = is_string($result) ? $result : '';
+        foreach ($http_response_header ?? [] as $line) {
+            if (preg_match('/^HTTP\/\S+\s+(\d{3})/', $line, $matches)) $statusCode = (int)$matches[1];
+        }
+    }
+
+    $decoded = json_decode($responseBody, true);
+    if ($statusCode >= 200 && $statusCode < 300 && is_array($decoded) && ($decoded['success'] ?? false) === true) {
+        return ['ok' => true, 'status' => 'sent', 'error' => ''];
+    }
+    return ['ok' => false, 'status' => 'failed', 'error' => 'Group contact delivery failed'];
+}
+
 function jt_create_token(int $userId, string $purpose, int $ttlSeconds): string {
     $token = bin2hex(random_bytes(32));
     jt_db()->prepare('INSERT INTO token_hash (user_id, purpose, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)')

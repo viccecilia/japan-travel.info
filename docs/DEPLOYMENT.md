@@ -1,30 +1,20 @@
 # Deployment
 
-Set the domain document root to this repository root after running `npm run build`.
-
-Required production checks:
+Run the complete verification suite before publishing, then set the domain document root to this repository root.
 
 ```bash
 npm ci
 npx playwright install chromium
 npm run verify
-php -l api/bootstrap.php
-php -l api/csrf.php
-php -l api/inquiry.php
-php -l api/member.php
-php -l api/rezio.php
-php tests/php/integration.php
 ```
 
-Runtime data must not be inside a public readable folder. Prefer:
+Lint every PHP endpoint and run the HTTP integration suite with the Daitora contact mock as documented in CI. Runtime data must live outside the public document root:
 
 ```text
 APP_DATA_DIR=/home/daitora/private/japan-travel-info
 ```
 
-If hosting forces project-local runtime data, keep it under `runtime/private` and deploy the included `.htaccess` rules. Do not upload `.env`, database files, logs or mail spool files to GitHub.
-
-Apache rewrite maps `/go/rezio/{product_key}` to `/api/rezio.php`. Old `/h5/` URLs are redirected to the new directory URL structure.
+The public form posts to the same-origin `/api/inquiry.php` endpoint. That endpoint validates and stores the inquiry, then signs the exact JSON body with `DAITORA_CONTACT_SHARED_SECRET` and forwards it server-to-server to `DAITORA_CONTACT_ENDPOINT`. The browser never receives the shared secret and does not call the group endpoint directly.
 
 Required production environment:
 
@@ -34,14 +24,12 @@ APP_SECRET=<32+ random characters>
 APP_DATA_DIR=/home/daitora/private/japan-travel-info
 SITE_URL=https://japan-travel.info
 ALLOWED_ORIGINS=japan-travel.info,www.japan-travel.info
-MAIL_TRANSPORT=smtp
-SMTP_HOST=<mail host>
-SMTP_PORT=587
-SMTP_USER=<smtp user>
-SMTP_PASSWORD=
-SMTP_TLS=1
-MAIL_FROM=no-reply@japan-travel.info
-BOOKING_TO_EMAIL=<operations inbox>
+DAITORA_CONTACT_ENDPOINT=https://daitora-jp.com/api/send-contact.php
+DAITORA_CONTACT_SHARED_SECRET=<same 32+ character secret configured on Daitora Group>
 ```
 
-Without SMTP settings, registration and inquiry endpoints return a clear configuration failure instead of pretending that mail was sent.
+SMTP settings remain required for member verification and password-reset email. Transport inquiries themselves use the Daitora Group channel and always go to the fixed group recipient configured there (`info@daitora-jp.com`).
+
+Legacy top-level booking-guide URLs redirect to the localized contact page. Legacy operator-information URLs redirect to the localized home page. Sending an inquiry is never presented as a confirmed booking.
+
+Do not upload `.env`, database files, logs, mail spool files or private exports to GitHub or the public web root.

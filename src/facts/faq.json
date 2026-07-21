@@ -1,172 +1,476 @@
 {
   "zh": [
-    {"q":"Japan Travel由谁运营？","a":"Japan Travel由株式会社大寅 / Daitora Group运营。公开内容用于旅行参考，交通服务由运营主体根据预约确认履约。下一步可浏览路线、景点或提交咨询。"},
-    {"q":"是否为日本合法运营车辆？","a":"交通服务以日本当地合规运营安排为前提。具体车辆、司机和许可证状态以预约确认为准，页面不写未经确认的确定安排。需要用车时请先选择Rezio商品或提交咨询。"},
-    {"q":"与普通出租车有什么区别？","a":"普通出租车适合即时短途出行，Japan Travel更适合机场接送、包车行程、家庭和来宾接待等提前安排场景。车型和服务边界以预约确认为准。"},
-    {"q":"与机场巴士、电车有什么区别？","a":"巴士和电车适合轻行李、固定路线和预算优先。专车更适合多人、行李多、儿童老人同行、深夜到达或需要酒店到酒店移动的客人。"},
-    {"q":"Alphard和Hiace如何选择？","a":"Alphard更适合少人数和舒适体验，Hiace更适合人数或行李较多的情况。实际安排会根据人数、行李和车辆情况确认。"},
-    {"q":"不同人数和行李如何选择车型？","a":"请在咨询或Rezio预约中写明乘客数、行李数、儿童座椅和大型物品。系统会据此判断是否需要Hiace或多车方案。"},
-    {"q":"机场接机流程是什么？","a":"通常先确认航班号、抵达日期、人数、行李和目的地。服务方根据预约确认安排集合方式，航班延误时按确认规则处理。"},
-    {"q":"找不到司机怎么办？","a":"请先查看预约确认中的集合说明和联系方式。若仍无法会合，请通过确认邮件、LINE或咨询入口联系，客服会按记录协助核对。"},
-    {"q":"航班延误怎么办？","a":"航班延误需要以预约确认和Rezio商品规则为准。请尽早提供航班号，服务方会根据车辆安排和运营条件协调。"},
-    {"q":"深夜到达可以安排吗？","a":"深夜服务取决于日期、车辆和运营条件。请通过Rezio或咨询表单提前确认，不要把未确认的页面展示视为已预约。"},
-    {"q":"等待时间如何计算？","a":"等待规则以Rezio商品和最终预约确认为准。超出确认范围的等待可能需要重新协调，确认范围外的等待需要重新协调。"},
-    {"q":"儿童座椅可以准备吗？","a":"儿童座椅属于特殊需求，请在预约或咨询时提前填写。是否可安排以及数量以预约确认为准。"},
-    {"q":"老人和儿童同行需要注意什么？","a":"建议提前说明步行距离、行李、上下车便利性和休息需求。行程安排会优先考虑安全和舒适，但具体车辆和时间需确认。"},
-    {"q":"可以安排多辆车吗？","a":"多车安排适合人数或行李较多的团队。请提交乘客、行李、集合地点和目的地，服务方会判断是否需要多车方案。"},
-    {"q":"企业接待可以使用吗？","a":"可以用于机场接送、来宾接待、会务移动等场景。请提前说明时间、人数、行李、发票或联络需求。"},
-    {"q":"酒店和旅行社可以合作吗？","a":"可以通过咨询入口说明合作形式、客源语言、服务频率和结算需求。正式合作条件需由Daitora Group确认。"},
-    {"q":"取消与退款规则是什么？","a":"取消、退款和变更规则以对应Rezio商品及最终预约确认为准。请在预约前阅读商品页面规则。"},
-    {"q":"如何通过Rezio预约？","a":"点击Rezio按钮会进入对应商品或友好提示页。Rezio负责日期、库存、金额、支付和凭证。"},
-    {"q":"直接咨询与Rezio预约有什么区别？","a":"直接咨询用于复杂行程、特殊需求和多车判断；Rezio用于标准商品、日期、库存、支付和正式预约。"},
-    {"q":"付款后的确认流程是什么？","a":"付款后的订单状态以Rezio和服务方最终确认为准。本站点击记录只表示预约跳转，不代表已付款或成单。"},
-    {"q":"预约信息如何修改？","a":"请按Rezio订单规则或确认邮件中的方式申请修改。是否可改以及费用以最终确认和商品规则为准。"},
-    {"q":"VIP权益包括什么？","a":"VIP可记录语言、饮品、温度、历史车型、家庭需求和欢迎卡等偏好，并在工作时间内优先响应。"},
-    {"q":"VIP不保证什么？","a":"VIP权益也需按预约确认执行，确认范围外的人员、车辆、等待、时间和远距离停靠需要重新评估。"},
-    {"q":"推荐码如何记录？","a":"推荐码由系统随机生成，并在服务器端记录。浏览器不能自行修改推荐关系。"},
-    {"q":"什么是有效推荐订单？","a":"只有已付款且符合有效订单规则的服务才计入推荐。取消、退款、测试单和自我推荐不计入。"},
-    {"q":"Instagram和TikTok来源如何识别？","a":"页面会保留UTM、来源渠道和ref_code。未配置追踪或未同意Cookie时，不加载非必要Pixel。"},
-    {"q":"个人信息如何保护？","a":"会员、预约、推荐和Token都不写入localStorage。后端使用服务端Session、CSRF和Token哈希。"},
-    {"q":"行李放不下怎么办？","a":"请在预约前准确填写行李数量和尺寸。必要时会建议更合适车型或多车方案，具体以确认结果为准。"},
-    {"q":"中途可以停靠吗？","a":"包车路线可讨论中途停靠，但是否可行取决于时间、距离、停车条件和商品规则。"},
-    {"q":"包车路线是否可以调整？","a":"可在咨询中提出想去的景点和节奏，服务方会根据时间和交通条件提出建议。"},
-    {"q":"日本节假日和旺季需要注意什么？","a":"旺季容易出现车源紧张和景点拥堵。建议尽早预约，行程中保留缓冲时间。"},
-    {"q":"服务完成后如何再次预约？","a":"可以通过Rezio再次下单，或登录会员查看收藏、偏好和推荐记录后提交新咨询。"}
+    {
+      "q": "Japan Travel由谁运营？",
+      "a": "Japan Travel由株式会社大寅 / Daitora Group运营。公开内容用于旅行参考，交通服务由运营主体根据预约确认履约。下一步可浏览路线、景点或提交咨询。"
+    },
+    {
+      "q": "与普通出租车有什么区别？",
+      "a": "普通出租车适合即时短途出行，Japan Travel更适合机场接送、包车行程、家庭和来宾接待等提前安排场景。车型和服务边界以预约确认为准。"
+    },
+    {
+      "q": "与机场巴士、电车有什么区别？",
+      "a": "巴士和电车适合轻行李、固定路线和预算优先。专车更适合多人、行李多、儿童老人同行、深夜到达或需要酒店到酒店移动的客人。"
+    },
+    {
+      "q": "Alphard和Hiace如何选择？",
+      "a": "Alphard更适合少人数和舒适体验，Hiace更适合人数或行李较多的情况。实际安排会根据人数、行李和车辆情况确认。"
+    },
+    {
+      "q": "机场接机流程是什么？",
+      "a": "通常先确认航班号、抵达日期、人数、行李和目的地。服务方根据预约确认安排集合方式，航班延误时按确认规则处理。"
+    },
+    {
+      "q": "找不到司机怎么办？",
+      "a": "请先查看预约确认中的集合说明和联系方式。若仍无法会合，请通过确认邮件、LINE或咨询入口联系，客服会按记录协助核对。"
+    },
+    {
+      "q": "儿童座椅可以准备吗？",
+      "a": "儿童座椅属于特殊需求，请在预约或咨询时提前填写。是否可安排以及数量以预约确认为准。"
+    },
+    {
+      "q": "老人和儿童同行需要注意什么？",
+      "a": "建议提前说明步行距离、行李、上下车便利性和休息需求。行程安排会优先考虑安全和舒适，但具体车辆和时间需确认。"
+    },
+    {
+      "q": "可以安排多辆车吗？",
+      "a": "多车安排适合人数或行李较多的团队。请提交乘客、行李、集合地点和目的地，服务方会判断是否需要多车方案。"
+    },
+    {
+      "q": "企业接待可以使用吗？",
+      "a": "可以用于机场接送、来宾接待、会务移动等场景。请提前说明时间、人数、行李、发票或联络需求。"
+    },
+    {
+      "q": "酒店和旅行社可以合作吗？",
+      "a": "可以通过咨询入口说明合作形式、客源语言、服务频率和结算需求。正式合作条件需由Daitora Group确认。"
+    },
+    {
+      "q": "VIP权益包括什么？",
+      "a": "VIP可记录语言、饮品、温度、历史车型、家庭需求和欢迎卡等偏好，并在工作时间内优先响应。"
+    },
+    {
+      "q": "VIP不保证什么？",
+      "a": "VIP权益也需按预约确认执行，确认范围外的人员、车辆、等待、时间和远距离停靠需要重新评估。"
+    },
+    {
+      "q": "推荐码如何记录？",
+      "a": "推荐码由系统随机生成，并在服务器端记录。浏览器不能自行修改推荐关系。"
+    },
+    {
+      "q": "什么是有效推荐订单？",
+      "a": "只有已付款且符合有效订单规则的服务才计入推荐。取消、退款、测试单和自我推荐不计入。"
+    },
+    {
+      "q": "Instagram和TikTok来源如何识别？",
+      "a": "页面会保留UTM、来源渠道和ref_code。未配置追踪或未同意Cookie时，不加载非必要Pixel。"
+    },
+    {
+      "q": "个人信息如何保护？",
+      "a": "会员、预约、推荐和Token都不写入localStorage。后端使用服务端Session、CSRF和Token哈希。"
+    },
+    {
+      "q": "行李放不下怎么办？",
+      "a": "请在预约前准确填写行李数量和尺寸。必要时会建议更合适车型或多车方案，具体以确认结果为准。"
+    },
+    {
+      "q": "中途可以停靠吗？",
+      "a": "包车路线可讨论中途停靠，但是否可行取决于时间、距离、停车条件和商品规则。"
+    },
+    {
+      "q": "包车路线是否可以调整？",
+      "a": "可在咨询中提出想去的景点和节奏，服务方会根据时间和交通条件提出建议。"
+    },
+    {
+      "q": "日本节假日和旺季需要注意什么？",
+      "a": "旺季容易出现车源紧张和景点拥堵。建议尽早预约，行程中保留缓冲时间。"
+    }
   ],
   "zhHant": [
-    {"q":"Japan Travel 由誰營運？","a":"Japan Travel 由株式会社大寅 / Daitora Group 營運。公開內容用於旅行參考，交通服務依預約確認履約。下一步可瀏覽路線、景點或提交諮詢。"},
-    {"q":"是否為日本合法營運車輛？","a":"交通服務以日本當地合規營運安排為前提。具體車輛、司機與許可狀態以預約確認為準，頁面不做未確認保證。"},
-    {"q":"與一般計程車有什麼不同？","a":"一般計程車適合即時短程移動，Japan Travel 更適合機場接送、包車行程、家庭與來賓接待等提前安排場景。"},
-    {"q":"與機場巴士、電車有什麼不同？","a":"巴士與電車適合輕行李、固定路線與預算優先。專車更適合多人、行李多、兒童長者同行、深夜抵達或飯店到飯店移動。"},
-    {"q":"Alphard 與 Hiace 如何選擇？","a":"Alphard 適合少人數與舒適體驗，Hiace 適合人數或行李較多。實際安排會依人數、行李與車輛狀況確認。"},
-    {"q":"不同人數與行李如何選車？","a":"請在諮詢或 Rezio 預約中寫明乘客數、行李數、兒童座椅與大型物品，以便判斷車型或多車方案。"},
-    {"q":"機場接機流程是什麼？","a":"通常先確認航班號、抵達日期、人數、行李與目的地。服務方依預約確認安排集合方式。"},
-    {"q":"找不到司機怎麼辦？","a":"請先查看預約確認中的集合說明與聯絡方式。若仍無法會合，請透過確認郵件、LINE 或諮詢入口聯絡。"},
-    {"q":"航班延誤怎麼辦？","a":"航班延誤依預約確認與 Rezio 商品規則處理。請盡早提供航班號，服務方會依車輛與營運條件協調。"},
-    {"q":"深夜抵達可以安排嗎？","a":"深夜服務取決於日期、車輛與營運條件。請提前確認，未確認前頁面展示不代表已預約。"},
-    {"q":"等待時間如何計算？","a":"等待規則以 Rezio 商品與最終預約確認為準。超出確認範圍的等待可能需要重新協調。"},
-    {"q":"可以準備兒童座椅嗎？","a":"兒童座椅屬特殊需求，請提前填寫。是否可安排以及數量以預約確認為準。"},
-    {"q":"長者和兒童同行需要注意什麼？","a":"建議提前說明步行距離、行李、上下車便利性與休息需求，行程安排會優先考量安全與舒適。"},
-    {"q":"可以安排多輛車嗎？","a":"多車安排適合人數或行李較多的團體。請提交乘客、行李、集合地與目的地。"},
-    {"q":"企業接待可以使用嗎？","a":"可用於機場接送、來賓接待與會務移動。請提前說明時間、人數、行李、發票或聯絡需求。"},
-    {"q":"飯店和旅行社可以合作嗎？","a":"可以透過諮詢入口說明合作形式、客源語言、服務頻率與結算需求，正式合作條件需確認。"},
-    {"q":"取消與退款規則是什麼？","a":"取消、退款與變更規則以對應 Rezio 商品及最終預約確認為準。"},
-    {"q":"如何透過 Rezio 預約？","a":"點擊 Rezio 按鈕會進入對應商品或友好提示頁。Rezio 負責日期、庫存、金額、支付與憑證。"},
-    {"q":"直接諮詢與 Rezio 預約有何不同？","a":"直接諮詢用於複雜行程、特殊需求與多車判斷；Rezio 用於標準商品與正式預約。"},
-    {"q":"付款後如何確認？","a":"付款後的訂單狀態以 Rezio 和服務方最終確認為準。本站點擊記錄不代表已付款或成單。"},
-    {"q":"預約資訊如何修改？","a":"請依 Rezio 訂單規則或確認郵件中的方式申請修改，是否可改及費用以最終確認為準。"},
-    {"q":"VIP 權益包括什麼？","a":"VIP 可記錄語言、飲品、溫度、歷史車型、家庭需求與歡迎卡等偏好，並在工作時間內優先回應。"},
-    {"q":"VIP 不保證什麼？","a":"VIP 權益也需依預約確認執行，確認範圍外的人員、車輛、等待、時間與遠距停靠需要重新評估。"},
-    {"q":"推薦碼如何記錄？","a":"推薦碼由系統隨機生成並在伺服器端記錄，瀏覽器不能自行修改推薦關係。"},
-    {"q":"什麼是有效推薦訂單？","a":"只有已付款且符合有效訂單規則的服務才計入推薦，取消、退款、測試單與自我推薦不計入。"},
-    {"q":"Instagram 和 TikTok 來源如何識別？","a":"頁面會保留 UTM、來源渠道與 ref_code。未設定追蹤或未同意 Cookie 時，不載入非必要 Pixel。"},
-    {"q":"個人資訊如何保護？","a":"會員、預約、推薦與 Token 都不寫入 localStorage。後端使用服務端 Session、CSRF 與 Token 雜湊。"},
-    {"q":"行李放不下怎麼辦？","a":"請在預約前準確填寫行李數量與尺寸，必要時會建議更合適車型或多車方案。"},
-    {"q":"中途可以停靠嗎？","a":"包車路線可討論中途停靠，但是否可行取決於時間、距離、停車條件與商品規則。"},
-    {"q":"包車路線是否可以調整？","a":"可在諮詢中提出想去的景點與節奏，服務方會依時間和交通條件提出建議。"},
-    {"q":"日本假日和旺季要注意什麼？","a":"旺季容易車源緊張與景點壅擠，建議盡早預約並保留緩衝時間。"},
-    {"q":"服務完成後如何再次預約？","a":"可以透過 Rezio 再次下單，或登入會員查看收藏、偏好與推薦記錄後提交新諮詢。"}
+    {
+      "q": "Japan Travel 由誰營運？",
+      "a": "Japan Travel 由株式会社大寅 / Daitora Group 營運。公開內容用於旅行參考，交通服務依預約確認履約。下一步可瀏覽路線、景點或提交諮詢。"
+    },
+    {
+      "q": "是否為日本合法營運車輛？",
+      "a": "交通服務以日本當地合規營運安排為前提。具體車輛、司機與許可狀態以預約確認為準，頁面不做未確認保證。"
+    },
+    {
+      "q": "與一般計程車有什麼不同？",
+      "a": "一般計程車適合即時短程移動，Japan Travel 更適合機場接送、包車行程、家庭與來賓接待等提前安排場景。"
+    },
+    {
+      "q": "與機場巴士、電車有什麼不同？",
+      "a": "巴士與電車適合輕行李、固定路線與預算優先。專車更適合多人、行李多、兒童長者同行、深夜抵達或飯店到飯店移動。"
+    },
+    {
+      "q": "Alphard 與 Hiace 如何選擇？",
+      "a": "Alphard 適合少人數與舒適體驗，Hiace 適合人數或行李較多。實際安排會依人數、行李與車輛狀況確認。"
+    },
+    {
+      "q": "機場接機流程是什麼？",
+      "a": "通常先確認航班號、抵達日期、人數、行李與目的地。服務方依預約確認安排集合方式。"
+    },
+    {
+      "q": "找不到司機怎麼辦？",
+      "a": "請先查看預約確認中的集合說明與聯絡方式。若仍無法會合，請透過確認郵件、LINE 或諮詢入口聯絡。"
+    },
+    {
+      "q": "深夜抵達可以安排嗎？",
+      "a": "深夜服務取決於日期、車輛與營運條件。請提前確認，未確認前頁面展示不代表已預約。"
+    },
+    {
+      "q": "可以準備兒童座椅嗎？",
+      "a": "兒童座椅屬特殊需求，請提前填寫。是否可安排以及數量以預約確認為準。"
+    },
+    {
+      "q": "長者和兒童同行需要注意什麼？",
+      "a": "建議提前說明步行距離、行李、上下車便利性與休息需求，行程安排會優先考量安全與舒適。"
+    },
+    {
+      "q": "可以安排多輛車嗎？",
+      "a": "多車安排適合人數或行李較多的團體。請提交乘客、行李、集合地與目的地。"
+    },
+    {
+      "q": "企業接待可以使用嗎？",
+      "a": "可用於機場接送、來賓接待與會務移動。請提前說明時間、人數、行李、發票或聯絡需求。"
+    },
+    {
+      "q": "飯店和旅行社可以合作嗎？",
+      "a": "可以透過諮詢入口說明合作形式、客源語言、服務頻率與結算需求，正式合作條件需確認。"
+    },
+    {
+      "q": "VIP 權益包括什麼？",
+      "a": "VIP 可記錄語言、飲品、溫度、歷史車型、家庭需求與歡迎卡等偏好，並在工作時間內優先回應。"
+    },
+    {
+      "q": "VIP 不保證什麼？",
+      "a": "VIP 權益也需依預約確認執行，確認範圍外的人員、車輛、等待、時間與遠距停靠需要重新評估。"
+    },
+    {
+      "q": "推薦碼如何記錄？",
+      "a": "推薦碼由系統隨機生成並在伺服器端記錄，瀏覽器不能自行修改推薦關係。"
+    },
+    {
+      "q": "什麼是有效推薦訂單？",
+      "a": "只有已付款且符合有效訂單規則的服務才計入推薦，取消、退款、測試單與自我推薦不計入。"
+    },
+    {
+      "q": "Instagram 和 TikTok 來源如何識別？",
+      "a": "頁面會保留 UTM、來源渠道與 ref_code。未設定追蹤或未同意 Cookie 時，不載入非必要 Pixel。"
+    },
+    {
+      "q": "個人資訊如何保護？",
+      "a": "會員、預約、推薦與 Token 都不寫入 localStorage。後端使用服務端 Session、CSRF 與 Token 雜湊。"
+    },
+    {
+      "q": "行李放不下怎麼辦？",
+      "a": "請在預約前準確填寫行李數量與尺寸，必要時會建議更合適車型或多車方案。"
+    },
+    {
+      "q": "中途可以停靠嗎？",
+      "a": "包車路線可討論中途停靠，但是否可行取決於時間、距離、停車條件與商品規則。"
+    },
+    {
+      "q": "包車路線是否可以調整？",
+      "a": "可在諮詢中提出想去的景點與節奏，服務方會依時間和交通條件提出建議。"
+    },
+    {
+      "q": "日本假日和旺季要注意什麼？",
+      "a": "旺季容易車源緊張與景點壅擠，建議盡早預約並保留緩衝時間。"
+    }
   ],
   "ja": [
-    {"q":"Japan Travelは誰が運営していますか？","a":"Japan Travelは株式会社大寅 / Daitora Groupが運営しています。公開情報は旅行参考で、交通サービスは予約確認に基づき手配されます。"},
-    {"q":"日本の適法な運行車両ですか？","a":"交通サービスは日本での適切な運行体制を前提に案内します。車両、ドライバー、許可の詳細は予約確認が基準です。"},
-    {"q":"一般タクシーとの違いは何ですか？","a":"一般タクシーは即時の短距離移動に向きます。Japan Travelは空港送迎、貸切行程、家族旅行、来賓対応など事前手配に向きます。"},
-    {"q":"空港バスや電車との違いは何ですか？","a":"バスや電車は荷物が少なく固定ルートで移動する場合に便利です。専用車は荷物が多い時、子どもや高齢者同行、深夜到着に向きます。"},
-    {"q":"AlphardとHiaceはどう選べばよいですか？","a":"Alphardは少人数で快適性を重視する場合、Hiaceは人数や荷物が多い場合に向きます。最終手配は予約確認が基準です。"},
-    {"q":"人数と荷物に合う車種はどう判断しますか？","a":"人数、荷物数、チャイルドシート、大型荷物を事前に入力してください。車種や複数台手配の判断材料になります。"},
-    {"q":"空港迎えの流れは？","a":"便名、到着日、人数、荷物、目的地を確認し、予約確認に基づき集合方法を案内します。"},
-    {"q":"ドライバーに会えない場合は？","a":"予約確認の集合案内と連絡先を確認してください。会えない場合は確認メール、LINE、問い合わせから連絡してください。"},
-    {"q":"フライト遅延時は？","a":"遅延時の扱いはRezio商品と予約確認が基準です。便名を早めに共有すると調整しやすくなります。"},
-    {"q":"深夜到着も可能ですか？","a":"深夜対応は日付、車両、運行条件により異なります。未確認の表示は予約確定を意味しません。"},
-    {"q":"待機時間はどうなりますか？","a":"待機規定はRezio商品と最終予約確認が基準です。確認範囲を超える場合は再調整が必要です。"},
-    {"q":"チャイルドシートはありますか？","a":"チャイルドシートは特別要望です。必要数を事前に記入してください。手配可否は予約確認が基準です。"},
-    {"q":"高齢者や子ども同行時の注意点は？","a":"徒歩距離、荷物、乗降しやすさ、休憩希望を事前に伝えると、安全で無理のない行程にしやすくなります。"},
-    {"q":"複数台の手配はできますか？","a":"人数や荷物が多い場合は複数台を検討できます。集合場所、目的地、荷物量を共有してください。"},
-    {"q":"企業の来賓対応に使えますか？","a":"空港送迎、来賓対応、会議移動などに利用できます。時間、人数、荷物、請求や連絡方法を事前に伝えてください。"},
-    {"q":"ホテルや旅行会社との提携は可能ですか？","a":"問い合わせから提携形態、言語、頻度、精算希望をお知らせください。正式条件はDaitora Groupが確認します。"},
-    {"q":"取消と返金規定は？","a":"取消、返金、変更規定はRezioの該当商品と最終予約確認が基準です。"},
-    {"q":"Rezioでどう予約しますか？","a":"Rezioボタンから該当商品または案内ページへ進みます。日付、在庫、料金、支払い、バウチャーはRezio側で扱います。"},
-    {"q":"直接相談とRezio予約の違いは？","a":"直接相談は複雑な行程や特別要望向けです。Rezioは標準商品、日付、在庫、支払い、正式予約を扱います。"},
-    {"q":"支払い後の確認は？","a":"支払い後の状態はRezioと最終確認が基準です。このサイトのクリック記録は成約ではありません。"},
-    {"q":"予約情報の変更は？","a":"Rezio注文規定または確認メールの方法で変更申請をしてください。可否と費用は最終確認が基準です。"},
-    {"q":"VIP特典は何ですか？","a":"言語、飲み物、温度、過去車種、家族要望、歓迎カードなどの好みを記録し、営業時間内に優先対応します。"},
-    {"q":"VIPで保証されない内容は？","a":"VIPでも予約確認範囲を超える人員、車両、待機、時間、遠距離立寄りは再調整が必要です。"},
-    {"q":"紹介コードはどう記録されますか？","a":"紹介コードはシステムがランダム生成し、サーバー側で記録します。ブラウザ側で変更できません。"},
-    {"q":"有効紹介注文とは？","a":"支払い済みで有効注文ルールを満たすサービスのみ計上します。取消、返金、テスト、自己紹介は対象外です。"},
-    {"q":"InstagramやTikTok流入はどう識別しますか？","a":"UTM、流入チャネル、ref_codeを保持します。未設定またはCookie未同意時は不要なPixelを読み込みません。"},
-    {"q":"個人情報はどう守りますか？","a":"会員、予約、紹介、TokenはlocalStorageに保存しません。サーバーSession、CSRF、Tokenハッシュを使います。"},
-    {"q":"荷物が入らない場合は？","a":"予約前に荷物数とサイズを正確に伝えてください。必要に応じて車種や複数台を提案します。"},
-    {"q":"途中立ち寄りは可能ですか？","a":"貸切では相談できますが、時間、距離、駐車条件、商品規定により可否が変わります。"},
-    {"q":"貸切ルートは変更できますか？","a":"行きたい場所とペースを相談で伝えてください。時間と交通条件に合わせて提案します。"},
-    {"q":"日本の連休や繁忙期は？","a":"繁忙期は車両と観光地が混みやすいため、早めの予約と余裕ある行程をおすすめします。"},
-    {"q":"利用後に再予約するには？","a":"Rezioで再予約するか、会員ページで保存、好み、紹介記録を確認して新しい相談を送信できます。"}
+    {
+      "q": "Japan Travelは誰が運営していますか？",
+      "a": "Japan Travelは株式会社大寅 / Daitora Groupが運営しています。公開情報は旅行参考で、交通サービスは予約確認に基づき手配されます。"
+    },
+    {
+      "q": "日本の適法な運行車両ですか？",
+      "a": "交通サービスは日本での適切な運行体制を前提に案内します。車両、ドライバー、許可の詳細は予約確認が基準です。"
+    },
+    {
+      "q": "一般タクシーとの違いは何ですか？",
+      "a": "一般タクシーは即時の短距離移動に向きます。Japan Travelは空港送迎、貸切行程、家族旅行、来賓対応など事前手配に向きます。"
+    },
+    {
+      "q": "空港バスや電車との違いは何ですか？",
+      "a": "バスや電車は荷物が少なく固定ルートで移動する場合に便利です。専用車は荷物が多い時、子どもや高齢者同行、深夜到着に向きます。"
+    },
+    {
+      "q": "AlphardとHiaceはどう選べばよいですか？",
+      "a": "Alphardは少人数で快適性を重視する場合、Hiaceは人数や荷物が多い場合に向きます。最終手配は予約確認が基準です。"
+    },
+    {
+      "q": "人数と荷物に合う車種はどう判断しますか？",
+      "a": "人数、荷物数、チャイルドシート、大型荷物を事前に入力してください。車種や複数台手配の判断材料になります。"
+    },
+    {
+      "q": "空港迎えの流れは？",
+      "a": "便名、到着日、人数、荷物、目的地を確認し、予約確認に基づき集合方法を案内します。"
+    },
+    {
+      "q": "ドライバーに会えない場合は？",
+      "a": "予約確認の集合案内と連絡先を確認してください。会えない場合は確認メール、LINE、問い合わせから連絡してください。"
+    },
+    {
+      "q": "深夜到着も可能ですか？",
+      "a": "深夜対応は日付、車両、運行条件により異なります。未確認の表示は予約確定を意味しません。"
+    },
+    {
+      "q": "チャイルドシートはありますか？",
+      "a": "チャイルドシートは特別要望です。必要数を事前に記入してください。手配可否は予約確認が基準です。"
+    },
+    {
+      "q": "高齢者や子ども同行時の注意点は？",
+      "a": "徒歩距離、荷物、乗降しやすさ、休憩希望を事前に伝えると、安全で無理のない行程にしやすくなります。"
+    },
+    {
+      "q": "複数台の手配はできますか？",
+      "a": "人数や荷物が多い場合は複数台を検討できます。集合場所、目的地、荷物量を共有してください。"
+    },
+    {
+      "q": "企業の来賓対応に使えますか？",
+      "a": "空港送迎、来賓対応、会議移動などに利用できます。時間、人数、荷物、請求や連絡方法を事前に伝えてください。"
+    },
+    {
+      "q": "ホテルや旅行会社との提携は可能ですか？",
+      "a": "問い合わせから提携形態、言語、頻度、精算希望をお知らせください。正式条件はDaitora Groupが確認します。"
+    },
+    {
+      "q": "VIP特典は何ですか？",
+      "a": "言語、飲み物、温度、過去車種、家族要望、歓迎カードなどの好みを記録し、営業時間内に優先対応します。"
+    },
+    {
+      "q": "VIPで保証されない内容は？",
+      "a": "VIPでも予約確認範囲を超える人員、車両、待機、時間、遠距離立寄りは再調整が必要です。"
+    },
+    {
+      "q": "紹介コードはどう記録されますか？",
+      "a": "紹介コードはシステムがランダム生成し、サーバー側で記録します。ブラウザ側で変更できません。"
+    },
+    {
+      "q": "有効紹介注文とは？",
+      "a": "支払い済みで有効注文ルールを満たすサービスのみ計上します。取消、返金、テスト、自己紹介は対象外です。"
+    },
+    {
+      "q": "InstagramやTikTok流入はどう識別しますか？",
+      "a": "UTM、流入チャネル、ref_codeを保持します。未設定またはCookie未同意時は不要なPixelを読み込みません。"
+    },
+    {
+      "q": "個人情報はどう守りますか？",
+      "a": "会員、予約、紹介、TokenはlocalStorageに保存しません。サーバーSession、CSRF、Tokenハッシュを使います。"
+    },
+    {
+      "q": "荷物が入らない場合は？",
+      "a": "予約前に荷物数とサイズを正確に伝えてください。必要に応じて車種や複数台を提案します。"
+    },
+    {
+      "q": "途中立ち寄りは可能ですか？",
+      "a": "貸切では相談できますが、時間、距離、駐車条件、商品規定により可否が変わります。"
+    },
+    {
+      "q": "貸切ルートは変更できますか？",
+      "a": "行きたい場所とペースを相談で伝えてください。時間と交通条件に合わせて提案します。"
+    },
+    {
+      "q": "日本の連休や繁忙期は？",
+      "a": "繁忙期は車両と観光地が混みやすいため、早めの予約と余裕ある行程をおすすめします。"
+    }
   ],
   "en": [
-    {"q":"Who operates Japan Travel?","a":"Japan Travel is operated by Kabushiki Kaisha Daitora / Daitora Group. Public pages are travel references; transport services are fulfilled according to booking confirmation."},
-    {"q":"Are the vehicles legally operated in Japan?","a":"Transport guidance assumes compliant local operation in Japan. Vehicle, driver and permit details are governed by booking confirmation, not by unconfirmed page claims."},
-    {"q":"How is this different from a normal taxi?","a":"A taxi is best for immediate short rides. Japan Travel guidance is better for planned airport transfers, private routes, family travel and guest reception."},
-    {"q":"How is this different from airport buses or trains?","a":"Buses and trains fit light luggage and fixed routes. Private transfer is useful for groups, luggage, children, seniors, late arrivals and hotel-to-hotel movement."},
-    {"q":"Should I choose Alphard or Hiace?","a":"Alphard fits smaller groups seeking comfort. Hiace is better for more passengers or luggage. Final assignment follows booking confirmation."},
-    {"q":"How do I choose by passenger and luggage count?","a":"Enter passenger count, luggage count, child seats and large items. This helps judge vehicle type or whether multiple cars are needed."},
-    {"q":"How does airport pickup work?","a":"Flight number, arrival date, party size, luggage and destination are confirmed first. Meeting details follow the booking confirmation."},
-    {"q":"What if I cannot find the driver?","a":"Check the meeting instructions and contact method in your confirmation. If you still cannot meet, contact support through the email, LINE or inquiry channel."},
-    {"q":"What happens if my flight is delayed?","a":"Delay handling follows the Rezio product and final booking confirmation. Providing the flight number early helps coordination."},
-    {"q":"Can late-night arrivals be arranged?","a":"Late-night service depends on date, vehicles and operating conditions. Page display before confirmation does not mean a booking is confirmed."},
-    {"q":"How is waiting time handled?","a":"Waiting rules follow the Rezio product and final booking confirmation. Extra waiting may require new coordination."},
-    {"q":"Can child seats be prepared?","a":"Child seats are special requests. Enter the requested number in advance. Availability follows booking confirmation."},
-    {"q":"What about seniors or children?","a":"Share walking distance concerns, luggage, boarding ease and rest needs in advance so the route can be planned more comfortably."},
-    {"q":"Can multiple vehicles be arranged?","a":"Multiple vehicles can be considered for larger groups or heavy luggage. Share passenger, luggage, pickup and drop-off details."},
-    {"q":"Is this suitable for corporate guests?","a":"Yes, it can support airport pickup, guest reception and meeting transfers. Share timing, headcount, luggage and billing needs in advance."},
-    {"q":"Can hotels or travel agencies cooperate?","a":"Use the inquiry form to describe cooperation style, guest language, frequency and settlement needs. Formal terms require Daitora Group confirmation."},
-    {"q":"What are cancellation and refund rules?","a":"Cancellation, refund and change rules follow the relevant Rezio product and final booking confirmation."},
-    {"q":"How do I book through Rezio?","a":"The Rezio button opens the relevant product or a friendly unconfigured page. Rezio handles dates, inventory, price, payment and vouchers."},
-    {"q":"What is the difference between inquiry and Rezio booking?","a":"Inquiry is for complex routes and special needs. Rezio is for standard products, dates, inventory, payment and formal booking."},
-    {"q":"What happens after payment?","a":"Order status after payment follows Rezio and final confirmation. A click on this site is only a redirect record, not a completed order."},
-    {"q":"How can I change booking information?","a":"Follow Rezio order rules or the confirmation email. Whether changes are possible and any fee depend on final confirmation."},
-    {"q":"What are VIP benefits?","a":"VIP can keep preferences such as language, drinks, temperature, past vehicles, family needs and welcome cards, with priority response during working hours."},
-    {"q":"What is not guaranteed by VIP?","a":"VIP does not guarantee a specific driver, vehicle upgrade, unlimited waiting, free extra hours or free long-distance extra stops."},
-    {"q":"How is a referral code recorded?","a":"Referral codes are random system values recorded on the server. The browser cannot edit referral relationships."},
-    {"q":"What is a valid referred order?","a":"Only paid services satisfying valid-order rules count. Cancelled, refunded, test and self-referral orders do not count."},
-    {"q":"How are Instagram and TikTok sources identified?","a":"UTM parameters, source channels and ref_code are preserved. Non-essential pixels do not load when not configured or not consented."},
-    {"q":"How is personal data protected?","a":"Member data, bookings, referrals and tokens are not stored in localStorage. Server sessions, CSRF and token hashes are used."},
-    {"q":"What if luggage does not fit?","a":"Enter luggage count and size accurately before booking. A larger vehicle or multiple cars may be suggested."},
-    {"q":"Can we add stops on the way?","a":"Private charters can discuss extra stops, but feasibility depends on time, distance, parking and product rules."},
-    {"q":"Can private routes be adjusted?","a":"Share desired spots and pace through inquiry. Suggestions are made according to time and traffic conditions."},
-    {"q":"What about Japanese holidays and peak seasons?","a":"Peak seasons can tighten vehicle supply and crowd attractions. Book early and keep buffer time."},
-    {"q":"How do I book again after service?","a":"Book again through Rezio or sign in to review favorites, preferences and referral records before sending a new inquiry."}
+    {
+      "q": "Who operates Japan Travel?",
+      "a": "Japan Travel is operated by Kabushiki Kaisha Daitora / Daitora Group. Public pages are travel references; transport services are fulfilled according to booking confirmation."
+    },
+    {
+      "q": "Are the vehicles legally operated in Japan?",
+      "a": "Transport guidance assumes compliant local operation in Japan. Vehicle, driver and permit details are governed by booking confirmation, not by unconfirmed page claims."
+    },
+    {
+      "q": "How is this different from a normal taxi?",
+      "a": "A taxi is best for immediate short rides. Japan Travel guidance is better for planned airport transfers, private routes, family travel and guest reception."
+    },
+    {
+      "q": "How is this different from airport buses or trains?",
+      "a": "Buses and trains fit light luggage and fixed routes. Private transfer is useful for groups, luggage, children, seniors, late arrivals and hotel-to-hotel movement."
+    },
+    {
+      "q": "Should I choose Alphard or Hiace?",
+      "a": "Alphard fits smaller groups seeking comfort. Hiace is better for more passengers or luggage. Final assignment follows booking confirmation."
+    },
+    {
+      "q": "How do I choose by passenger and luggage count?",
+      "a": "Enter passenger count, luggage count, child seats and large items. This helps judge vehicle type or whether multiple cars are needed."
+    },
+    {
+      "q": "How does airport pickup work?",
+      "a": "Flight number, arrival date, party size, luggage and destination are confirmed first. Meeting details follow the booking confirmation."
+    },
+    {
+      "q": "What if I cannot find the driver?",
+      "a": "Check the meeting instructions and contact method in your confirmation. If you still cannot meet, contact support through the email, LINE or inquiry channel."
+    },
+    {
+      "q": "Can late-night arrivals be arranged?",
+      "a": "Late-night service depends on date, vehicles and operating conditions. Page display before confirmation does not mean a booking is confirmed."
+    },
+    {
+      "q": "Can child seats be prepared?",
+      "a": "Child seats are special requests. Enter the requested number in advance. Availability follows booking confirmation."
+    },
+    {
+      "q": "What about seniors or children?",
+      "a": "Share walking distance concerns, luggage, boarding ease and rest needs in advance so the route can be planned more comfortably."
+    },
+    {
+      "q": "Can multiple vehicles be arranged?",
+      "a": "Multiple vehicles can be considered for larger groups or heavy luggage. Share passenger, luggage, pickup and drop-off details."
+    },
+    {
+      "q": "Is this suitable for corporate guests?",
+      "a": "Yes, it can support airport pickup, guest reception and meeting transfers. Share timing, headcount, luggage and billing needs in advance."
+    },
+    {
+      "q": "Can hotels or travel agencies cooperate?",
+      "a": "Use the inquiry form to describe cooperation style, guest language, frequency and settlement needs. Formal terms require Daitora Group confirmation."
+    },
+    {
+      "q": "What are VIP benefits?",
+      "a": "VIP can keep preferences such as language, drinks, temperature, past vehicles, family needs and welcome cards, with priority response during working hours."
+    },
+    {
+      "q": "What is not guaranteed by VIP?",
+      "a": "VIP does not guarantee a specific driver, vehicle upgrade, unlimited waiting, free extra hours or free long-distance extra stops."
+    },
+    {
+      "q": "How is a referral code recorded?",
+      "a": "Referral codes are random system values recorded on the server. The browser cannot edit referral relationships."
+    },
+    {
+      "q": "What is a valid referred order?",
+      "a": "Only paid services satisfying valid-order rules count. Cancelled, refunded, test and self-referral orders do not count."
+    },
+    {
+      "q": "How are Instagram and TikTok sources identified?",
+      "a": "UTM parameters, source channels and ref_code are preserved. Non-essential pixels do not load when not configured or not consented."
+    },
+    {
+      "q": "How is personal data protected?",
+      "a": "Member data, bookings, referrals and tokens are not stored in localStorage. Server sessions, CSRF and token hashes are used."
+    },
+    {
+      "q": "What if luggage does not fit?",
+      "a": "Enter luggage count and size accurately before booking. A larger vehicle or multiple cars may be suggested."
+    },
+    {
+      "q": "Can we add stops on the way?",
+      "a": "Private charters can discuss extra stops, but feasibility depends on time, distance, parking and product rules."
+    },
+    {
+      "q": "Can private routes be adjusted?",
+      "a": "Share desired spots and pace through inquiry. Suggestions are made according to time and traffic conditions."
+    },
+    {
+      "q": "What about Japanese holidays and peak seasons?",
+      "a": "Peak seasons can tighten vehicle supply and crowd attractions. Book early and keep buffer time."
+    }
   ],
   "ko": [
-    {"q":"Japan Travel은 누가 운영하나요?","a":"Japan Travel은 株式会社大寅 / Daitora Group이 운영합니다. 공개 페이지는 여행 참고 자료이며 교통 서비스는 예약 확인에 따라 이행됩니다."},
-    {"q":"일본에서 합법적으로 운영되는 차량인가요?","a":"교통 서비스는 일본 현지의 적절한 운영 체계를 전제로 안내합니다. 차량, 기사, 허가 상태는 예약 확인을 기준으로 합니다."},
-    {"q":"일반 택시와 무엇이 다른가요?","a":"일반 택시는 즉시 짧은 이동에 적합합니다. Japan Travel은 공항 송영, 전용 차량 코스, 가족 여행과 의전 이동에 적합합니다."},
-    {"q":"공항버스나 전철과 무엇이 다른가요?","a":"버스와 전철은 짐이 적고 고정 노선일 때 좋습니다. 전용 차량은 인원, 수하물, 아이나 어르신 동행, 심야 도착에 유용합니다."},
-    {"q":"Alphard와 Hiace는 어떻게 고르나요?","a":"Alphard는 적은 인원과 편안함에, Hiace는 인원이나 수하물이 많을 때 적합합니다. 최종 배정은 예약 확인을 기준으로 합니다."},
-    {"q":"인원과 수하물에 맞는 차종은 어떻게 판단하나요?","a":"승객 수, 수하물 수, 카시트, 대형 짐을 입력해 주세요. 차종 또는 복수 차량 판단에 사용됩니다."},
-    {"q":"공항 픽업 절차는 어떻게 되나요?","a":"항공편, 도착일, 인원, 수하물, 목적지를 먼저 확인하고 예약 확인에 따라 만나는 방법을 안내합니다."},
-    {"q":"기사를 찾지 못하면 어떻게 하나요?","a":"예약 확인서의 만남 안내와 연락 방법을 확인하세요. 그래도 만나지 못하면 이메일, LINE 또는 문의 채널로 연락해 주세요."},
-    {"q":"항공편이 지연되면 어떻게 되나요?","a":"지연 처리는 Rezio 상품과 최종 예약 확인을 기준으로 합니다. 항공편 정보를 미리 공유하면 조율에 도움이 됩니다."},
-    {"q":"심야 도착도 가능한가요?","a":"심야 서비스는 날짜, 차량, 운영 조건에 따라 다릅니다. 확인 전 페이지 표시는 예약 확정을 의미하지 않습니다."},
-    {"q":"대기 시간은 어떻게 처리되나요?","a":"대기 규정은 Rezio 상품과 최종 예약 확인을 기준으로 합니다. 범위를 넘는 대기는 재조율이 필요할 수 있습니다."},
-    {"q":"카시트를 준비할 수 있나요?","a":"카시트는 특별 요청입니다. 필요한 수량을 미리 입력해 주세요. 가능 여부는 예약 확인을 기준으로 합니다."},
-    {"q":"어르신과 아이 동행 시 주의할 점은?","a":"보행 거리, 짐, 승하차 편의, 휴식 필요를 미리 알려 주시면 더 편안한 일정 제안이 가능합니다."},
-    {"q":"여러 대 차량 배정이 가능한가요?","a":"인원이나 수하물이 많은 경우 여러 대를 검토할 수 있습니다. 승객, 수하물, 출발지와 목적지를 알려 주세요."},
-    {"q":"기업 의전에도 사용할 수 있나요?","a":"공항 픽업, 방문객 의전, 회의 이동에 사용할 수 있습니다. 시간, 인원, 수하물, 청구 요구를 미리 알려 주세요."},
-    {"q":"호텔이나 여행사와 협력할 수 있나요?","a":"문의 양식으로 협력 방식, 고객 언어, 이용 빈도, 정산 요구를 알려 주세요. 공식 조건은 Daitora Group 확인이 필요합니다."},
-    {"q":"취소와 환불 규정은 무엇인가요?","a":"취소, 환불, 변경 규정은 해당 Rezio 상품과 최종 예약 확인을 기준으로 합니다."},
-    {"q":"Rezio로 어떻게 예약하나요?","a":"Rezio 버튼은 해당 상품 또는 안내 페이지로 이동합니다. 날짜, 재고, 가격, 결제, 바우처는 Rezio가 처리합니다."},
-    {"q":"직접 문의와 Rezio 예약의 차이는?","a":"직접 문의는 복잡한 일정과 특별 요청에, Rezio는 표준 상품, 날짜, 재고, 결제와 공식 예약에 사용됩니다."},
-    {"q":"결제 후 확인 절차는?","a":"결제 후 주문 상태는 Rezio와 최종 확인을 기준으로 합니다. 이 사이트의 클릭 기록은 완료 주문이 아닙니다."},
-    {"q":"예약 정보는 어떻게 수정하나요?","a":"Rezio 주문 규정 또는 확인 메일의 방법에 따라 수정 요청을 해 주세요. 가능 여부와 비용은 최종 확인을 기준으로 합니다."},
-    {"q":"VIP 혜택은 무엇인가요?","a":"VIP는 언어, 음료, 온도, 과거 차종, 가족 요구와 환영 카드 선호를 기록하고 업무 시간 내 우선 응대를 받을 수 있습니다."},
-    {"q":"VIP가 보장하지 않는 것은?","a":"VIP라도 예약 확인 범위를 넘는 기사, 차량, 대기, 시간, 장거리 경유는 다시 조율해야 합니다."},
-    {"q":"추천 코드는 어떻게 기록되나요?","a":"추천 코드는 시스템에서 무작위로 생성하고 서버에 기록합니다. 브라우저에서 추천 관계를 수정할 수 없습니다."},
-    {"q":"유효 추천 주문이란 무엇인가요?","a":"결제 완료 및 유효 주문 규칙을 만족한 서비스만 반영됩니다. 취소, 환불, 테스트, 자기 추천은 제외됩니다."},
-    {"q":"Instagram과 TikTok 유입은 어떻게 식별하나요?","a":"UTM, 유입 채널, ref_code를 보존합니다. 설정되지 않았거나 쿠키 동의가 없으면 비필수 Pixel을 로드하지 않습니다."},
-    {"q":"개인정보는 어떻게 보호하나요?","a":"회원, 예약, 추천, Token은 localStorage에 저장하지 않습니다. 서버 Session, CSRF, Token 해시를 사용합니다."},
-    {"q":"짐이 차량에 들어가지 않으면?","a":"예약 전에 수하물 수와 크기를 정확히 입력해 주세요. 큰 차량 또는 복수 차량을 제안할 수 있습니다."},
-    {"q":"중간 경유가 가능한가요?","a":"전용 차량은 경유를 상담할 수 있지만 시간, 거리, 주차 조건, 상품 규정에 따라 달라집니다."},
-    {"q":"전용 차량 코스는 조정할 수 있나요?","a":"원하는 스팟과 이동 속도를 문의로 알려 주세요. 시간과 교통 조건에 맞춰 제안합니다."},
-    {"q":"일본 연휴와 성수기에는 무엇을 주의해야 하나요?","a":"성수기에는 차량과 관광지가 혼잡할 수 있으므로 일찍 예약하고 여유 시간을 두는 것이 좋습니다."},
-    {"q":"서비스 후 다시 예약하려면?","a":"Rezio로 다시 예약하거나 회원으로 로그인해 저장, 선호, 추천 기록을 확인한 뒤 새 문의를 보낼 수 있습니다."}
+    {
+      "q": "Japan Travel은 누가 운영하나요?",
+      "a": "Japan Travel은 株式会社大寅 / Daitora Group이 운영합니다. 공개 페이지는 여행 참고 자료이며 교통 서비스는 예약 확인에 따라 이행됩니다."
+    },
+    {
+      "q": "일본에서 합법적으로 운영되는 차량인가요?",
+      "a": "교통 서비스는 일본 현지의 적절한 운영 체계를 전제로 안내합니다. 차량, 기사, 허가 상태는 예약 확인을 기준으로 합니다."
+    },
+    {
+      "q": "일반 택시와 무엇이 다른가요?",
+      "a": "일반 택시는 즉시 짧은 이동에 적합합니다. Japan Travel은 공항 송영, 전용 차량 코스, 가족 여행과 의전 이동에 적합합니다."
+    },
+    {
+      "q": "공항버스나 전철과 무엇이 다른가요?",
+      "a": "버스와 전철은 짐이 적고 고정 노선일 때 좋습니다. 전용 차량은 인원, 수하물, 아이나 어르신 동행, 심야 도착에 유용합니다."
+    },
+    {
+      "q": "Alphard와 Hiace는 어떻게 고르나요?",
+      "a": "Alphard는 적은 인원과 편안함에, Hiace는 인원이나 수하물이 많을 때 적합합니다. 최종 배정은 예약 확인을 기준으로 합니다."
+    },
+    {
+      "q": "인원과 수하물에 맞는 차종은 어떻게 판단하나요?",
+      "a": "승객 수, 수하물 수, 카시트, 대형 짐을 입력해 주세요. 차종 또는 복수 차량 판단에 사용됩니다."
+    },
+    {
+      "q": "공항 픽업 절차는 어떻게 되나요?",
+      "a": "항공편, 도착일, 인원, 수하물, 목적지를 먼저 확인하고 예약 확인에 따라 만나는 방법을 안내합니다."
+    },
+    {
+      "q": "기사를 찾지 못하면 어떻게 하나요?",
+      "a": "예약 확인서의 만남 안내와 연락 방법을 확인하세요. 그래도 만나지 못하면 이메일, LINE 또는 문의 채널로 연락해 주세요."
+    },
+    {
+      "q": "심야 도착도 가능한가요?",
+      "a": "심야 서비스는 날짜, 차량, 운영 조건에 따라 다릅니다. 확인 전 페이지 표시는 예약 확정을 의미하지 않습니다."
+    },
+    {
+      "q": "카시트를 준비할 수 있나요?",
+      "a": "카시트는 특별 요청입니다. 필요한 수량을 미리 입력해 주세요. 가능 여부는 예약 확인을 기준으로 합니다."
+    },
+    {
+      "q": "어르신과 아이 동행 시 주의할 점은?",
+      "a": "보행 거리, 짐, 승하차 편의, 휴식 필요를 미리 알려 주시면 더 편안한 일정 제안이 가능합니다."
+    },
+    {
+      "q": "여러 대 차량 배정이 가능한가요?",
+      "a": "인원이나 수하물이 많은 경우 여러 대를 검토할 수 있습니다. 승객, 수하물, 출발지와 목적지를 알려 주세요."
+    },
+    {
+      "q": "기업 의전에도 사용할 수 있나요?",
+      "a": "공항 픽업, 방문객 의전, 회의 이동에 사용할 수 있습니다. 시간, 인원, 수하물, 청구 요구를 미리 알려 주세요."
+    },
+    {
+      "q": "호텔이나 여행사와 협력할 수 있나요?",
+      "a": "문의 양식으로 협력 방식, 고객 언어, 이용 빈도, 정산 요구를 알려 주세요. 공식 조건은 Daitora Group 확인이 필요합니다."
+    },
+    {
+      "q": "VIP 혜택은 무엇인가요?",
+      "a": "VIP는 언어, 음료, 온도, 과거 차종, 가족 요구와 환영 카드 선호를 기록하고 업무 시간 내 우선 응대를 받을 수 있습니다."
+    },
+    {
+      "q": "VIP가 보장하지 않는 것은?",
+      "a": "VIP라도 예약 확인 범위를 넘는 기사, 차량, 대기, 시간, 장거리 경유는 다시 조율해야 합니다."
+    },
+    {
+      "q": "추천 코드는 어떻게 기록되나요?",
+      "a": "추천 코드는 시스템에서 무작위로 생성하고 서버에 기록합니다. 브라우저에서 추천 관계를 수정할 수 없습니다."
+    },
+    {
+      "q": "유효 추천 주문이란 무엇인가요?",
+      "a": "결제 완료 및 유효 주문 규칙을 만족한 서비스만 반영됩니다. 취소, 환불, 테스트, 자기 추천은 제외됩니다."
+    },
+    {
+      "q": "Instagram과 TikTok 유입은 어떻게 식별하나요?",
+      "a": "UTM, 유입 채널, ref_code를 보존합니다. 설정되지 않았거나 쿠키 동의가 없으면 비필수 Pixel을 로드하지 않습니다."
+    },
+    {
+      "q": "개인정보는 어떻게 보호하나요?",
+      "a": "회원, 예약, 추천, Token은 localStorage에 저장하지 않습니다. 서버 Session, CSRF, Token 해시를 사용합니다."
+    },
+    {
+      "q": "짐이 차량에 들어가지 않으면?",
+      "a": "예약 전에 수하물 수와 크기를 정확히 입력해 주세요. 큰 차량 또는 복수 차량을 제안할 수 있습니다."
+    },
+    {
+      "q": "중간 경유가 가능한가요?",
+      "a": "전용 차량은 경유를 상담할 수 있지만 시간, 거리, 주차 조건, 상품 규정에 따라 달라집니다."
+    },
+    {
+      "q": "전용 차량 코스는 조정할 수 있나요?",
+      "a": "원하는 스팟과 이동 속도를 문의로 알려 주세요. 시간과 교통 조건에 맞춰 제안합니다."
+    },
+    {
+      "q": "일본 연휴와 성수기에는 무엇을 주의해야 하나요?",
+      "a": "성수기에는 차량과 관광지가 혼잡할 수 있으므로 일찍 예약하고 여유 시간을 두는 것이 좋습니다."
+    }
   ]
 }

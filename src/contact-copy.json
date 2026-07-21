@@ -1,0 +1,67 @@
+{
+  "zh": {
+    "navContact": "咨询・预约",
+    "title": "行程咨询",
+    "help": "请告诉我们计划中的日期、上下车地点和行程需求。提交后表示工作人员已收到咨询，不代表预约成立。",
+    "contactSection": "联系信息",
+    "transportSection": "用车信息",
+    "requestSection": "咨询内容",
+    "panelTitle": "咨询这项行程",
+    "notConfirmed": "我们会根据日期、车辆和运营条件回复。提交咨询并不代表预约已经确认。",
+    "submit": "提交咨询",
+    "fields": {"name":"姓名","email":"邮箱","phone":"电话号码（选填）","contact_method":"希望联系方式","service_type":"服务类型","travel_date":"使用日期（选填）","travel_time":"使用时间（选填）","flight_number":"航班号（选填）","pickup_location":"上车地点","dropoff_location":"下车地点","passenger_count":"乘客人数（选填）","luggage_count":"行李数量（选填）","vehicle_preference":"希望车型（选填）","itinerary":"行程与具体需求"},
+    "services": {"":"请选择","airport_transfer":"机场接送","private_charter":"关西包车","day_route":"一日游路线","custom":"定制行程","other":"其他咨询"}
+  },
+  "zhHant": {
+    "navContact": "諮詢・預約",
+    "title": "行程諮詢",
+    "help": "請告訴我們預計日期、上下車地點與行程需求。提交後表示工作人員已收到諮詢，不代表預約成立。",
+    "contactSection": "聯絡資訊",
+    "transportSection": "用車資訊",
+    "requestSection": "諮詢內容",
+    "panelTitle": "諮詢這項行程",
+    "notConfirmed": "我們會依日期、車輛與營運條件回覆。提交諮詢並不代表預約已確認。",
+    "submit": "提交諮詢",
+    "fields": {"name":"姓名","email":"Email","phone":"電話號碼（選填）","contact_method":"希望聯絡方式","service_type":"服務類型","travel_date":"使用日期（選填）","travel_time":"使用時間（選填）","flight_number":"航班號碼（選填）","pickup_location":"上車地點","dropoff_location":"下車地點","passenger_count":"乘客人數（選填）","luggage_count":"行李數量（選填）","vehicle_preference":"希望車型（選填）","itinerary":"行程與具體需求"},
+    "services": {"":"請選擇","airport_transfer":"機場接送","private_charter":"關西包車","day_route":"一日遊路線","custom":"客製行程","other":"其他諮詢"}
+  },
+  "ja": {
+    "navContact": "相談・予約",
+    "title": "旅程のご相談",
+    "help": "ご利用予定日、乗車地、降車地、ご希望の行程をお知らせください。送信はお問い合わせの受付であり、予約確定ではありません。",
+    "contactSection": "連絡先",
+    "transportSection": "ご利用情報",
+    "requestSection": "ご相談内容",
+    "panelTitle": "この旅程を相談する",
+    "notConfirmed": "日程、車両、運行条件を確認して返信します。お問い合わせの送信だけでは予約は確定しません。",
+    "submit": "相談を送信",
+    "fields": {"name":"お名前","email":"メールアドレス","phone":"電話番号（任意）","contact_method":"希望連絡方法","service_type":"サービス種別","travel_date":"利用日（任意）","travel_time":"利用時間（任意）","flight_number":"便名（任意）","pickup_location":"乗車地","dropoff_location":"降車地","passenger_count":"人数（任意）","luggage_count":"荷物数（任意）","vehicle_preference":"希望車種（任意）","itinerary":"行程・ご希望"},
+    "services": {"":"選択してください","airport_transfer":"空港送迎","private_charter":"関西貸切","day_route":"日帰りルート","custom":"カスタム旅程","other":"その他の相談"}
+  },
+  "en": {
+    "navContact": "Inquire / Book",
+    "title": "Plan your journey",
+    "help": "Tell us your expected date, pickup, drop-off and itinerary. Submission records an inquiry; it does not confirm a booking.",
+    "contactSection": "Contact details",
+    "transportSection": "Travel details",
+    "requestSection": "Your request",
+    "panelTitle": "Ask about this journey",
+    "notConfirmed": "We will reply after checking dates, vehicles and operating conditions. Sending an inquiry does not confirm a booking.",
+    "submit": "Send inquiry",
+    "fields": {"name":"Name","email":"Email","phone":"Phone (optional)","contact_method":"Preferred contact method","service_type":"Service type","travel_date":"Travel date (optional)","travel_time":"Travel time (optional)","flight_number":"Flight number (optional)","pickup_location":"Pickup location","dropoff_location":"Drop-off location","passenger_count":"Passengers (optional)","luggage_count":"Luggage (optional)","vehicle_preference":"Vehicle preference (optional)","itinerary":"Itinerary and requirements"},
+    "services": {"":"Please select","airport_transfer":"Airport transfer","private_charter":"Kansai private charter","day_route":"Day route","custom":"Custom itinerary","other":"Other inquiry"}
+  },
+  "ko": {
+    "navContact": "상담・예약",
+    "title": "여정 상담",
+    "help": "예정 날짜, 승차지, 하차지와 희망 일정을 알려 주세요. 제출은 문의 접수이며 예약 확정이 아닙니다.",
+    "contactSection": "연락처",
+    "transportSection": "이용 정보",
+    "requestSection": "상담 내용",
+    "panelTitle": "이 여정 상담하기",
+    "notConfirmed": "날짜, 차량과 운행 조건을 확인한 뒤 답변드립니다. 문의 제출만으로 예약이 확정되지는 않습니다.",
+    "submit": "상담 보내기",
+    "fields": {"name":"이름","email":"이메일","phone":"전화번호(선택)","contact_method":"희망 연락 방법","service_type":"서비스 유형","travel_date":"이용 날짜(선택)","travel_time":"이용 시간(선택)","flight_number":"항공편명(선택)","pickup_location":"승차지","dropoff_location":"하차지","passenger_count":"인원(선택)","luggage_count":"수하물 수(선택)","vehicle_preference":"희망 차량(선택)","itinerary":"일정 및 요청 사항"},
+    "services": {"":"선택해 주세요","airport_transfer":"공항 송영","private_charter":"간사이 전용 차량","day_route":"당일 코스","custom":"맞춤 일정","other":"기타 상담"}
+  }
+}

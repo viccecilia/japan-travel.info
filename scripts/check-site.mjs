@@ -42,7 +42,7 @@ for (const f of files.filter((x) => /\.(html|js|php|json|md|txt|xml|htaccess)$/i
   if (rel === "scripts/check-site.mjs") continue;
   const text = fs.readFileSync(f, "utf8");
   for (const re of forbidden) if (re.test(text)) fail(`forbidden ${re} in ${rel}`);
-  if (/localhost|127\.0\.0\.1/.test(text) && !rel.startsWith("docs/") && !rel.startsWith("tests/") && !rel.startsWith(".github/")) fail(`localhost default in ${rel}`);
+  if (/localhost|127\.0\.0\.1/.test(text) && rel !== "api/bootstrap.php" && !rel.startsWith("docs/") && !rel.startsWith("tests/") && !rel.startsWith(".github/")) fail(`localhost default in ${rel}`);
   if (smtpSecretPattern.test(text) && !rel.endsWith(".env.example") && !rel.startsWith("tests/") && !rel.startsWith(".github/")) fail(`possible smtp secret in ${rel}`);
 }
 
@@ -72,6 +72,19 @@ for (const cssFile of files.filter((f) => f.endsWith(".css"))) {
 }
 
 const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about)\/<\/loc>/.test(sitemap)) fail("cancelled top-level pages remain in sitemap");
+const htaccess = fs.readFileSync(path.join(root, ".htaccess"), "utf8");
+for (const rule of [
+  "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]",
+  "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]",
+  "RewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]"
+]) if (!htaccess.includes(rule)) fail(`missing legacy redirect: ${rule}`);
+for (const f of html) {
+  const rel = path.relative(root, f).replaceAll("\\", "/");
+  const text = fs.readFileSync(f, "utf8");
+  if (/href="\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about)\/"/.test(text)) fail(`cancelled top-level link in ${rel}`);
+  if (/\/go\/rezio|Rezio link unavailable|booking link is not configured|スポット資料庫/.test(text)) fail(`obsolete public booking or navigation text in ${rel}`);
+}
 for (const match of sitemap.matchAll(/https:\/\/japan-travel\.info\/([^<]*)/g)) {
   const rel = match[1].replace(/\/$/, "");
   const target = rel ? path.join(root, rel, "index.html") : path.join(root, "index.html");

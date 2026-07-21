@@ -38,15 +38,19 @@ jobs:
           APP_DATA_DIR: ${{ runner.temp }}/jt-http-data
           MAIL_TRANSPORT: spool
           SITE_URL: http://127.0.0.1:8099
-          REZIO_DEFAULT_URL: https://demo.rezio.shop/products/default
-          REZIO_ROUTE_URLS_JSON: '{"kyoto":"https://demo.rezio.shop/products/kyoto"}'
+          DAITORA_CONTACT_ENDPOINT: http://127.0.0.1:8100/tests/php/group_contact_mock.php
+          DAITORA_CONTACT_SHARED_SECRET: ci-group-contact-secret-with-thirty-two-characters
+          GROUP_CONTACT_CAPTURE: ${{ runner.temp }}/group-contact.json
         run: |
-          trap 'echo "::group::PHP server log"; cat "${{ runner.temp }}/php-server.log" || true; echo "::endgroup::"; kill "$(cat "${{ runner.temp }}/php-server.pid")" 2>/dev/null || true' EXIT
+          trap 'echo "::group::PHP server log"; cat "${{ runner.temp }}/php-server.log" || true; cat "${{ runner.temp }}/group-server.log" || true; echo "::endgroup::"; kill "$(cat "${{ runner.temp }}/php-server.pid")" "$(cat "${{ runner.temp }}/group-server.pid")" 2>/dev/null || true' EXIT
+          php -S 127.0.0.1:8100 -t . > "${{ runner.temp }}/group-server.log" 2>&1 &
+          echo $! > "${{ runner.temp }}/group-server.pid"
           php -S 127.0.0.1:8099 -t . > "${{ runner.temp }}/php-server.log" 2>&1 &
           echo $! > "${{ runner.temp }}/php-server.pid"
           sleep 2
           php tests/php/http_integration.php http://127.0.0.1:8099
           kill "$(cat "${{ runner.temp }}/php-server.pid")"
+          kill "$(cat "${{ runner.temp }}/group-server.pid")"
           trap - EXIT
       - name: SMTP integration
         run: |
