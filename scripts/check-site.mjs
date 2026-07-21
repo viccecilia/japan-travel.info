@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+const daitoraContactPageUrl = process.env.DAITORA_CONTACT_PAGE_URL || "https://www.taxi-airport.jp/daitora-preview/contact.html";
 const content = JSON.parse(fs.readFileSync(path.join(root, "src/content.json"), "utf8"));
 const langs = ["zh-cn", "zh-tw", "ja", "en", "ko"];
 const langMap = { "zh-cn": "zh", "zh-tw": "zhHant", ja: "ja", en: "en", ko: "ko" };
@@ -73,12 +74,16 @@ for (const cssFile of files.filter((f) => f.endsWith(".css"))) {
 
 const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
 if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about)\/<\/loc>/.test(sitemap)) fail("cancelled top-level pages remain in sitemap");
+if (/\/zh-cn\/services\/airport-transfer\/<\/loc>/.test(sitemap)) fail("redirected airport transfer page remains in sitemap");
 const htaccess = fs.readFileSync(path.join(root, ".htaccess"), "utf8");
 for (const rule of [
   "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]",
   "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]",
+  `RewriteRule ^zh-cn/services/airport-transfer/?$ ${daitoraContactPageUrl} [R=302,L,NE]`,
   "RewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]"
 ]) if (!htaccess.includes(rule)) fail(`missing legacy redirect: ${rule}`);
+const zhHome = fs.readFileSync(path.join(root, "zh-cn", "index.html"), "utf8");
+if (!zhHome.includes(`href="${daitoraContactPageUrl}"`)) fail("zh-cn airport transfer entry does not link directly to Daitora");
 for (const f of html) {
   const rel = path.relative(root, f).replaceAll("\\", "/");
   const text = fs.readFileSync(f, "utf8");

@@ -21,6 +21,7 @@ const langs = [
 ];
 const langByKey = new Map(langs.map((l) => [l.key, l]));
 const siteUrl = (process.env.SITE_URL || "https://japan-travel.info").replace(/\/$/, "");
+const daitoraContactPageUrl = process.env.DAITORA_CONTACT_PAGE_URL || "https://www.taxi-airport.jp/daitora-preview/contact.html";
 const generated = new Set();
 const publicPages = [];
 
@@ -121,6 +122,10 @@ function relUrl(lang, rest = "") {
   const clean = rest.replace(/^\/+|\/+$/g, "");
   return `/${lang.slug}/${clean ? `${clean}/` : ""}`;
 }
+function serviceHref(lang, serviceId) {
+  if (lang.key === "zh" && serviceId === "airport-transfer") return daitoraContactPageUrl;
+  return relUrl(lang, `services/${serviceId}`);
+}
 function canonical(lang, rest = "") {
   return siteUrl + relUrl(lang, rest);
 }
@@ -150,9 +155,9 @@ function pageLangAlternates(rest = "") {
 function nav(lang, rest = "") {
   const t = label[lang.key];
   const c = pageCopy[lang.key];
-  const links = [[t.home, ""], [t.routes, "routes"], [t.spots, "spots"], [t.services, "services/airport-transfer"]];
+  const links = [[t.home, "", relUrl(lang)], [t.routes, "routes", relUrl(lang, "routes")], [t.spots, "spots", relUrl(lang, "spots")], [t.services, "services/airport-transfer", serviceHref(lang, "airport-transfer")]];
   const current = `/${rest}`;
-  const navLinks = links.map(([name, target]) => `<a href="${relUrl(lang, target)}" ${current === `/${target}` ? 'aria-current="page"' : ""}>${h(name)}</a>`).join("");
+  const navLinks = links.map(([name, target, href]) => `<a href="${h(href)}" ${current === `/${target}` ? 'aria-current="page"' : ""}>${h(name)}</a>`).join("");
   const languageLinks = langs.map((l) => `<a class="${l.key === lang.key ? "active" : ""}" href="${relUrl(l, rest)}"><span>${h(l.name)}</span><strong>${l.label}</strong></a>`).join("");
   return `<a class="skip-link" href="#main-content">Skip to content</a><header class="topbar"><div class="wrap nav">
     <a class="brand" href="${relUrl(lang)}">Japan Travel<small>株式会社大寅 / Daitora Group</small></a>
@@ -169,7 +174,7 @@ function footer(lang) {
   const social = ["instagramUrl", "tiktokUrl", "lineUrl"].map((key) => `<span data-social="${key}"></span>`).join("");
   return `<footer class="footer"><div class="wrap footer-grid">
     <div><strong>Japan Travel</strong><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p></div>
-    <div><strong>${h(t.services)}</strong>${servicePages.map((s) => `<a href="${relUrl(lang, `services/${s.id}`)}">${h(s.title[lang.key])}</a>`).join("")}</div>
+    <div><strong>${h(t.services)}</strong>${servicePages.map((s) => `<a href="${h(serviceHref(lang, s.id))}">${h(s.title[lang.key])}</a>`).join("")}</div>
     <div><strong>${h(t.routes)}</strong><a href="${relUrl(lang, "routes")}">${h(t.routesTitle)}</a><a href="${relUrl(lang, "spots")}">${h(t.spotsTitle)}</a><a href="${relUrl(lang, "contact")}">${h(contactCopy[lang.key].navContact)}</a><a href="${relUrl(lang, "member")}">${h(c.nav.member)}</a></div>
     <div><strong>Japan Travel</strong><a href="${h(brand.daitora_url)}" rel="noopener" target="_blank">Daitora Group</a><a href="${relUrl(lang, "faq")}">FAQ</a><a href="${relUrl(lang, "privacy")}">${h(c.info.privacy)}</a><a href="${relUrl(lang, "terms")}">${h(c.info.terms)}</a><div class="social-links">${social}</div></div>
   </div><div class="wrap footer-legal"><p>${h(t.bookingBoundary)}</p></div></footer>
@@ -249,7 +254,7 @@ function homePage(lang) {
       <div class="hero-overlay wrap"><p class="eyebrow">${h(c.home.kicker)}</p><h1>${h(c.home.title)}</h1><p class="lead">${h(c.home.lead)}</p><div class="hero-actions"><a class="btn primary" href="${relUrl(lang, "contact")}">${h(contactCopy[lang.key].navContact)}</a><a class="btn" href="${relUrl(lang, "routes")}">${h(t.routes)}</a></div></div>
     </section>
     <section class="trust-strip wrap"><div class="trust-grid">${c.home.trust.map(([a,b]) => `<div class="trust-item"><strong>${h(a)}</strong><span>${h(b)}</span></div>`).join("")}</div></section>
-    <section class="wrap section"><div class="section-head"><div><p class="eyebrow">01 · ${h(t.services)}</p><h2>${h(t.servicesTitle)}</h2></div></div><div class="service-grid">${servicePages.map((s, i) => { const d=serviceDetails[s.id][lang.key]; return `<a class="service-card" href="${relUrl(lang, `services/${s.id}`)}"><span class="number">0${i+1}</span><h3>${h(s.title[lang.key])}</h3><p>${h(d[0])}</p><span class="btn-link">${h(t.view)} →</span></a>`; }).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></section>
+    <section class="wrap section"><div class="section-head"><div><p class="eyebrow">01 · ${h(t.services)}</p><h2>${h(t.servicesTitle)}</h2></div></div><div class="service-grid">${servicePages.map((s, i) => { const d=serviceDetails[s.id][lang.key]; return `<a class="service-card" href="${h(serviceHref(lang, s.id))}"><span class="number">0${i+1}</span><h3>${h(s.title[lang.key])}</h3><p>${h(d[0])}</p><span class="btn-link">${h(t.view)} →</span></a>`; }).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></section>
     <section class="surface-band"><div class="wrap section"><div class="section-head"><div><p class="eyebrow">02 · ${h(t.services)}</p><h2>${h(c.home.products)}</h2></div><a class="btn-link" href="${relUrl(lang, "contact")}">${h(contactCopy[lang.key].navContact)} →</a></div>${productCards(lang)}</div></section>
     <section class="wrap section"><div class="section-head"><div><p class="eyebrow">03 · ${h(t.routes)}</p><h2>${h(c.home.routes)}</h2></div><a class="btn-link" href="${relUrl(lang, "routes")}">${h(t.view)} →</a></div>${routeGrid(lang, 3)}</section>
     <section class="warm-band"><div class="wrap section"><div class="section-head"><div><p class="eyebrow">04 · ${h(t.spots)}</p><h2>${h(c.home.areas)}</h2></div><a class="btn-link" href="${relUrl(lang, "spots")}">${h(t.view)} →</a></div>${spotGrid(lang, 9)}</div></section>
@@ -561,8 +566,8 @@ function build() {
     for (const p of memberPages) writeLangPage(lang, `member/${p}`, memberPage(lang, p));
   }
   writeFile("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /runtime/\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404").map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
-  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]\nRewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
+  writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404" && !(p.lang.key === "zh" && p.rest === "services/airport-transfer")).map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
+  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^zh-cn/services/airport-transfer/?$ ${daitoraContactPageUrl} [R=302,L,NE]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]\nRewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
   const sha = crypto.createHash("sha256")
     .update(JSON.stringify(content))
     .update(JSON.stringify(brand))
