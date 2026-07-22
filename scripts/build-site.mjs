@@ -21,7 +21,6 @@ const langs = [
 ];
 const langByKey = new Map(langs.map((l) => [l.key, l]));
 const siteUrl = (process.env.SITE_URL || "https://japan-travel.info").replace(/\/$/, "");
-const daitoraContactPageUrl = process.env.DAITORA_CONTACT_PAGE_URL || "https://www.taxi-airport.jp/daitora-preview/contact.html";
 const generated = new Set();
 const publicPages = [];
 
@@ -123,7 +122,6 @@ function relUrl(lang, rest = "") {
   return `/${lang.slug}/${clean ? `${clean}/` : ""}`;
 }
 function serviceHref(lang, serviceId) {
-  if (lang.key === "zh" && serviceId === "airport-transfer") return daitoraContactPageUrl;
   return relUrl(lang, `services/${serviceId}`);
 }
 function canonical(lang, rest = "") {
@@ -314,10 +312,13 @@ function servicesIndex(lang, page) {
   const title = page.title[lang.key];
   const d = serviceDetails[page.id];
   const points = d[lang.key];
-  const body = `<main><section class="detail-hero" style="--hero:url('${h(d.image)}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(title)}</h1><p>${h(points[0])}</p><div class="btn-row"><a class="btn primary" href="${relUrl(lang, "contact")}">${h(contactCopy[lang.key].navContact)}</a></div></div></section>
+  const hasInlineInquiry = page.id === "airport-transfer";
+  const inquiryHref = hasInlineInquiry ? "#transport-inquiry" : relUrl(lang, "contact");
+  const inquirySection = hasInlineInquiry ? `\n    <section class="surface-band" id="transport-inquiry"><div class="wrap section contact-page"><p class="eyebrow">Japan Travel · Daitora Group</p><h2>${h(contactCopy[lang.key].title)}</h2><p class="lead">${h(contactCopy[lang.key].help)}</p>${contactFormV2(lang, "airport_transfer")}</div></section>` : "";
+  const body = `<main><section class="detail-hero" style="--hero:url('${h(d.image)}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(title)}</h1><p>${h(points[0])}</p><div class="btn-row"><a class="btn primary" href="${inquiryHref}">${h(contactCopy[lang.key].navContact)}</a></div></div></section>
     <section class="wrap section"><div class="section-head"><div><h2>${h(c.service.scenes)}</h2><p>${h(points[0])}</p></div></div><ul class="feature-list">${points.slice(1).map((p) => `<li><strong>${h(p)}</strong></li>`).join("")}</ul></section>
     <section class="surface-band"><div class="wrap section"><h2>${h(c.service.process)}</h2><ol class="process">${c.service.steps.map((x) => `<li>${h(x)}</li>`).join("")}</ol></div></section>
-    <section class="wrap section two-col"><div><h2>${h(c.service.vehicles)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "vehicles")}">${h(pageCopy[lang.key].vehicles.title)} →</a></div><div><h2>${h(contactCopy[lang.key].panelTitle)}</h2><p>${h(contactCopy[lang.key].notConfirmed)}</p><a class="btn primary" href="${relUrl(lang, "contact")}">${h(contactCopy[lang.key].navContact)}</a></div></section>
+    <section class="wrap section two-col"><div><h2>${h(c.service.vehicles)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "vehicles")}">${h(pageCopy[lang.key].vehicles.title)} →</a></div><div><h2>${h(contactCopy[lang.key].panelTitle)}</h2><p>${h(contactCopy[lang.key].notConfirmed)}</p><a class="btn primary" href="${inquiryHref}">${h(contactCopy[lang.key].navContact)}</a></div></section>${inquirySection}
     <section class="warm-band"><div class="wrap section"><h2>${h(c.service.faq)}</h2><div class="faq-list">${faq[lang.key].slice(0, 5).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></div></section></main>`;
   return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${points.join(" ")}` }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 5)] });
 }
@@ -360,7 +361,7 @@ function contactPage(lang) {
   const body = `<main class="wrap page contact-page"><p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(formCopy.title)}</h1><p class="lead">${h(formCopy.help)}</p>${contactFormV2(lang)}</main>`;
   return layout(lang, "contact", { title: `${formCopy.title} | Japan Travel`, description: formCopy.help }, body, { ld: baseLd(lang, "contact", "ContactPage") });
 }
-function contactFormV2(lang) {
+function contactFormV2(lang, selectedService = "") {
   const t = label[lang.key];
   const copy = contactCopy[lang.key];
   const fields = copy.fields;
@@ -371,7 +372,7 @@ function contactFormV2(lang) {
     const attrs = options.number ? ' min="0" max="100" inputmode="numeric"' : '';
     return `<label for="${id}" class="${options.full ? "full" : ""}">${h(fields[name])}${options.required ? ' <span class="required" aria-hidden="true"></span>' : ''}${options.textarea ? `<textarea id="${id}" name="${name}" maxlength="4000"${required}></textarea>` : `<input id="${id}" name="${name}" type="${type}" maxlength="${options.number ? 3 : 500}"${attrs}${required}>`}</label>`;
   };
-  const serviceOptions = Object.entries(copy.services).map(([value, text]) => `<option value="${h(value)}">${h(text)}</option>`).join("");
+  const serviceOptions = Object.entries(copy.services).map(([value, text]) => `<option value="${h(value)}"${selectedService && value === selectedService ? " selected" : ""}>${h(text)}</option>`).join("");
   return `<form class="contact-form" method="post" action="/api/inquiry.php" data-enhanced-form>
     <input type="hidden" name="language" value="${h(lang.slug)}"><input type="hidden" name="source_url" value=""><input type="hidden" name="idempotency_key" value="">
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -565,8 +566,8 @@ function build() {
     for (const p of memberPages) writeLangPage(lang, `member/${p}`, memberPage(lang, p));
   }
   writeFile("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /runtime/\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404" && !(p.lang.key === "zh" && p.rest === "services/airport-transfer")).map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
-  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^zh-cn/services/airport-transfer/?$ ${daitoraContactPageUrl} [R=302,L,NE]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]\nRewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
+  writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${publicPages.filter((p) => !p.rest.startsWith("member/") && p.rest !== "404").map((p) => `  <url><loc>${canonical(p.lang, p.rest)}</loc></url>`).join("\n")}\n</urlset>\n`);
+  writeFile(".htaccess", `DirectoryIndex index.html\nRewriteEngine On\nRewriteRule ^runtime/private/ - [F,L]\nRewriteRule ^h5/?$ /zh-cn/ [R=301,L]\nRewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]\nRewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]\nRewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]\nRewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]\n<FilesMatch "^(\\.env|.*\\.sqlite|.*\\.log)$">\n  Require all denied\n</FilesMatch>\n`);
   const sha = crypto.createHash("sha256")
     .update(JSON.stringify(content))
     .update(JSON.stringify(brand))

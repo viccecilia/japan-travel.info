@@ -130,12 +130,15 @@ try {
         await page.keyboard.press("Enter");
         assert(await item.evaluate((el) => el.open), `${url}: FAQ is not keyboard operable`);
       }
-      if (url.endsWith("/contact/")) {
+      if (url.endsWith("/contact/") || url.endsWith("/services/airport-transfer/")) {
         const invalid = await page.locator(".contact-form input, .contact-form select, .contact-form textarea").evaluateAll((controls) => controls.filter((control) => {
           const explicit = control.id && document.querySelector(`label[for="${CSS.escape(control.id)}"]`);
           return !explicit && !control.closest("label") && control.type !== "hidden" && !control.classList.contains("hp");
         }).length);
         assert(invalid === 0, `${url}: form controls are not properly labelled`);
+      }
+      if (url.endsWith("/services/airport-transfer/")) {
+        assert(await page.locator('#transport-inquiry form[action="/api/inquiry.php"]').count() === 1, `${url}: internal transport inquiry form missing`);
       }
       if (url.includes("/member/")) {
         assert(await page.locator("form").count() <= 1, `${url}: duplicate member forms detected`);
