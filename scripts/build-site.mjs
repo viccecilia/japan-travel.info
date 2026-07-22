@@ -436,8 +436,7 @@ function memberPage(lang, slug) {
 function memberDashboard(lang) {
   const t = label[lang.key];
   const m = t.member;
-  const links = ["profile", "favorites", "trips", "bookings", "vip", "referrals", "ambassador"];
-  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="dashboard"><p class="eyebrow">Japan Travel member</p><h1>${h(m.dashboard)}</h1><p class="lead">${h(t.memberLead)}</p><div class="sidebar-layout">${memberSideNav(lang, "dashboard")}<div><section class="panel member-data" data-member-panel data-member-page="dashboard"><p data-member-status></p><div data-member-content></div></section><section class="grid cards member-dashboard-links">${links.map((slug) => `<a class="card" href="${relUrl(lang, `member/${slug}`)}"><div class="card-body"><h2>${h(m[slug])}</h2><span class="btn-link">→</span></div></a>`).join("")}</section></div></div></main>`;
+  const body = `<main class="wrap page member-shell" data-member-shell data-member-page="dashboard"><p class="eyebrow">Japan Travel member</p><h1>${h(m.dashboard)}</h1><p class="lead">${h(t.memberLead)}</p><div class="sidebar-layout">${memberSideNav(lang, "dashboard")}<div><section class="panel member-data" data-member-panel data-member-page="dashboard"><p data-member-status></p><div data-member-content></div></section></div></div></main>`;
   return layout(lang, "member", { title: `${m.dashboard} | Japan Travel`, description: `${m.dashboard}. ${t.memberLead}` }, body, { noindex: true, ld: baseLd(lang, "member", "WebPage") });
 }
 function memberSideNav(lang, current) {

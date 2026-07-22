@@ -30,7 +30,9 @@ for (const lang of langs) {
   const key = langMap[lang];
   const memberHome = path.join(root, lang, "member", "index.html");
   if (!fs.existsSync(memberHome)) fail(`missing member center ${memberHome}`);
-  if (!fs.readFileSync(memberHome, "utf8").includes('data-member-page="dashboard"')) fail(`invalid member center ${memberHome}`);
+  const memberHomeHtml = fs.readFileSync(memberHome, "utf8");
+  if (!memberHomeHtml.includes('data-member-page="dashboard"')) fail(`invalid member center ${memberHome}`);
+  if (memberHomeHtml.includes("member-dashboard-links")) fail(`duplicate member dashboard links in ${memberHome}`);
   const langSpotDirs = content[key].all_spots.map((s) => path.join(root, lang, "spots", s.id, "index.html"));
   for (const f of langSpotDirs) if (!fs.existsSync(f)) fail(`missing spot page ${f}`);
   for (const r of content[key].routes) if (!fs.existsSync(path.join(root, lang, "routes", r.id, "index.html"))) fail(`missing route ${lang}/${r.id}`);
