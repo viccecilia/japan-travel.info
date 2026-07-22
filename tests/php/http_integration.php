@@ -130,7 +130,13 @@ $inquiry = [
     'passenger_count' => '3',
     'luggage_count' => '4',
     'itinerary' => 'Please confirm this airport transfer.',
-    'source_url' => $base . '/en/contact/'
+    'source_url' => $base . '/en/services/airport-transfer/#transport-inquiry',
+    'landing_page' => '/en/?utm_source=instagram',
+    'visitor_id' => 'vis_http_test_001',
+    'ref_code' => 'JTHTTP01',
+    'utm_source' => 'instagram',
+    'utm_medium' => 'social',
+    'utm_campaign' => 'kansai-summer'
 ];
 [$status, $inq1] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'first inquiry idempotency request');
 [$status2, $inq2] = expect_http(request('POST', $base . '/api/inquiry.php', $inquiry), 200, 'duplicate inquiry idempotency request');
@@ -139,6 +145,9 @@ $capture = json_decode((string)file_get_contents((string)getenv('GROUP_CONTACT_C
 ok(($capture['count'] ?? 0) === 1, 'duplicate inquiry sends exactly one group contact request');
 ok(($capture['payload']['page_language'] ?? '') === 'en', 'group contact request preserves page language');
 ok(($capture['payload']['dropoff_location'] ?? '') === 'Kyoto Station', 'group contact request preserves travel details');
+ok(($capture['payload']['source_channel'] ?? '') === 'Japan Travel website', 'group contact request identifies source channel');
+ok(($capture['payload']['utm_source'] ?? '') === 'instagram', 'group contact request preserves consented UTM source');
+ok(($capture['payload']['ref_code'] ?? '') === 'JTHTTP01', 'group contact request preserves referral code');
 
 $failedInquiry = $inquiry;
 $failedInquiry['idempotency_key'] = 'idem_' . bin2hex(random_bytes(4));

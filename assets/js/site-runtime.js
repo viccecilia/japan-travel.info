@@ -328,6 +328,12 @@
         data.set("idempotency_key", idempotencyKey);
         data.set("visitor_id", visitorId());
         data.set("ref_code", decodeURIComponent(getCookie("jt_ref_code")));
+        data.set("landing_page", decodeURIComponent(getCookie("jt_landing_page")));
+        if (analyticsAllowed()) {
+          for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content"]) {
+            data.set(key, decodeURIComponent(getCookie(`jt_${key}`)));
+          }
+        }
         try {
           data.set("csrf_token", await csrfToken());
           const res = await fetch(form.action, { method: "POST", body: data, credentials: "same-origin" });

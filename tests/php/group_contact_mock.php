@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $client !== 'japan-travel' || !ctyp
     exit;
 }
 $payload = json_decode($raw, true);
-if (!is_array($payload) || ($payload['type'] ?? '') !== 'japan_travel' || ($payload['source_site'] ?? '') !== 'Japan Travel') {
+if (!is_array($payload) || ($payload['type'] ?? '') !== 'japan_travel' || ($payload['source_site'] ?? '') !== 'Japan Travel' || ($payload['source_channel'] ?? '') !== 'Japan Travel website') {
     http_response_code(422);
     echo json_encode(['success' => false]);
     exit;

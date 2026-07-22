@@ -26,7 +26,9 @@ $limits = [
     'service_type' => 40, 'travel_date' => 10, 'travel_time' => 5,
     'flight_number' => 40, 'pickup_location' => 300, 'dropoff_location' => 300,
     'passenger_count' => 3, 'luggage_count' => 3, 'vehicle_preference' => 120,
-    'itinerary' => 4000, 'source_url' => 500, 'idempotency_key' => 100
+    'itinerary' => 4000, 'source_url' => 500, 'idempotency_key' => 100,
+    'visitor_id' => 120, 'ref_code' => 100, 'landing_page' => 500,
+    'utm_source' => 120, 'utm_medium' => 120, 'utm_campaign' => 120, 'utm_content' => 120
 ];
 $payload = ['language' => $language];
 foreach ($limits as $field => $max) {
@@ -55,6 +57,11 @@ foreach (['passenger_count','luggage_count'] as $field) {
 if ($payload['source_url'] !== '' && (!filter_var($payload['source_url'], FILTER_VALIDATE_URL) || !in_array(parse_url($payload['source_url'], PHP_URL_SCHEME), ['http','https'], true))) {
     jt_json(['ok' => false, 'message' => $messages['invalid']], 422);
 }
+if ($payload['landing_page'] !== '' && (!str_starts_with($payload['landing_page'], '/') || str_contains($payload['landing_page'], "\n") || str_contains($payload['landing_page'], "\r"))) {
+    jt_json(['ok' => false, 'message' => $messages['invalid']], 422);
+}
+if ($payload['visitor_id'] !== '' && !preg_match('/^[A-Za-z0-9_-]{1,120}$/', $payload['visitor_id'])) jt_json(['ok' => false, 'message' => $messages['invalid']], 422);
+if ($payload['ref_code'] !== '' && !preg_match('/^[A-Za-z0-9_-]{1,100}$/', $payload['ref_code'])) jt_json(['ok' => false, 'message' => $messages['invalid']], 422);
 if (empty($input['privacy_consent'])) jt_json(['ok' => false, 'message' => $messages['invalid']], 422);
 
 $idempotencyKey = $payload['idempotency_key'] !== '' ? $payload['idempotency_key'] : jt_hash(json_encode([$payload['email'], $payload['source_url'], $payload['itinerary']]));

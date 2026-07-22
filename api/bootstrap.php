@@ -443,6 +443,7 @@ function jt_group_contact_payload(array $payload): array {
     return [
         'type' => 'japan_travel',
         'source_site' => 'Japan Travel',
+        'source_channel' => 'Japan Travel website',
         'request_id' => (string)($payload['request_id'] ?? ''),
         'name' => (string)($payload['name'] ?? ''),
         'email' => (string)($payload['email'] ?? ''),
@@ -464,7 +465,14 @@ function jt_group_contact_payload(array $payload): array {
         'vehicle_preference' => (string)($payload['vehicle_preference'] ?? ''),
         'itinerary' => $itinerary,
         'message' => $itinerary,
-        'source_page' => (string)($payload['source_url'] ?? '')
+        'landing_page' => (string)($payload['landing_page'] ?? ''),
+        'source_page' => (string)($payload['source_url'] ?? ''),
+        'visitor_id' => (string)($payload['visitor_id'] ?? ''),
+        'ref_code' => (string)($payload['ref_code'] ?? ''),
+        'utm_source' => (string)($payload['utm_source'] ?? ''),
+        'utm_medium' => (string)($payload['utm_medium'] ?? ''),
+        'utm_campaign' => (string)($payload['utm_campaign'] ?? ''),
+        'utm_content' => (string)($payload['utm_content'] ?? '')
     ];
 }
 
