@@ -52,6 +52,63 @@ const vehiclePages = [
   { id: "alphard", title: { zh: "Alphard 车型", zhHant: "Alphard 車型", ja: "Alphard", en: "Alphard", ko: "알파드" } },
   { id: "hiace", title: { zh: "Hiace 车型", zhHant: "Hiace 車型", ja: "Hiace", en: "Hiace", ko: "하이에이스" } }
 ];
+const vehicleFormCopy = {
+  zh: {
+    label: "车型偏好", guide: "车型容量参考", people: "建议人数", luggage: "标准行李参考", scene: "适合场景",
+    review: "填写的人数或行李超过该车型的参考范围，建议选择“请工作人员推荐”或“多车或其他方案”。",
+    note: "仅供咨询参考。行李尺寸、儿童座椅、婴儿车、轮椅及实际车辆配置会影响可载空间，最终以工作人员回复为准。",
+    options: {
+      staff_recommendation: ["请工作人员推荐", "根据填写人数判断", "根据数量与尺寸判断", "工作人员结合日期、人数和行李推荐"],
+      alphard: ["Alphard", "1–4 人", "约 2–4 件标准行李", "少人数、重视舒适度"],
+      hiace: ["Hiace", "5–9 人", "约 5–9 件标准行李", "人数或行李较多"],
+      multiple_vehicles: ["多车或其他方案", "10 人以上", "大量或大件行李", "团体、轮椅、婴儿车或设备较多"]
+    }
+  },
+  zhHant: {
+    label: "車型偏好", guide: "車型容量參考", people: "建議人數", luggage: "標準行李參考", scene: "適合情況",
+    review: "填寫的人數或行李超過此車型的參考範圍，建議選擇「請工作人員建議」或「多車或其他方案」。",
+    note: "僅供諮詢參考。行李尺寸、兒童座椅、嬰兒車、輪椅及實際車輛配置會影響可載空間，最終以工作人員回覆為準。",
+    options: {
+      staff_recommendation: ["請工作人員建議", "依填寫人數判斷", "依數量與尺寸判斷", "工作人員會依日期、人數和行李提供建議"],
+      alphard: ["Alphard", "1–4 人", "約 2–4 件標準行李", "少人數、重視舒適度"],
+      hiace: ["Hiace", "5–9 人", "約 5–9 件標準行李", "人數或行李較多"],
+      multiple_vehicles: ["多車或其他方案", "10 人以上", "大量或大型行李", "團體、輪椅、嬰兒車或設備較多"]
+    }
+  },
+  ja: {
+    label: "車種の希望", guide: "車種・乗車目安", people: "推奨人数", luggage: "標準サイズ荷物の目安", scene: "向いているケース",
+    review: "入力された人数または荷物数が目安を超えています。「スタッフにおまかせ」または「複数台・その他」をお選びください。",
+    note: "相談時の目安です。荷物の大きさ、チャイルドシート、ベビーカー、車いす、実際の車両仕様により積載可能量は変わります。最終内容は担当者の返信でご確認ください。",
+    options: {
+      staff_recommendation: ["スタッフにおまかせ", "入力人数から確認", "個数と大きさから確認", "日程・人数・荷物に合わせて担当者が提案"],
+      alphard: ["Alphard", "1〜4名", "標準スーツケース約2〜4個", "少人数・快適性重視"],
+      hiace: ["Hiace", "5〜9名", "標準スーツケース約5〜9個", "人数または荷物が多い場合"],
+      multiple_vehicles: ["複数台・その他", "10名以上", "荷物が多い・大型荷物", "団体、車いす、ベビーカー、機材が多い場合"]
+    }
+  },
+  en: {
+    label: "Vehicle preference", guide: "Vehicle planning guide", people: "Suggested party", luggage: "Standard luggage guide", scene: "Best for",
+    review: "The entered party or luggage exceeds this vehicle guide. Choose “Let our team recommend” or “Multiple vehicles / other”.",
+    note: "For inquiry planning only. Luggage size, child seats, strollers, wheelchairs and the actual vehicle configuration affect usable capacity. Final arrangements are confirmed by our team.",
+    options: {
+      staff_recommendation: ["Let our team recommend", "Based on entered party", "Based on quantity and size", "Our team recommends from the date, party and luggage details"],
+      alphard: ["Alphard", "1–4 guests", "About 2–4 standard suitcases", "Smaller parties prioritizing comfort"],
+      hiace: ["Hiace", "5–9 guests", "About 5–9 standard suitcases", "Larger parties or more luggage"],
+      multiple_vehicles: ["Multiple vehicles / other", "10+ guests", "Heavy or oversized luggage", "Groups, wheelchairs, strollers or equipment"]
+    }
+  },
+  ko: {
+    label: "차량 선호", guide: "차량 정원 참고", people: "권장 인원", luggage: "표준 수하물 기준", scene: "추천 상황",
+    review: "입력한 인원 또는 수하물이 이 차량의 참고 범위를 넘습니다. ‘직원 추천 받기’ 또는 ‘여러 대·기타’를 선택해 주세요.",
+    note: "상담을 위한 참고 정보입니다. 수하물 크기, 유아 시트, 유모차, 휠체어와 실제 차량 구성에 따라 적재 공간이 달라집니다. 최종 내용은 담당자 답변으로 확인해 주세요.",
+    options: {
+      staff_recommendation: ["직원 추천 받기", "입력 인원에 따라 확인", "수량과 크기에 따라 확인", "날짜, 인원과 수하물에 맞춰 담당자가 추천"],
+      alphard: ["Alphard", "1~4명", "표준 캐리어 약 2~4개", "소규모·편안함 중시"],
+      hiace: ["Hiace", "5~9명", "표준 캐리어 약 5~9개", "인원 또는 수하물이 많은 경우"],
+      multiple_vehicles: ["여러 대·기타", "10명 이상", "많은 짐 또는 대형 수하물", "단체, 휠체어, 유모차 또는 장비가 많은 경우"]
+    }
+  }
+};
 const productPages = [
   { id: "kix-osaka", title: { zh: "KIX 至大阪预约指南", zhHant: "KIX 至大阪預約指南", ja: "KIX から大阪への予約ガイド", en: "KIX to Osaka Booking Guide", ko: "KIX-오사카 예약 가이드" } },
   { id: "kix-kyoto", title: { zh: "KIX 至京都预约指南", zhHant: "KIX 至京都預約指南", ja: "KIX から京都への予約ガイド", en: "KIX to Kyoto Booking Guide", ko: "KIX-교토 예약 가이드" } },
@@ -321,12 +378,12 @@ function servicesIndex(lang, page) {
   const points = d[lang.key];
   const hasInlineInquiry = page.id === "airport-transfer";
   const inquiryHref = hasInlineInquiry ? "#transport-inquiry" : contactHref(lang);
-  const inquirySection = hasInlineInquiry ? `\n    <section class="surface-band" id="transport-inquiry"><div class="wrap section contact-page"><p class="eyebrow">Japan Travel · Daitora Group</p><h2>${h(contactCopy[lang.key].title)}</h2><p class="lead">${h(contactCopy[lang.key].help)}</p>${contactFormV2(lang, "airport_transfer")}</div></section>` : "";
+  const inquirySection = hasInlineInquiry ? `    <section class="surface-band" id="transport-inquiry"><div class="wrap section contact-page"><p class="eyebrow">Japan Travel · Daitora Group</p><h2>${h(contactCopy[lang.key].title)}</h2><p class="lead">${h(contactCopy[lang.key].help)}</p>${contactFormV2(lang, "airport_transfer")}</div></section>\n` : "";
+  const planningSection = hasInlineInquiry ? "" : `    <section class="wrap section two-col"><div><h2>${h(c.service.vehicles)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "vehicles")}">${h(pageCopy[lang.key].vehicles.title)} →</a></div><div><h2>${h(contactCopy[lang.key].panelTitle)}</h2><p>${h(contactCopy[lang.key].notConfirmed)}</p><a class="btn primary" href="${inquiryHref}">${h(contactCopy[lang.key].navContact)}</a></div></section>\n`;
   const body = `<main><section class="detail-hero" style="--hero:url('${h(d.image)}')"><div class="wrap">${breadcrumb(lang, [{ name: t.home, href: relUrl(lang) }, { name: t.services, href: relUrl(lang, "services/airport-transfer") }, { name: title }])}<p class="eyebrow">Japan Travel · Daitora Group</p><h1>${h(title)}</h1><p>${h(points[0])}</p><div class="btn-row"><a class="btn primary" href="${inquiryHref}">${h(contactCopy[lang.key].navContact)}</a></div></div></section>
     <section class="wrap section"><div class="section-head"><div><h2>${h(c.service.scenes)}</h2><p>${h(points[0])}</p></div></div><ul class="feature-list">${points.slice(1).map((p) => `<li><strong>${h(p)}</strong></li>`).join("")}</ul></section>
     <section class="surface-band"><div class="wrap section"><h2>${h(c.service.process)}</h2><ol class="process">${c.service.steps.map((x) => `<li>${h(x)}</li>`).join("")}</ol></div></section>
-    <section class="wrap section two-col"><div><h2>${h(c.service.vehicles)}</h2><p>${h(brand.vehicle_boundary[lang.key])}</p><a class="btn-link" href="${relUrl(lang, "vehicles")}">${h(pageCopy[lang.key].vehicles.title)} →</a></div><div><h2>${h(contactCopy[lang.key].panelTitle)}</h2><p>${h(contactCopy[lang.key].notConfirmed)}</p><a class="btn primary" href="${inquiryHref}">${h(contactCopy[lang.key].navContact)}</a></div></section>${inquirySection}
-    <section class="warm-band"><div class="wrap section"><h2>${h(c.service.faq)}</h2><div class="faq-list">${faq[lang.key].slice(0, 5).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></div></section></main>`;
+${planningSection}${inquirySection}    <section class="warm-band"><div class="wrap section"><h2>${h(c.service.faq)}</h2><div class="faq-list">${faq[lang.key].slice(0, 5).map((f) => `<details><summary>${h(f.q)}</summary><p>${h(f.a)}</p></details>`).join("")}</div><p class="boundary">${h(t.bookingBoundary)}</p></div></section></main>`;
   return layout(lang, `services/${page.id}`, { title: `${title} | Japan Travel`, description: `${title}: ${points.join(" ")}` }, body, { ld: [...baseLd(lang, `services/${page.id}`, "Service"), faqLd(lang, 5)] });
 }
 function vehiclePage(lang, page) {
@@ -364,6 +421,33 @@ function faqPage(lang) {
 function contactPage(lang) {
   return legacyPage(contactHref(lang));
 }
+function vehicleSelector(lang) {
+  const copy = vehicleFormCopy[lang.key];
+  const limits = {
+    staff_recommendation: [0, 0],
+    alphard: [4, 4],
+    hiace: [9, 9],
+    multiple_vehicles: [0, 0]
+  };
+  const options = Object.entries(copy.options).map(([value, details]) => {
+    const [maxPeople, maxLuggage] = limits[value];
+    return `<option value="${h(value)}" data-people="${h(details[1])}" data-luggage="${h(details[2])}" data-scene="${h(details[3])}" data-max-people="${maxPeople}" data-max-luggage="${maxLuggage}">${h(details[0])}</option>`;
+  }).join("");
+  const initial = copy.options.staff_recommendation;
+  return `<div class="vehicle-picker full" id="vehicle-selection" data-vehicle-picker>
+    <label for="contact-vehicle_preference">${h(copy.label)}<select id="contact-vehicle_preference" name="vehicle_preference">${options}</select></label>
+    <div class="vehicle-guidance" data-vehicle-guidance aria-live="polite">
+      <div class="vehicle-guidance-head"><strong data-vehicle-name>${h(initial[0])}</strong><span>${h(copy.guide)}</span></div>
+      <div class="vehicle-guidance-metrics">
+        <div><small>${h(copy.people)}</small><strong data-vehicle-people>${h(initial[1])}</strong></div>
+        <div><small>${h(copy.luggage)}</small><strong data-vehicle-luggage>${h(initial[2])}</strong></div>
+        <div><small>${h(copy.scene)}</small><strong data-vehicle-scene>${h(initial[3])}</strong></div>
+      </div>
+      <p class="vehicle-guidance-warning" data-vehicle-warning hidden>${h(copy.review)}</p>
+      <p class="vehicle-guidance-note">${h(copy.note)}</p>
+    </div>
+  </div>`;
+}
 function contactFormV2(lang, selectedService = "") {
   const t = label[lang.key];
   const copy = contactCopy[lang.key];
@@ -381,7 +465,7 @@ function contactFormV2(lang, selectedService = "") {
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="form-sections">
       <fieldset class="form-section"><legend>${h(copy.contactSection)}</legend><div class="form-grid">${input("name",{required:true})}${input("email",{required:true})}${input("phone")}<label for="contact-method">${h(fields.contact_method)}<select id="contact-method" name="contact_method"><option value="email">Email</option><option value="phone">${h(fields.phone)}</option><option value="line">LINE</option><option value="wechat">WeChat</option><option value="whatsapp">WhatsApp</option></select></label></div></fieldset>
-      <fieldset class="form-section"><legend>${h(copy.transportSection)}</legend><div class="form-grid"><label for="contact-service">${h(fields.service_type)} <span class="required" aria-hidden="true"></span><select id="contact-service" name="service_type" required>${serviceOptions}</select></label>${input("travel_date")}${input("travel_time")}${input("flight_number")}${input("pickup_location",{required:true})}${input("dropoff_location",{required:true})}${input("passenger_count",{number:true})}${input("luggage_count",{number:true})}${input("vehicle_preference")}</div></fieldset>
+      <fieldset class="form-section"><legend>${h(copy.transportSection)}</legend><div class="form-grid"><label for="contact-service">${h(fields.service_type)} <span class="required" aria-hidden="true"></span><select id="contact-service" name="service_type" required>${serviceOptions}</select></label>${input("travel_date")}${input("travel_time")}${input("flight_number")}${input("pickup_location",{required:true})}${input("dropoff_location",{required:true})}${input("passenger_count",{number:true})}${input("luggage_count",{number:true})}${vehicleSelector(lang)}</div></fieldset>
       <fieldset class="form-section"><legend>${h(copy.requestSection)}</legend><div class="form-grid">${input("itinerary",{textarea:true,full:true,required:true})}</div></fieldset>
     </div>
     <label class="check"><input type="checkbox" name="privacy_consent" value="1" required> ${h(t.form.privacy)}</label>

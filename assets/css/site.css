@@ -219,6 +219,20 @@ label small { color: var(--muted); font-weight: 400; }
 .form-status.success { color: #17663b; }
 .form-status.error { color: var(--danger); }
 .contact-form button[type="submit"]:disabled { cursor: wait; opacity: .6; }
+.vehicle-picker { display: grid; grid-template-columns: minmax(220px, .72fr) minmax(0, 1.28fr); gap: 16px; align-items: stretch; margin-top: 4px; }
+.vehicle-picker > label { align-content: start; }
+.vehicle-guidance { display: grid; gap: 14px; padding: 18px; border: 1px solid #bad5d2; border-radius: var(--radius-sm); background: #edf6f4; }
+.vehicle-guidance-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.vehicle-guidance-head strong { color: var(--brand-dark); font-size: 18px; }
+.vehicle-guidance-head span { color: var(--brand); font-size: 13px; font-weight: 800; }
+.vehicle-guidance-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid #cfe1de; border-radius: 6px; background: #cfe1de; }
+.vehicle-guidance-metrics > div { min-width: 0; padding: 12px; background: #fff; }
+.vehicle-guidance-metrics small { display: block; margin-bottom: 5px; color: var(--muted); }
+.vehicle-guidance-metrics strong { display: block; font-size: 14px; line-height: 1.45; }
+.vehicle-guidance-note, .vehicle-guidance-warning { margin: 0; font-size: 13px; line-height: 1.65; }
+.vehicle-guidance-note { color: var(--muted); }
+.vehicle-guidance-warning { padding: 10px 12px; border-left: 3px solid var(--danger); background: #fff3f1; color: var(--danger); font-weight: 700; }
+.vehicle-picker.is-warning .vehicle-guidance { border-color: #dca8a2; }
 .contact-method-fields [data-contact-field] { display: none; }
 .contact-method-fields [data-contact-field].active { display: grid; }
 .check { min-height: 44px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -312,6 +326,8 @@ label small { color: var(--muted); font-weight: 400; }
   .filters button { flex: 0 0 auto; }
   .form-section { padding: 20px 16px; }
   .form-grid .full { grid-column: auto; }
+  .vehicle-picker { grid-template-columns: 1fr; }
+  .vehicle-guidance-metrics { grid-template-columns: 1fr; }
   .product-hero > div { padding: 28px 20px; }
   .comparison { display: block; overflow-x: auto; }
   .bottom-nav { display: grid; }

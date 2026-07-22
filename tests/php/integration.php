@@ -42,6 +42,15 @@ ok(isset($urls['kyoto']), 'rezio.shop host is allowed');
 $withQuery = jt_url_with_query($urls['kyoto'], ['click_id' => 'clk_1', 'utm_source' => 'site']);
 ok(str_contains($withQuery, 'click_id=clk_1'), 'rezio query appended');
 
+$groupPayload = jt_group_contact_payload([
+    'language' => 'zh-cn',
+    'vehicle_preference' => 'alphard',
+    'passenger_count' => '4',
+    'luggage_count' => '3'
+]);
+ok(($groupPayload['vehicle_preference'] ?? '') === 'Toyota Alphard', 'vehicle preference is readable in group contact email');
+ok(($groupPayload['passenger_count'] ?? '') === '4' && ($groupPayload['luggage_count'] ?? '') === '3', 'vehicle planning counts reach group contact payload');
+
 $pdo->prepare('INSERT INTO referral_click (referral_code, click_id, landing_page, created_at) VALUES (?, ?, ?, ?)')
     ->execute(['JTOWNER1', 'clk_ref_1', '/en/?ref_code=JTOWNER1', gmdate('c')]);
 $pdo->prepare('INSERT INTO booking_reference (user_id, rezio_order_id, click_id, status, payload_json, created_at) VALUES (?, ?, ?, ?, ?, ?)')

@@ -306,6 +306,32 @@
     });
   }
   function initForms() {
+    bySel("[data-vehicle-picker]").forEach((picker) => {
+      const select = picker.querySelector("select[name='vehicle_preference']");
+      const form = picker.closest("form");
+      const passengers = form?.querySelector("[name='passenger_count']");
+      const luggage = form?.querySelector("[name='luggage_count']");
+      const warning = picker.querySelector("[data-vehicle-warning]");
+      const update = () => {
+        const option = select?.selectedOptions?.[0];
+        if (!option) return;
+        safeText(picker.querySelector("[data-vehicle-name]"), option.textContent.trim());
+        safeText(picker.querySelector("[data-vehicle-people]"), option.dataset.people || "");
+        safeText(picker.querySelector("[data-vehicle-luggage]"), option.dataset.luggage || "");
+        safeText(picker.querySelector("[data-vehicle-scene]"), option.dataset.scene || "");
+        const maxPeople = Number(option.dataset.maxPeople || 0);
+        const maxLuggage = Number(option.dataset.maxLuggage || 0);
+        const exceeds = (maxPeople > 0 && Number(passengers?.value || 0) > maxPeople)
+          || (maxLuggage > 0 && Number(luggage?.value || 0) > maxLuggage);
+        if (warning) warning.hidden = !exceeds;
+        picker.classList.toggle("is-warning", exceeds);
+      };
+      select?.addEventListener("change", update);
+      passengers?.addEventListener("input", update);
+      luggage?.addEventListener("input", update);
+      form?.addEventListener("reset", () => setTimeout(update, 0));
+      update();
+    });
     bySel("[data-contact-method]").forEach((select) => {
       const update = () => bySel("[data-contact-field]", select.closest("form")).forEach((node) => node.classList.toggle("active", node.dataset.contactField === select.value));
       select.addEventListener("change", update);

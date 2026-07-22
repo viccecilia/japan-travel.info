@@ -139,6 +139,17 @@ try {
       }
       if (url.endsWith("/services/airport-transfer/")) {
         assert(await page.locator('#transport-inquiry form[action="/api/inquiry.php"]').count() === 1, `${url}: internal transport inquiry form missing`);
+        const vehicle = page.locator("[data-vehicle-picker]");
+        assert(await vehicle.count() === 1, `${url}: vehicle recommendation picker missing`);
+        const selector = vehicle.locator("select[name='vehicle_preference']");
+        assert(await selector.locator("option").count() === 4, `${url}: vehicle recommendation choices incomplete`);
+        await selector.selectOption("alphard");
+        assert((await vehicle.locator("[data-vehicle-people]").textContent() || "").includes("1"), `${url}: Alphard passenger guidance did not update`);
+        assert((await vehicle.locator("[data-vehicle-luggage]").textContent() || "").includes("2"), `${url}: Alphard luggage guidance did not update`);
+        await page.locator("[name='passenger_count']").fill("6");
+        assert(await vehicle.locator("[data-vehicle-warning]").isVisible(), `${url}: over-capacity warning did not appear`);
+        await selector.selectOption("hiace");
+        assert(!(await vehicle.locator("[data-vehicle-warning]").isVisible()), `${url}: suitable vehicle still shows an over-capacity warning`);
       }
       if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/$/.test(url)) {
         assert(await page.locator("main .service-grid + .boundary").count() === 0, `${url}: redundant service boundary remains on home page`);

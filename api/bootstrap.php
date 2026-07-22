@@ -440,6 +440,13 @@ function jt_group_contact_payload(array $payload): array {
     $language = strtolower((string)($payload['language'] ?? 'en'));
     if (!in_array($language, ['ja', 'en', 'zh-cn', 'zh-tw', 'ko'], true)) $language = 'en';
     $itinerary = trim((string)($payload['itinerary'] ?? ''));
+    $vehiclePreference = (string)($payload['vehicle_preference'] ?? '');
+    $vehicleLabels = [
+        'staff_recommendation' => 'Staff recommendation',
+        'alphard' => 'Toyota Alphard',
+        'hiace' => 'Toyota Hiace',
+        'multiple_vehicles' => 'Multiple vehicles / other'
+    ];
     return [
         'type' => 'japan_travel',
         'source_site' => 'Japan Travel',
@@ -462,7 +469,7 @@ function jt_group_contact_payload(array $payload): array {
         'dropoff_location' => (string)($payload['dropoff_location'] ?? ''),
         'passenger_count' => (string)($payload['passenger_count'] ?? ''),
         'luggage_count' => (string)($payload['luggage_count'] ?? ''),
-        'vehicle_preference' => (string)($payload['vehicle_preference'] ?? ''),
+        'vehicle_preference' => $vehicleLabels[$vehiclePreference] ?? $vehiclePreference,
         'itinerary' => $itinerary,
         'message' => $itinerary,
         'landing_page' => (string)($payload['landing_page'] ?? ''),
