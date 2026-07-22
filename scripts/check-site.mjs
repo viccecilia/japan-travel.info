@@ -74,17 +74,19 @@ for (const cssFile of files.filter((f) => f.endsWith(".css"))) {
 }
 
 const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
-if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about)\/<\/loc>/.test(sitemap)) fail("cancelled top-level pages remain in sitemap");
+if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about|contact)\/<\/loc>/.test(sitemap)) fail("cancelled or merged top-level pages remain in sitemap");
 if (!sitemap.includes("https://japan-travel.info/zh-cn/services/airport-transfer/</loc>")) fail("internal airport transfer page missing from sitemap");
 const htaccess = fs.readFileSync(path.join(root, ".htaccess"), "utf8");
 for (const rule of [
-  "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]",
+  "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/contact/?$ /$1/services/airport-transfer/ [R=301,L]",
+  "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/services/airport-transfer/ [R=301,L]",
   "RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]",
-  "RewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]"
+  "RewriteRule ^go/rezio/.*$ /ja/services/airport-transfer/ [R=302,L]"
 ]) if (!htaccess.includes(rule)) fail(`missing legacy redirect: ${rule}`);
 if (/RewriteRule \^zh-cn\/services\/airport-transfer/.test(htaccess)) fail("airport transfer must remain on Japan Travel");
 const zhHome = fs.readFileSync(path.join(root, "zh-cn", "index.html"), "utf8");
 if (!zhHome.includes('href="/zh-cn/services/airport-transfer/"')) fail("zh-cn airport transfer entry is not internal");
+if (!zhHome.includes('href="/zh-cn/services/airport-transfer/#transport-inquiry"')) fail("zh-cn inquiry entry does not target merged transport page");
 for (const lang of langs) {
   const serviceHtml = fs.readFileSync(path.join(root, lang, "services", "airport-transfer", "index.html"), "utf8");
   if (!serviceHtml.includes('id="transport-inquiry"') || !serviceHtml.includes('action="/api/inquiry.php"')) fail(`airport inquiry form missing for ${lang}`);
@@ -93,6 +95,7 @@ for (const f of html) {
   const rel = path.relative(root, f).replaceAll("\\", "/");
   const text = fs.readFileSync(f, "utf8");
   if (/href="\/(?:ja|en|zh-cn|zh-tw|ko)\/(?:products|about)\/"/.test(text)) fail(`cancelled top-level link in ${rel}`);
+  if (!rel.includes("/contact/") && /href="\/(?:ja|en|zh-cn|zh-tw|ko)\/contact\/"/.test(text)) fail(`separate contact link remains in ${rel}`);
   if (/\/go\/rezio|Rezio link unavailable|booking link is not configured|スポット資料庫/.test(text)) fail(`obsolete public booking or navigation text in ${rel}`);
 }
 for (const match of sitemap.matchAll(/https:\/\/japan-travel\.info\/([^<]*)/g)) {

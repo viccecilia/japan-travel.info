@@ -4,9 +4,10 @@ RewriteRule ^runtime/private/ - [F,L]
 RewriteRule ^h5/?$ /zh-cn/ [R=301,L]
 RewriteRule ^h5/routes/([^/]+)/?$ /zh-cn/routes/$1/ [R=301,L]
 RewriteRule ^spots/([^/]+)/?$ /zh-cn/spots/$1/ [R=301,L]
-RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/contact/ [R=301,L]
+RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/contact/?$ /$1/services/airport-transfer/ [R=301,L]
+RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/products/?$ /$1/services/airport-transfer/ [R=301,L]
 RewriteRule ^(ja|en|zh-cn|zh-tw|ko)/about/?$ /$1/ [R=301,L]
-RewriteRule ^go/rezio/.*$ /ja/contact/ [R=302,L]
+RewriteRule ^go/rezio/.*$ /ja/services/airport-transfer/ [R=302,L]
 <FilesMatch "^(\.env|.*\.sqlite|.*\.log)$">
   Require all denied
 </FilesMatch>

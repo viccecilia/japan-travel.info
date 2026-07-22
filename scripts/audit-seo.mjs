@@ -21,7 +21,7 @@ for (const file of html) {
   if (!isNoindex && !/<h1[\s>]/i.test(text)) throw new Error(`missing h1 ${rel}`);
   if (rel.startsWith("h5/") && !robots.toLowerCase().includes("noindex")) throw new Error(`legacy page must be noindex ${rel}`);
   const key = `${title}||${desc}`;
-  if (seen.has(key) && !rel.startsWith("h5/") && !rel.includes("/member/") && !rel.includes("/404/") && rel !== "404.html") throw new Error(`duplicate seo ${rel} and ${seen.get(key)}`);
+  if (!isNoindex && seen.has(key) && !rel.includes("/member/") && !rel.includes("/404/") && rel !== "404.html") throw new Error(`duplicate seo ${rel} and ${seen.get(key)}`);
   seen.set(key, rel);
   if (!isNoindex && seenTitle.has(title)) throw new Error(`duplicate title ${rel} and ${seenTitle.get(title)}`);
   if (!isNoindex && seenDesc.has(desc)) throw new Error(`duplicate description ${rel} and ${seenDesc.get(desc)}`);

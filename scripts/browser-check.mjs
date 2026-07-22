@@ -144,6 +144,7 @@ try {
         assert(await page.locator("main .service-grid + .boundary").count() === 0, `${url}: redundant service boundary remains on home page`);
         assert(await page.locator("main .product-card").count() === 0, `${url}: booking guide cards must remain hidden until Rezio is connected`);
         assert(await page.locator("main .home-cta .home-cta-actions").count() === 1, `${url}: centered home CTA layout missing`);
+        assert((await page.locator(".nav-cta").getAttribute("href")) === `/${url.split("/")[1]}/services/airport-transfer/#transport-inquiry`, `${url}: consultation CTA does not target the merged transport page`);
         const spotActions = page.locator("main .spot-card .card-actions");
         assert(await spotActions.count() > 0, `${url}: compact spot card actions missing`);
         assert(await spotActions.count() === await page.locator("main .spot-card .card-enter").count(), `${url}: spot card entry control missing`);

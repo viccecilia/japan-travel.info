@@ -6,7 +6,7 @@ const css = fs.readFileSync(path.join(root, "assets/css/site.css"), "utf8");
 const fail = (message) => { throw new Error(message); };
 for (const token of ["--content: 1180px", "--reading: 760px", "html[lang=\"zh-CN\"]", "html[lang=\"zh-Hant\"]", "html[lang=\"ja\"]", "html[lang=\"ko\"]", ".bottom-nav", ".lang-menu"]) if (!css.includes(token)) fail(`missing UI rule ${token}`);
 if (/font-weight:\s*(850|900|950)/.test(css)) fail("excessive font weight remains");
-const samples = ["en/index.html","en/routes/index.html","en/routes/kyoto-nara-classic/index.html","en/spots/index.html","en/spots/kyo-0001/index.html","en/services/airport-transfer/index.html","en/products/kix-osaka/index.html","en/vehicles/index.html","en/member/profile/index.html","en/faq/index.html","en/contact/index.html"];
+const samples = ["en/index.html","en/routes/index.html","en/routes/kyoto-nara-classic/index.html","en/spots/index.html","en/spots/kyo-0001/index.html","en/services/airport-transfer/index.html","en/services/business/index.html","en/products/kix-osaka/index.html","en/vehicles/index.html","en/member/profile/index.html","en/faq/index.html"];
 for (const rel of samples) {
   const html = fs.readFileSync(path.join(root, rel), "utf8");
   if (!html.includes("lang-menu") || !html.includes("bottom-nav")) fail(`missing responsive navigation ${rel}`);
