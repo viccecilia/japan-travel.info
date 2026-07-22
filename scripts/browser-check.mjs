@@ -140,6 +140,9 @@ try {
       if (url.endsWith("/services/airport-transfer/")) {
         assert(await page.locator('#transport-inquiry form[action="/api/inquiry.php"]').count() === 1, `${url}: internal transport inquiry form missing`);
       }
+      if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/$/.test(url)) {
+        assert(await page.locator("main .service-grid + .boundary").count() === 0, `${url}: redundant service boundary remains on home page`);
+      }
       if (url.includes("/member/")) {
         assert(await page.locator("form").count() <= 1, `${url}: duplicate member forms detected`);
       }
