@@ -142,6 +142,7 @@ try {
       }
       if (/\/(?:ja|en|zh-cn|zh-tw|ko)\/$/.test(url)) {
         assert(await page.locator("main .service-grid + .boundary").count() === 0, `${url}: redundant service boundary remains on home page`);
+        assert(await page.locator("main .product-card").count() === 0, `${url}: booking guide cards must remain hidden until Rezio is connected`);
       }
       if (url.includes("/member/")) {
         assert(await page.locator("form").count() <= 1, `${url}: duplicate member forms detected`);
