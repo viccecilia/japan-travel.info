@@ -144,6 +144,13 @@ try {
         assert(await page.locator("main .service-grid + .boundary").count() === 0, `${url}: redundant service boundary remains on home page`);
         assert(await page.locator("main .product-card").count() === 0, `${url}: booking guide cards must remain hidden until Rezio is connected`);
         assert(await page.locator("main .home-cta .home-cta-actions").count() === 1, `${url}: centered home CTA layout missing`);
+        const spotActions = page.locator("main .spot-card .card-actions");
+        assert(await spotActions.count() > 0, `${url}: compact spot card actions missing`);
+        assert(await spotActions.count() === await page.locator("main .spot-card .card-enter").count(), `${url}: spot card entry control missing`);
+        if (viewport.name === "desktop") {
+          const firstRowBottoms = await spotActions.evaluateAll((items) => items.slice(0, 3).map((item) => Math.round(item.getBoundingClientRect().bottom)));
+          assert(Math.max(...firstRowBottoms) - Math.min(...firstRowBottoms) <= 2, `${url}: first-row spot card actions are not bottom-aligned`);
+        }
       }
       if (url.includes("/member/")) {
         assert(await page.locator("form").count() <= 1, `${url}: duplicate member forms detected`);

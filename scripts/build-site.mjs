@@ -218,7 +218,12 @@ function breadcrumb(lang, items) {
   return `<nav class="breadcrumb" aria-label="Breadcrumb">${items.map((it, i) => it.href ? `<a href="${it.href}">${h(it.name)}</a>` : `<span>${h(it.name)}</span>`).join("<span>/</span>")}</nav>`;
 }
 function card(routeOrSpot, img, href, text, chips = [], meta = [], className = "") {
-  return `<article class="card ${h(className)}"><a href="${href}"><img src="${h(img)}" alt="${h(routeOrSpot.title || routeOrSpot.name)}" loading="lazy"></a><div class="card-body">${meta.length ? `<div class="card-meta">${meta.map((x) => `<span>${h(x)}</span>`).join("")}</div>` : ""}<h3><a href="${href}">${h(routeOrSpot.title || routeOrSpot.name)}</a></h3><p>${h(text)}</p><div class="chips">${chips.slice(0, 4).map((c) => `<span>${h(c)}</span>`).join("")}</div><a class="btn-link" href="${href}">→</a></div></article>`;
+  const title = routeOrSpot.title || routeOrSpot.name;
+  const chipList = `<div class="chips">${chips.slice(0, 4).map((c) => `<span>${h(c)}</span>`).join("")}</div>`;
+  const action = className.split(/\s+/).includes("spot-card")
+    ? `<div class="card-actions">${chipList}<a class="card-enter" href="${href}" aria-label="${h(title)}">→</a></div>`
+    : `${chipList}<a class="btn-link" href="${href}">→</a>`;
+  return `<article class="card ${h(className)}"><a href="${href}"><img src="${h(img)}" alt="${h(title)}" loading="lazy"></a><div class="card-body">${meta.length ? `<div class="card-meta">${meta.map((x) => `<span>${h(x)}</span>`).join("")}</div>` : ""}<h3><a href="${href}">${h(title)}</a></h3><p>${h(text)}</p>${action}</div></article>`;
 }
 function audioBlock(lang, spot) {
   const s = pageCopy[lang.key].spot;
