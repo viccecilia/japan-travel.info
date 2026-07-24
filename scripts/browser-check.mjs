@@ -31,9 +31,10 @@ if (!base) {
 }
 
 const viewports = [
-  { name: "mobile", width: 390, height: 844, mobile: true },
-  { name: "tablet", width: 768, height: 1024, mobile: true },
-  { name: "desktop", width: 1440, height: 1000, mobile: false }
+  { name: "wide", width: 2048, height: 1000, mobile: false, desktop: true },
+  { name: "desktop", width: 1440, height: 1000, mobile: false, desktop: true },
+  { name: "tablet", width: 1024, height: 768, mobile: true, desktop: false },
+  { name: "mobile", width: 390, height: 844, mobile: true, desktop: false }
 ];
 const representative = [
   "/", "/zh-cn/", "/zh-cn/routes/", "/zh-cn/routes/kyoto-nara-classic/",
@@ -43,10 +44,10 @@ const representative = [
   "/zh-cn/ambassador/", "/zh-cn/member/login/", "/zh-cn/member/register/",
   "/zh-cn/member/profile/", "/zh-cn/member/bookings/", "/zh-cn/faq/",
   "/zh-cn/contact/", "/zh-cn/privacy/", "/zh-cn/terms/",
-  "/ja/", "/ja/contact/", "/en/spots/", "/ko/routes/", "/zh-tw/services/family/"
+  "/ja/", "/en/", "/ko/", "/zh-tw/", "/ja/contact/", "/en/spots/", "/ko/routes/", "/zh-tw/services/family/"
 ];
 const screenshots = new Set([
-  "/", "/zh-cn/", "/zh-cn/routes/kyoto-nara-classic/", "/zh-cn/spots/",
+  "/", "/zh-cn/", "/ja/", "/en/", "/ko/", "/zh-tw/", "/zh-cn/routes/kyoto-nara-classic/", "/zh-cn/spots/",
   "/zh-cn/spots/kyo-0001/", "/zh-cn/services/airport-transfer/", "/zh-cn/faq/",
   "/zh-cn/contact/", "/ja/contact/", "/zh-cn/member/profile/", "/en/spots/"
 ]);
@@ -86,7 +87,13 @@ try {
       const metrics = await page.evaluate(() => {
         const visible = (el) => !!el && getComputedStyle(el).visibility !== "hidden" && el.getBoundingClientRect().height > 0;
         const h1 = document.querySelector("h1");
-        const header = document.querySelector(".site-header");
+        const header = document.querySelector(".topbar");
+        const nav = document.querySelector(".topbar .nav");
+        const brandLogo = document.querySelector(".brand-logo");
+        const navLinks = document.querySelector(".nav-links");
+        const mobileMenu = document.querySelector(".mobile-menu");
+        const cta = document.querySelector(".nav-cta");
+        const hero = document.querySelector("#main-content .hero");
         const main = document.querySelector("#main-content") || document.querySelector("main");
         const controls = [...document.querySelectorAll("button, summary, input, select, textarea, a.btn")].filter(visible);
         return {
@@ -95,6 +102,18 @@ try {
           h1Context: h1?.closest(".root-hero,.hero,.detail-hero")?.className || "page",
           bodySize: parseFloat(getComputedStyle(document.body).fontSize),
           headerBottom: header?.getBoundingClientRect().bottom || 0,
+          headerHeight: header?.getBoundingClientRect().height || 0,
+          navLeft: nav?.getBoundingClientRect().left || 0,
+          navRight: nav?.getBoundingClientRect().right || 0,
+          logoWidth: brandLogo?.getBoundingClientRect().width || 0,
+          logoHeight: brandLogo?.getBoundingClientRect().height || 0,
+          logoBackground: brandLogo ? getComputedStyle(brandLogo).backgroundColor : "",
+          navLinksVisible: visible(navLinks),
+          mobileMenuVisible: visible(mobileMenu),
+          ctaVisible: visible(cta),
+          ctaHeight: cta?.getBoundingClientRect().height || 0,
+          ctaWhiteSpace: cta ? getComputedStyle(cta).whiteSpace : "",
+          heroHeight: hero?.getBoundingClientRect().height || 0,
           mainTop: main?.getBoundingClientRect().top || 0,
           smallControls: controls.filter((el) => {
             const r = el.getBoundingClientRect();
@@ -116,12 +135,34 @@ try {
       assert(metrics.bodySize >= 16, `${viewport.name} ${url}: body text below 16px`);
       assert(metrics.mainTop >= metrics.headerBottom - 2, `${viewport.name} ${url}: header overlaps main content`);
       assert(metrics.smallControls.length === 0, `${viewport.name} ${url}: targets below 44px: ${metrics.smallControls.join(", ")}`);
-      if (viewport.name === "desktop") {
+      if (url !== "/") {
+        const expectedHeaderHeight = viewport.name === "mobile" ? 68 : 76;
+        assert(metrics.headerHeight >= expectedHeaderHeight - 1 && metrics.headerHeight <= 84, `${viewport.name} ${url}: header height ${metrics.headerHeight}px`);
+        assert(metrics.logoWidth > 0 && metrics.logoWidth <= 260, `${viewport.name} ${url}: logo width ${metrics.logoWidth}px`);
+        assert(metrics.logoHeight <= 58, `${viewport.name} ${url}: logo height ${metrics.logoHeight}px`);
+        assert(metrics.logoBackground === "rgba(0, 0, 0, 0)", `${viewport.name} ${url}: logo background is not transparent`);
+        const sideInset = viewport.name === "mobile" ? 12 : 24;
+        assert(metrics.navLeft >= sideInset - 1 && metrics.navRight <= viewport.width - sideInset + 1, `${viewport.name} ${url}: header content touches viewport edge`);
+        if (viewport.width >= 1200) {
+          assert(metrics.navLinksVisible && !metrics.mobileMenuVisible, `${viewport.name} ${url}: desktop navigation mode is incorrect`);
+          assert(metrics.logoWidth >= 210, `${viewport.name} ${url}: desktop logo is too small`);
+        } else {
+          assert(!metrics.navLinksVisible && metrics.mobileMenuVisible, `${viewport.name} ${url}: hamburger navigation mode is incorrect`);
+        }
+        if (metrics.ctaVisible) {
+          assert(metrics.ctaHeight <= 44.5, `${viewport.name} ${url}: CTA is taller than 44px`);
+          assert(metrics.ctaWhiteSpace === "nowrap", `${viewport.name} ${url}: CTA can wrap`);
+        }
+        if (/^\/(?:ja|en|zh-cn|zh-tw|ko)\/$/.test(url)) {
+          assert(metrics.heroHeight >= Math.min(520, viewport.height * .64), `${viewport.name} ${url}: home hero no longer dominates the first screen`);
+        }
+      }
+      if (viewport.desktop) {
         const desktopLimit = metrics.h1Context.includes("root-hero") ? 78 : metrics.h1Context.includes("hero") ? 72 : metrics.h1Context.includes("detail-hero") ? 60 : 52;
         assert(metrics.h1Size <= desktopLimit, `${url}: desktop H1 too large (${metrics.h1Size}px)`);
         assert(metrics.cards.every((n) => n <= 3), `${url}: desktop card grid exceeds 3 columns`);
       } else {
-        const mobileLimit = viewport.name === "mobile" ? 44 : 54;
+        const mobileLimit = viewport.name === "mobile" ? 44 : 64;
         assert(metrics.h1Size <= mobileLimit, `${viewport.name} ${url}: H1 too large (${metrics.h1Size}px)`);
         if (viewport.name === "mobile" && url !== "/") assert(metrics.fixedNav, `${viewport.name} ${url}: mobile bottom navigation missing`);
       }
@@ -167,7 +208,7 @@ try {
         const spotActions = page.locator("main .spot-card .card-actions");
         assert(await spotActions.count() > 0, `${url}: compact spot card actions missing`);
         assert(await spotActions.count() === await page.locator("main .spot-card .card-enter").count(), `${url}: spot card entry control missing`);
-        if (viewport.name === "desktop") {
+        if (viewport.desktop) {
           const firstRowBottoms = await spotActions.evaluateAll((items) => items.slice(0, 3).map((item) => Math.round(item.getBoundingClientRect().bottom)));
           assert(Math.max(...firstRowBottoms) - Math.min(...firstRowBottoms) <= 2, `${url}: first-row spot card actions are not bottom-aligned`);
         }
@@ -189,6 +230,7 @@ try {
         await page.locator(".lang-menu summary").click();
         const en = page.locator(".lang-popover a").filter({ hasText: "EN" });
         assert(await en.getAttribute("href") === "/en/", `${url}: language switch does not preserve page route`);
+        await page.locator(".lang-menu").evaluate((menu) => menu.removeAttribute("open"));
       }
 
       if (screenshots.has(url)) {
