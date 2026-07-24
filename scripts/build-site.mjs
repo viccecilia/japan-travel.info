@@ -218,7 +218,10 @@ function nav(lang, rest = "") {
   const navLinks = links.map(([name, target, href]) => `<a href="${h(href)}" ${current === `/${target}` ? 'aria-current="page"' : ""}>${h(name)}</a>`).join("");
   const languageLinks = langs.map((l) => `<a class="${l.key === lang.key ? "active" : ""}" href="${relUrl(l, rest)}"><span>${h(l.name)}</span><strong>${l.label}</strong></a>`).join("");
   return `<a class="skip-link" href="#main-content">Skip to content</a><header class="topbar"><div class="wrap nav">
-    <a class="brand" href="${relUrl(lang)}">Japan Travel<small>株式会社大寅 / Daitora Group</small></a>
+    <a class="brand" href="${relUrl(lang)}" aria-label="Japan Travel">
+      <img class="brand-logo" src="/assets/images/brand/japan-travel-logo-horizontal.png" alt="Japan Travel">
+      <small>株式会社大寅 / Daitora Group</small>
+    </a>
     <nav class="nav-links" aria-label="Main">${navLinks}</nav>
     <div class="nav-actions"><a class="nav-member" href="${relUrl(lang, "member")}">${h(c.nav.member)}</a><a class="nav-cta" href="${contactHref(lang)}">${h(c.nav.cta)}</a>
       <details class="lang-menu"><summary aria-label="${h(c.nav.language)}">${lang.label}</summary><div class="lang-popover">${languageLinks}</div></details>
@@ -231,7 +234,7 @@ function footer(lang) {
   const c = pageCopy[lang.key];
   const social = ["instagramUrl", "tiktokUrl", "lineUrl"].map((key) => `<span data-social="${key}"></span>`).join("");
   return `<footer class="footer"><div class="wrap footer-grid">
-    <div><strong>Japan Travel</strong><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p></div>
+    <div><img class="footer-logo" src="/assets/images/brand/japan-travel-logo-horizontal.png" alt="Japan Travel"><p>${h(brand.operated_by_text)}</p><p>${h(brand.vehicle_network_text[lang.key])}</p></div>
     <div><strong>${h(t.services)}</strong>${servicePages.map((s) => `<a href="${h(serviceHref(lang, s.id))}">${h(s.title[lang.key])}</a>`).join("")}</div>
     <div><strong>${h(t.routes)}</strong><a href="${relUrl(lang, "routes")}">${h(t.routesTitle)}</a><a href="${relUrl(lang, "spots")}">${h(t.spotsTitle)}</a><a href="${contactHref(lang)}">${h(contactCopy[lang.key].navContact)}</a><a href="${relUrl(lang, "member")}">${h(c.nav.member)}</a></div>
     <div><strong>Japan Travel</strong><a href="${h(brand.daitora_url)}" rel="noopener" target="_blank">Daitora Group</a><a href="${relUrl(lang, "faq")}">FAQ</a><a href="${relUrl(lang, "privacy")}">${h(c.info.privacy)}</a><a href="${relUrl(lang, "terms")}">${h(c.info.terms)}</a><div class="social-links">${social}</div></div>
@@ -261,6 +264,9 @@ function layout(lang, rest, meta, body, options = {}) {
   <meta property="og:description" content="${h(description)}">
   <meta property="og:url" content="${canonical(lang, rest)}">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/brand/favicon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/brand/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/site.css">
   <script defer src="/assets/js/site-config.js"></script>
   <script>window.JT_I18N=${JSON.stringify(label[lang.key]).replace(/</g, "\\u003c")};</script>
@@ -578,6 +584,7 @@ function baseLd(lang, rest, type) {
     "@type": "Organization",
     name: "Japan Travel",
     url: siteUrl,
+    logo: `${siteUrl}/assets/images/brand/favicon-512.png`,
     parentOrganization: { "@type": "Organization", name: "Daitora Group", url: brand.daitora_url }
   }, {
     "@context": "https://schema.org",
@@ -593,7 +600,7 @@ function touristLd(lang, s) {
   return { "@context": "https://schema.org", "@type": "TouristAttraction", name: s.name, image: siteUrl + cleanAsset(s.image), url: canonical(lang, `spots/${s.id}`), address: `${s.city || ""} ${s.region || ""}` };
 }
 function rootPage() {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Japan Travel | Kansai travel and transport</title><meta name="description" content="Kansai airport transfers, private charters, day routes and guides to 73 places, operated by Daitora Group."><link rel="canonical" href="${siteUrl}/">${pageLangAlternates("")}<link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="root-hero"><video autoplay muted loop playsinline poster="/kansai-assets/images/nara/nar-0003-kasuga-taisha-shrine-cover.jpg"><source src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4" type="video/mp4"></video><div class="root-inner wrap"><p class="eyebrow">Kansai · Japan</p><h1>Japan Travel</h1><p>Kansai travel content, airport transfers, private charters and day routes. Operated by 株式会社大寅 / Daitora Group, supported by a group-wide vehicle network of about 100 vehicles.</p><div class="language-grid">${langs.map((l) => `<a href="${relUrl(l)}"><span>${l.label}</span><small>${h(l.name)}</small></a>`).join("")}</div></div></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Japan Travel | Kansai travel and transport</title><meta name="description" content="Kansai airport transfers, private charters, day routes and guides to 73 places, operated by Daitora Group."><link rel="canonical" href="${siteUrl}/">${pageLangAlternates("")}<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/brand/favicon-32.png"><link rel="icon" type="image/png" sizes="512x512" href="/assets/images/brand/favicon-512.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/images/brand/apple-touch-icon.png"><link rel="stylesheet" href="/assets/css/site.css"></head><body><main class="root-hero"><video autoplay muted loop playsinline poster="/kansai-assets/images/nara/nar-0003-kasuga-taisha-shrine-cover.jpg"><source src="/kansai-assets/video/hero/sea_kansai_01_beach_only_42s.mp4" type="video/mp4"></video><div class="root-inner wrap"><img class="root-brand-mark" src="/assets/images/brand/japan-travel-mark.png" alt=""><p class="eyebrow">Kansai · Japan</p><h1>Japan Travel</h1><p>Kansai travel content, airport transfers, private charters and day routes. Operated by 株式会社大寅 / Daitora Group, supported by a group-wide vehicle network of about 100 vehicles.</p><div class="language-grid">${langs.map((l) => `<a href="${relUrl(l)}"><span>${l.label}</span><small>${h(l.name)}</small></a>`).join("")}</div></div></main></body></html>`;
 }
 function legacyPage(to) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="description" content="This old Japan Travel URL has moved to the new language directory structure."><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0; url=${h(to)}"><link rel="canonical" href="${siteUrl}${to}"><title>Japan Travel Page Moved</title></head><body><h1>Japan Travel Page Moved</h1><p><a href="${h(to)}">Continue to the new page</a></p></body></html>`;

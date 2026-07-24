@@ -74,6 +74,14 @@ try {
       const response = await page.goto(base + url, { waitUntil: "domcontentloaded" });
       assert(response && response.status() < 400, `${viewport.name} ${url}: HTTP ${response?.status()}`);
       await page.locator(url === "/" ? "main.root-hero" : "#main-content").waitFor();
+      const logo = page.locator(url === "/" ? ".root-brand-mark" : ".brand-logo");
+      assert(await logo.count() === 1, `${viewport.name} ${url}: brand logo missing`);
+      assert(await logo.evaluate((image) => image.complete && image.naturalWidth > 0), `${viewport.name} ${url}: brand logo failed to load`);
+      if (url !== "/") {
+        const footerLogo = page.locator(".footer-logo");
+        assert(await footerLogo.count() === 1, `${viewport.name} ${url}: footer logo missing`);
+        assert(await footerLogo.evaluate((image) => image.complete && image.naturalWidth > 0), `${viewport.name} ${url}: footer logo failed to load`);
+      }
 
       const metrics = await page.evaluate(() => {
         const visible = (el) => !!el && getComputedStyle(el).visibility !== "hidden" && el.getBoundingClientRect().height > 0;
